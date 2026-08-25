@@ -1,4 +1,5 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import java.util.Properties
 
 plugins {
     alias(libs.plugins.android.application)
@@ -6,6 +7,10 @@ plugins {
     alias(libs.plugins.hilt)
     alias(libs.plugins.ksp)
     // id("com.google.gms.google-services")
+}
+
+val properties = Properties().apply {
+    load(rootProject.file("local.properties").inputStream())
 }
 
 android {
@@ -21,6 +26,7 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
+
 
     buildTypes {
         release {
@@ -38,6 +44,15 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
+    }
+
+    defaultConfig {
+        buildConfigField(
+            "String",
+            "PLANT_NET_API_KEY",
+            "\"${properties["PLANT_NET_API_KEY"]}\""
+        )
     }
 
     testOptions {
