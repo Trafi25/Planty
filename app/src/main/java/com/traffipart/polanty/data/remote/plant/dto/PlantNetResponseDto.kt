@@ -1,4 +1,4 @@
-package com.traffipart.polanty.data.plant.dto
+package com.traffipart.polanty.data.remote.plant.dto
 
 import com.squareup.moshi.JsonClass
 

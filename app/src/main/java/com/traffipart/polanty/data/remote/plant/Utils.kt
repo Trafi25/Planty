@@ -1,4 +1,4 @@
-package com.traffipart.polanty.data.plant
+package com.traffipart.polanty.data.remote.plant
 
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody

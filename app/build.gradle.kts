@@ -9,9 +9,10 @@ plugins {
     // id("com.google.gms.google-services")
 }
 
-val properties = Properties().apply {
-    load(rootProject.file("local.properties").inputStream())
-}
+val properties =
+    Properties().apply {
+        load(rootProject.file("local.properties").inputStream())
+    }
 
 android {
     namespace = "com.traffipart.polanty"
@@ -26,7 +27,6 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
-
 
     buildTypes {
         release {
@@ -51,7 +51,7 @@ android {
         buildConfigField(
             "String",
             "PLANT_NET_API_KEY",
-            "\"${properties["PLANT_NET_API_KEY"]}\""
+            "\"${properties["PLANT_NET_API_KEY"]}\"",
         )
     }
 
@@ -111,6 +111,7 @@ dependencies {
     implementation(libs.moshi)
     implementation(libs.moshi.kotlin)
     ksp(libs.moshi.kotlin.codegen)
+    implementation(libs.okhttp)
     implementation(libs.okhttp.logging.interceptor)
 
     // room
