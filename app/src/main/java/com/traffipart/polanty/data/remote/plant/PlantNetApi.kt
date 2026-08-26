@@ -11,7 +11,6 @@ interface PlantNetApi {
     @Multipart
     @POST("v2/identify/all")
     suspend fun identifyPlant(
-        @Query("api-key") apiKey: String,
         @Query("lang") language: String = "en",
         @Query("nb-results") numberOfResults: Int = 5,
         @Part image: MultipartBody.Part,
