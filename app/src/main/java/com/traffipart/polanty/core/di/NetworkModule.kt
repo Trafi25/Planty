@@ -1,8 +1,9 @@
-package com.traffipart.polanty.core.network
+package com.traffipart.polanty.core.di
 
 import com.google.firebase.BuildConfig
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
+import com.traffipart.polanty.core.network.PlantNetAuthInterceptor
 import com.traffipart.polanty.data.remote.plant.PlantNetApi
 import dagger.Module
 import dagger.Provides
@@ -38,10 +39,12 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideHttpClient(interceptor: HttpLoggingInterceptor): OkHttpClient =
+    fun provideHttpClient(interceptor: HttpLoggingInterceptor,
+                          planetAuthInterceptor: PlantNetAuthInterceptor): OkHttpClient =
         OkHttpClient
             .Builder()
             .addInterceptor(interceptor)
+            .addInterceptor(planetAuthInterceptor)
             .connectTimeout(20, TimeUnit.SECONDS)
             .readTimeout(30, TimeUnit.SECONDS)
             .writeTimeout(30, TimeUnit.SECONDS)
