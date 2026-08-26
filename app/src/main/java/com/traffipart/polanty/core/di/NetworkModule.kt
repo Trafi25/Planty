@@ -39,8 +39,10 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideHttpClient(interceptor: HttpLoggingInterceptor,
-                          planetAuthInterceptor: PlantNetAuthInterceptor): OkHttpClient =
+    fun provideHttpClient(
+        interceptor: HttpLoggingInterceptor,
+        planetAuthInterceptor: PlantNetAuthInterceptor,
+    ): OkHttpClient =
         OkHttpClient
             .Builder()
             .addInterceptor(interceptor)

@@ -1,4 +1,4 @@
-package com.traffipart.polanty.core.model
+package com.traffipart.polanty.domain.model
 
 data class PlantImage(
     val bytes: ByteArray,

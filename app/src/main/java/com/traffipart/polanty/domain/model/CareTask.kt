@@ -1,4 +1,4 @@
-package com.traffipart.polanty.core
+package com.traffipart.polanty.domain.model
 
 data class CareTask(
     val id: Long,

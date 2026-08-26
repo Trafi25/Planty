@@ -1,7 +1,7 @@
 package com.traffipart.polanty.core.di
 
-import com.traffipart.polanty.core.repository.PlantIdentificationRepository
 import com.traffipart.polanty.data.repository.PlantIdentificationRepositoryImpl
+import com.traffipart.polanty.domain.repository.PlantIdentificationRepository
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
