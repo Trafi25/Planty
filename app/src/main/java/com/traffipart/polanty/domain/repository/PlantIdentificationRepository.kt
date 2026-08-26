@@ -1,8 +1,10 @@
 package com.traffipart.polanty.domain.repository
 
+import com.traffipart.polanty.core.common.DataError
+import com.traffipart.polanty.core.common.Result
 import com.traffipart.polanty.domain.model.PlantIdentification
 import com.traffipart.polanty.domain.model.PlantImage
 
 interface PlantIdentificationRepository {
-    suspend fun identifyPlant(image: PlantImage): Result<PlantIdentification>
+    suspend fun identifyPlant(image: PlantImage): Result<PlantIdentification, DataError>
 }
