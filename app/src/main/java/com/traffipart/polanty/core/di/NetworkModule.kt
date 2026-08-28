@@ -41,12 +41,12 @@ object NetworkModule {
     @Singleton
     fun provideHttpClient(
         interceptor: HttpLoggingInterceptor,
-        planetAuthInterceptor: PlantNetAuthInterceptor,
+        plantNetAuthInterceptor: PlantNetAuthInterceptor,
     ): OkHttpClient =
         OkHttpClient
             .Builder()
             .addInterceptor(interceptor)
-            .addInterceptor(planetAuthInterceptor)
+            .addInterceptor(plantNetAuthInterceptor)
             .connectTimeout(20, TimeUnit.SECONDS)
             .readTimeout(30, TimeUnit.SECONDS)
             .writeTimeout(30, TimeUnit.SECONDS)
