@@ -1,8 +1,8 @@
 package com.traffipart.polanty.core.di
 
-import com.google.firebase.BuildConfig
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
+import com.traffipart.polanty.BuildConfig
 import com.traffipart.polanty.core.network.PlantNetAuthInterceptor
 import com.traffipart.polanty.data.remote.plant.PlantNetApi
 import dagger.Module

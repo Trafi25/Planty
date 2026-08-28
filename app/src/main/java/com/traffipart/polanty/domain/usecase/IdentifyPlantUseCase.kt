@@ -12,5 +12,13 @@ class IdentifyPlantUseCase
     constructor(
         private val repository: PlantIdentificationRepository,
     ) {
-        suspend operator fun invoke(image: PlantImage): Result<PlantIdentification, DataError> = repository.identifyPlant(image)
+        private val allowedMimeTypes = setOf("image/jpeg", "image/png")
+
+        suspend operator fun invoke(image: PlantImage): Result<PlantIdentification, DataError> {
+            if (image.bytes.isEmpty() || image.mimeType !in allowedMimeTypes) {
+                return Result.Error(DataError.InvalidImage)
+            }
+
+            return repository.identifyPlant(image)
+        }
     }
