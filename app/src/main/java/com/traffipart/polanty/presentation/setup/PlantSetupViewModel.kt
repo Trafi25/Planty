@@ -71,7 +71,6 @@ class PlantSetupViewModel
                             imageUri = state.imageUri,
                         )
                     val plantId = savePlantUseCase(plant)
-
                     _uiState.update {
                         it.copy(
                             isSaving = false,

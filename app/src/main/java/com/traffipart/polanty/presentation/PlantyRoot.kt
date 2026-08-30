@@ -6,8 +6,15 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.traffipart.polanty.domain.model.PlantCandidate
+import com.traffipart.polanty.presentation.garden.GardenScreen
 import com.traffipart.polanty.presentation.scan.IdentifyPlantScreen
 import com.traffipart.polanty.presentation.setup.PlantSetupScreen
+
+private enum class PlantyScreen {
+    Identify,
+    Setup,
+    Garden,
+}
 
 @Composable
 fun PlantyRoot() {
@@ -15,21 +22,39 @@ fun PlantyRoot() {
         mutableStateOf<PlantCandidate?>(null)
     }
 
-    val candidate = selectedCandidate
+    var screen by remember {
+        mutableStateOf(PlantyScreen.Identify)
+    }
 
-    if (candidate == null) {
-        IdentifyPlantScreen(
-            onCandidateSelected = {
-                selectedCandidate = it
-            },
-        )
-    } else {
-        PlantSetupScreen(
-            candidate = candidate,
-            onPlantSaved = { plantId -> selectedCandidate = null },
-            onBack = {
-                selectedCandidate = null
-            },
-        )
+    when (screen) {
+        PlantyScreen.Identify -> {
+            IdentifyPlantScreen(
+                onCandidateSelected = { candidate ->
+                    selectedCandidate = candidate
+                    screen = PlantyScreen.Setup
+                },
+            )
+        }
+
+        PlantyScreen.Setup -> {
+            val candidate = selectedCandidate
+
+            if (candidate != null) {
+                PlantSetupScreen(
+                    candidate = candidate,
+                    onBack = { screen = PlantyScreen.Identify },
+                    onPlantSaved = {
+                        selectedCandidate = null
+                        screen = PlantyScreen.Garden
+                    },
+                )
+            }
+        }
+
+        PlantyScreen.Garden -> {
+            GardenScreen(onAddPlant = {
+                screen = PlantyScreen.Identify
+            })
+        }
     }
 }

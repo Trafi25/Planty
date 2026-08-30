@@ -36,6 +36,12 @@ fun PlantSetupScreen(
         )
     }
 
+    LaunchedEffect(state.savedPlantId) {
+        state.savedPlantId?.let { plantId ->
+            onPlantSaved(plantId)
+        }
+    }
+
     Column(
         modifier =
             Modifier
