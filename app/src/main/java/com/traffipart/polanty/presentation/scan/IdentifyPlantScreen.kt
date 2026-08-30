@@ -3,11 +3,14 @@ package com.traffipart.polanty.presentation.scan
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -18,9 +21,13 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.traffipart.polanty.core.common.toMessage
+import com.traffipart.polanty.domain.model.PlantCandidate
 
 @Composable
-fun IdentifyPlantScreen(viewModel: IdentifyPlantViewModel = hiltViewModel()) {
+fun IdentifyPlantScreen(
+    onCandidateSelected: (PlantCandidate) -> Unit,
+    viewModel: IdentifyPlantViewModel = hiltViewModel(),
+) {
     val state by viewModel.uiState.collectAsState()
     val context = LocalContext.current
 
@@ -57,11 +64,18 @@ fun IdentifyPlantScreen(viewModel: IdentifyPlantViewModel = hiltViewModel()) {
             Text(text = "Best match: ${identification.bestMatch}")
 
             identification.candidates.forEach { candidate ->
-                Text(
-                    text =
-                        "${candidate.scientificName} - " +
-                            "${(candidate.confidence * 100).toInt()}%",
-                )
+                Card(
+                    modifier =
+                        Modifier.fillMaxWidth().clickable {
+                            onCandidateSelected(candidate)
+                        },
+                ) {
+                    Text(text = candidate.commonName ?: candidate.scientificName)
+                    Text(
+                        text =
+                            "${(candidate.confidence * 100).toInt()}% match",
+                    )
+                }
             }
         }
         state.error?.let { error ->
