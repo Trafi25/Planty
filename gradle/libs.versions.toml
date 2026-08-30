@@ -33,6 +33,7 @@ hiltCommon = "1.4.0"
 hiltWork = "1.4.0"
 googleAi = "0.9.0"
 firebaseAppcheckPlayintegrity = "19.4.0"
+navigationCompose = "2.10.0"
 
 [libraries]
 # AndroidX Core & Lifecycle
@@ -54,6 +55,7 @@ androidx-compose-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-
 androidx-compose-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
 androidx-compose-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
 androidx-compose-material-icons-extended = { group = "androidx.compose.material", name = "material-icons-extended" }
+androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose"}
 
 # Dependency Injection (Hilt)
 androidx-hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
