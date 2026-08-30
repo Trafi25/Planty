@@ -1,7 +1,7 @@
 package com.traffipart.polanty.domain.model
 
 data class Plant(
-    val id: Long,
+    val id: Long = 0,
     val scientificName: String,
     val commonName: String?,
     val nickname: String?,
