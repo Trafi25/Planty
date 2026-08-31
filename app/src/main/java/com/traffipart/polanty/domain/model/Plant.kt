@@ -7,4 +7,7 @@ data class Plant(
     val nickname: String?,
     val spaceId: Long?,
     val imageUri: String?,
-)
+) {
+    val displayName: String
+        get() = nickname ?: commonName ?: scientificName
+}

@@ -24,4 +24,9 @@ class PlantRepositoryImpl
         override suspend fun deletePlant(plant: Plant) {
             plantDao.deletePlant(plant.toEntity())
         }
+
+        override fun observePlant(plantId: Long): Flow<Plant?> =
+            plantDao.observePlant(plantId).map { entity ->
+                entity?.toDomain()
+            }
     }

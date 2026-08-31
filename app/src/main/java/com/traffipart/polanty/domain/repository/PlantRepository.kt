@@ -9,4 +9,6 @@ interface PlantRepository {
     suspend fun savePlant(plant: Plant): Long
 
     suspend fun deletePlant(plant: Plant)
+
+    fun observePlant(plantId: Long): Flow<Plant?>
 }

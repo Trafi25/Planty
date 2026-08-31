@@ -20,6 +20,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 @Composable
 fun GardenScreen(
     onAddPlant: () -> Unit,
+    onPlantSelected: (Long) -> Unit,
     viewModel: GardenViewModel = hiltViewModel(),
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
@@ -46,9 +47,10 @@ fun GardenScreen(
                 ) { plant ->
                     Card(
                         modifier = Modifier.fillMaxWidth(),
+                        onClick = { onPlantSelected(plant.id) },
                     ) {
                         Column(modifier = Modifier.padding(16.dp)) {
-                            Text(text = plant.nickname ?: plant.commonName ?: plant.scientificName)
+                            Text(text = plant.displayName)
                         }
                     }
                 }
