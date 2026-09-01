@@ -13,13 +13,13 @@ class SavePlantUseCase
     ) {
         suspend operator fun invoke(
             plant: Plant,
-            sourceImageUri: String,
+            sourceImageUri: String?,
         ): Long {
-            val sourceImageUri =
-                sourceImageUri.let {
+            val savedImageUri =
+                sourceImageUri?.let {
                     plantImageStorage.saveImage(it)
                 }
-            val plantToSave = plant.copy(imageUri = sourceImageUri)
+            val plantToSave = plant.copy(imageUri = savedImageUri)
             return plantRepository.savePlant(plantToSave)
         }
     }
