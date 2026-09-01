@@ -24,14 +24,16 @@ fun PlantSetupScreen(
     candidate: PlantCandidate,
     onPlantSaved: (Long) -> Unit,
     onBack: () -> Unit,
+    imageUri: String?,
     viewModel: PlantSetupViewModel = hiltViewModel(),
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
 
-    LaunchedEffect(candidate) {
+    LaunchedEffect(candidate, imageUri) {
         viewModel.onAction(
             PlantSetupAction.Initialize(
                 candidate = candidate,
+                imageUri = imageUri,
             ),
         )
     }

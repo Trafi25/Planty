@@ -16,6 +16,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
@@ -25,17 +28,20 @@ import com.traffipart.polanty.domain.model.PlantCandidate
 
 @Composable
 fun IdentifyPlantScreen(
-    onCandidateSelected: (PlantCandidate) -> Unit,
+    onCandidateSelected: (candidate: PlantCandidate, imageUri: String?) -> Unit,
     viewModel: IdentifyPlantViewModel = hiltViewModel(),
 ) {
     val state by viewModel.uiState.collectAsState()
     val context = LocalContext.current
+
+    var selectedImageUri by remember { mutableStateOf<String?>(null) }
 
     val photoPicker =
         rememberLauncherForActivityResult(
             contract = ActivityResultContracts.PickVisualMedia(),
         ) { uri ->
             if (uri != null) {
+                selectedImageUri = uri.toString()
                 val plantImage = uri.toPlantImage(context)
                 if (plantImage != null) {
                     viewModel.onAction(IdentifyPlantAction.IdentifyPlant(plantImage))
@@ -67,7 +73,7 @@ fun IdentifyPlantScreen(
                 Card(
                     modifier =
                         Modifier.fillMaxWidth().clickable {
-                            onCandidateSelected(candidate)
+                            onCandidateSelected(candidate, selectedImageUri)
                         },
                 ) {
                     Text(text = candidate.commonName ?: candidate.scientificName)

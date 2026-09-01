@@ -68,9 +68,9 @@ class PlantSetupViewModel
                             commonName = candidate.commonName,
                             nickname = state.nickname.trim().takeIf { it.isNotEmpty() },
                             spaceId = state.spaceId,
-                            imageUri = state.imageUri,
+                            imageUri = null,
                         )
-                    val plantId = savePlantUseCase(plant)
+                    val plantId = savePlantUseCase(plant = plant, sourceImageUri = state.imageUri)
                     _uiState.update {
                         it.copy(
                             isSaving = false,

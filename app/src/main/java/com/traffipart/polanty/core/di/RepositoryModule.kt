@@ -2,8 +2,10 @@ package com.traffipart.polanty.core.di
 
 import com.traffipart.polanty.data.repository.PlantIdentificationRepositoryImpl
 import com.traffipart.polanty.data.repository.PlantRepositoryImpl
+import com.traffipart.polanty.data.storage.PlantImageStorageImpl
 import com.traffipart.polanty.domain.repository.PlantIdentificationRepository
 import com.traffipart.polanty.domain.repository.PlantRepository
+import com.traffipart.polanty.domain.storage.PlantImageStorage
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -22,4 +24,8 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindPlantRepository(repository: PlantRepositoryImpl): PlantRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindPlantImageStorage(plantImageStorageImpl: PlantImageStorageImpl): PlantImageStorage
 }

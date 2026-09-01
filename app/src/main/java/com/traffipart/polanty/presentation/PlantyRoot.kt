@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -37,6 +38,11 @@ fun PlantyRoot() {
         mutableStateOf<PlantCandidate?>(null)
     }
 
+    var selectedImageUri by
+        rememberSaveable {
+            mutableStateOf<String?>(null)
+        }
+
     NavHost(
         navController = navController,
         startDestination = PlantRoute.GARDEN,
@@ -51,8 +57,9 @@ fun PlantyRoot() {
         }
         composable(route = PlantRoute.IDENTIFY) {
             IdentifyPlantScreen(
-                onCandidateSelected = { candidate ->
+                onCandidateSelected = { candidate, imageUri ->
                     selectedCandidate = candidate
+                    selectedImageUri = imageUri
                     navController.navigate(PlantRoute.SETUP)
                 },
             )
@@ -62,11 +69,13 @@ fun PlantyRoot() {
             if (candidate != null) {
                 PlantSetupScreen(
                     candidate = candidate,
+                    imageUri = selectedImageUri,
                     onBack = {
                         navController.popBackStack()
                     },
                     onPlantSaved = {
                         selectedCandidate = null
+                        selectedImageUri = null
                         navController.navigate(PlantRoute.GARDEN) {
                             popUpTo(PlantRoute.GARDEN)
                             launchSingleTop = true

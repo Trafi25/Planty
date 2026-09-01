@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
@@ -13,9 +14,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import coil3.compose.AsyncImage
 
 @Composable
 fun PlantDetailsScreen(
@@ -44,13 +47,20 @@ fun PlantDetailsScreen(
             Text("Could not load plant")
             return@Column
         }
+        plant.imageUri?.let { imageUri ->
+            AsyncImage(
+                model = imageUri,
+                contentDescription = plant.displayName,
+                modifier = Modifier.fillMaxWidth().height(180.dp),
+                contentScale = ContentScale.Crop,
+            )
+        }
         Text(text = plant.displayName)
         plant.nickname?.let {
             Text(
                 text = "Nickname: $it",
             )
         }
-
         plant.commonName?.let {
             Text(
                 text = "Common name: $it",
