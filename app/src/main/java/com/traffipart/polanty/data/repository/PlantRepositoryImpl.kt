@@ -2,7 +2,7 @@ package com.traffipart.polanty.data.repository
 
 import com.traffipart.polanty.data.mapper.toDomain
 import com.traffipart.polanty.data.mapper.toEntity
-import com.traffipart.polanty.data.room.PlantDao
+import com.traffipart.polanty.data.room.plant.PlantDao
 import com.traffipart.polanty.domain.model.Plant
 import com.traffipart.polanty.domain.repository.PlantRepository
 import kotlinx.coroutines.flow.Flow

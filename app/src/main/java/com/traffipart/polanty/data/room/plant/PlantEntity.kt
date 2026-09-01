@@ -1,4 +1,4 @@
-package com.traffipart.polanty.data.room
+package com.traffipart.polanty.data.room.plant
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey

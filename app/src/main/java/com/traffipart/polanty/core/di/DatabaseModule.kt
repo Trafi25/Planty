@@ -28,4 +28,8 @@ class DatabaseModule {
     @Provides
     @Singleton
     fun providePlantDao(plantDatabase: PlantDatabase) = plantDatabase.plantDao()
+
+    @Provides
+    @Singleton
+    fun providePlantSpaceDao(plantDatabase: PlantDatabase) = plantDatabase.PlantSpaceDao()
 }

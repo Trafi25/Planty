@@ -1,6 +1,5 @@
 package com.traffipart.polanty.presentation.details
 
-import android.widget.Button
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
