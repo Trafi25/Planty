@@ -1,25 +1,33 @@
 package com.traffipart.polanty.presentation.setup
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import coil3.compose.AsyncImage
 import com.traffipart.polanty.domain.model.PlantCandidate
 
 @Composable
@@ -31,6 +39,10 @@ fun PlantSetupScreen(
     viewModel: PlantSetupViewModel = hiltViewModel(),
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
+
+    var showSpacePicker by rememberSaveable { mutableStateOf(false) }
+
+    val selectedSpace = state.spaces.firstOrNull { it.id == state.spaceId }
 
     LaunchedEffect(candidate, imageUri) {
         viewModel.onAction(
@@ -60,11 +72,30 @@ fun PlantSetupScreen(
         ) {
             Text("Back")
         }
-        Text(text = candidate.commonName ?: candidate.scientificName)
-        Text(
-            text =
-                "${(candidate.confidence * 100).toInt()}% match",
+
+        AsyncImage(
+            model = imageUri,
+            contentDescription = null,
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .aspectRatio(16 / 9f)
+                    .clip(RoundedCornerShape(12.dp)),
+            contentScale = ContentScale.Crop,
         )
+
+        Column {
+            Text(
+                text = candidate.commonName ?: candidate.scientificName,
+                style = MaterialTheme.typography.headlineSmall,
+            )
+            Text(
+                text = "${(candidate.confidence * 100).toInt()}% match",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.secondary,
+            )
+        }
+
         OutlinedTextField(
             modifier = Modifier.fillMaxWidth(),
             value = state.nickname,
@@ -75,22 +106,27 @@ fun PlantSetupScreen(
             singleLine = true,
         )
 
-        Text("Chose space")
-        state.spaces.forEach { space ->
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            onClick = {
+                showSpacePicker = true
+            },
+        ) {
             Row(
-                modifier =
-                    Modifier
-                        .fillMaxWidth()
-                        .clickable {
-                            viewModel.onAction(PlantSetupAction.SpaceIdSelected(space.id))
-                        },
+                modifier = Modifier.padding(16.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                RadioButton(
-                    selected = state.spaceId == space.id,
-                    onClick = { viewModel.onAction(PlantSetupAction.SpaceIdSelected(space.id)) },
-                )
-                Text(text = space.name)
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = "Space",
+                        style = MaterialTheme.typography.labelMedium,
+                    )
+                    Text(
+                        text = selectedSpace?.name ?: "Select a space",
+                        style = MaterialTheme.typography.bodyLarge,
+                    )
+                }
+                Text(">")
             }
         }
 
@@ -108,5 +144,17 @@ fun PlantSetupScreen(
         if (state.saveError) {
             Text(text = "Could not save plant. Please try again.")
         }
+    }
+
+    if (showSpacePicker) {
+        SpacePickerDialog(
+            spaces = state.spaces,
+            selectedSpaceId = state.spaceId,
+            onSpaceSelected = { spaceId ->
+                viewModel.onAction(PlantSetupAction.SpaceIdSelected(spaceId))
+                showSpacePicker = false
+            },
+            onDismiss = { showSpacePicker = false },
+        )
     }
 }

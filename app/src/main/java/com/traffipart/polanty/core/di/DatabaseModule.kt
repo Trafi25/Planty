@@ -31,5 +31,5 @@ class DatabaseModule {
 
     @Provides
     @Singleton
-    fun providePlantSpaceDao(plantDatabase: PlantDatabase) = plantDatabase.PlantSpaceDao()
+    fun providePlantSpaceDao(plantDatabase: PlantDatabase) = plantDatabase.plantSpaceDao()
 }

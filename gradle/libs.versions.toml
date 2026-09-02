@@ -35,6 +35,7 @@ googleAi = "0.9.0"
 firebaseAppcheckPlayintegrity = "19.4.0"
 navigationCompose = "2.10.0"
 coil = "3.6.0"
+material3 = "1.4.0"
 
 [libraries]
 # AndroidX Core & Lifecycle
@@ -114,6 +115,7 @@ androidx-hilt-compiler = { group = "androidx.hilt", name = "hilt-compiler", vers
 google-ai-client = { group = "com.google.ai.client.generativeai", name = "generativeai", version.ref = "googleAi" }
 firebase-vertexai = { group = "com.google.firebase", name = "firebase-vertexai" }
 firebase-appcheck-playintegrity = { group = "com.google.firebase", name = "firebase-appcheck-playintegrity", version.ref = "firebaseAppcheckPlayintegrity" }
+androidx-material3 = { group = "androidx.compose.material3", name = "material3", version.ref = "material3" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

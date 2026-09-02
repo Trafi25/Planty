@@ -11,5 +11,5 @@ import com.traffipart.polanty.data.room.space.PlantSpaceEntity
 abstract class PlantDatabase : RoomDatabase() {
     abstract fun plantDao(): PlantDao
 
-    abstract fun PlantSpaceDao(): PlantSpaceDao
+    abstract fun plantSpaceDao(): PlantSpaceDao
 }

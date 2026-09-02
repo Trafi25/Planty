@@ -4,10 +4,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.traffipart.polanty.domain.model.Plant
 import com.traffipart.polanty.domain.model.PlantCandidate
+import com.traffipart.polanty.domain.usecase.InitializeDefaultSpacesUseCase
+import com.traffipart.polanty.domain.usecase.ObserveSpacesUseCase
 import com.traffipart.polanty.domain.usecase.SavePlantUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -18,9 +22,33 @@ class PlantSetupViewModel
     @Inject
     constructor(
         private val savePlantUseCase: SavePlantUseCase,
+        private val observeSpacesUseCase: ObserveSpacesUseCase,
+        private val initializeDefaultSpacesUseCase: InitializeDefaultSpacesUseCase,
     ) : ViewModel() {
         private val _uiState = MutableStateFlow(PlantSetupUiState())
         val uiState = _uiState.asStateFlow()
+
+        init {
+            observeSpaces()
+            initializeDefaultSpaces()
+        }
+
+        private fun observeSpaces() {
+            observeSpacesUseCase()
+                .onEach { spaces ->
+                    _uiState.update {
+                        it.copy(
+                            spaces = spaces,
+                        )
+                    }
+                }.launchIn(viewModelScope)
+        }
+
+        private fun initializeDefaultSpaces() {
+            viewModelScope.launch {
+                initializeDefaultSpacesUseCase()
+            }
+        }
 
         fun onAction(action: PlantSetupAction) {
             when (action) {
