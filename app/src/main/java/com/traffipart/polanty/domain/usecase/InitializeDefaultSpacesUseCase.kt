@@ -16,18 +16,8 @@ class InitializeDefaultSpacesUseCase
 
             if (existingSpaces.isNotEmpty()) return
 
-            val defaultSpaces =
-                listOf(
-                    PlantSpace(id = 0, name = "Living Room", type = PlantSpaceType.LivingRoom),
-                    PlantSpace(id = 0, name = "Kitchen", type = PlantSpaceType.Kitchen),
-                    PlantSpace(id = 0, name = "Bedroom", type = PlantSpaceType.Bedroom),
-                    PlantSpace(id = 0, name = "Balcony", type = PlantSpaceType.Balcony),
-                    PlantSpace(id = 0, name = "Office", type = PlantSpaceType.Office),
-                    PlantSpace(id = 0, name = "Backyard", type = PlantSpaceType.Backyard),
-                )
-
-            defaultSpaces.forEach { space ->
-                plantSpaceRepository.insertSpace(space)
-            }
+            plantSpaceRepository.insertSpace(
+                PlantSpace(id = 0, name = "Bedroom", type = PlantSpaceType.Bedroom),
+            )
         }
     }

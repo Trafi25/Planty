@@ -2,23 +2,31 @@ package com.traffipart.polanty.presentation.garden
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Button
-import androidx.compose.material3.Card
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import coil3.compose.AsyncImage
+import com.traffipart.polanty.presentation.garden.gardenContent.AddSpaceDialog
+import com.traffipart.polanty.presentation.garden.gardenContent.PlantsContent
+import com.traffipart.polanty.presentation.garden.gardenContent.SpacesContent
+
+private enum class GardenTab {
+    Plants,
+    Spaces,
+}
 
 @Composable
 fun GardenScreen(
@@ -28,44 +36,95 @@ fun GardenScreen(
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
 
+    var selectedTab by rememberSaveable { mutableStateOf(GardenTab.Plants) }
+
+    var showAddSpaceDialog by rememberSaveable { mutableStateOf(false) }
+
+    var newSpaceName by rememberSaveable { mutableStateOf("") }
+
+    LaunchedEffect(state.isAddingSpace, state.addSpaceError) {
+        if (!state.isAddingSpace && state.addSpaceError == null && showAddSpaceDialog) {
+            showAddSpaceDialog = false
+        }
+    }
+
     Column(
-        modifier = Modifier.fillMaxSize().padding(24.dp),
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .padding(24.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-        Text("My Garden")
-        Button(
-            onClick = onAddPlant,
+        Text(
+            text = "My Garden",
+            style = MaterialTheme.typography.headlineMedium,
+        )
+        Text(
+            text =
+                "${state.plants.size} plants · " +
+                    "${state.spaces.size} spaces",
+            style = MaterialTheme.typography.bodySmall,
+        )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            Text("Add plant")
+            FilterChip(
+                modifier = Modifier.weight(1f),
+                selected = selectedTab == GardenTab.Plants,
+                onClick = { selectedTab = GardenTab.Plants },
+                label = { Text("All plants") },
+            )
+
+            FilterChip(
+                modifier = Modifier.weight(1f),
+                selected = selectedTab == GardenTab.Spaces,
+                onClick = { selectedTab = GardenTab.Spaces },
+                label = { Text("Spaces") },
+            )
         }
-        if (state.plants.isEmpty()) {
-            Text("No plants in garden")
-        } else {
-            LazyColumn(
-                verticalArrangement = Arrangement.spacedBy(12.dp),
-            ) {
-                items(
-                    items = state.plants,
-                    key = { plant -> plant.id },
-                ) { plant ->
-                    Card(
-                        modifier = Modifier.fillMaxWidth(),
-                        onClick = { onPlantSelected(plant.id) },
-                    ) {
-                        Column(modifier = Modifier.padding(16.dp)) {
-                            plant.imageUri?.let {
-                                AsyncImage(
-                                    model = it,
-                                    contentDescription = plant.displayName,
-                                    modifier = Modifier.fillMaxWidth().height(180.dp),
-                                    contentScale = ContentScale.Crop,
-                                )
-                            }
-                            Text(text = plant.displayName)
-                        }
-                    }
-                }
+
+        when (selectedTab) {
+            GardenTab.Plants -> {
+                PlantsContent(
+                    modifier = Modifier.weight(1f),
+                    state = state,
+                    onAddPlant = onAddPlant,
+                    onPlantSelected = onPlantSelected,
+                )
+            }
+
+            GardenTab.Spaces -> {
+                SpacesContent(
+                    modifier = Modifier.weight(1f),
+                    state = state,
+                    onAddSpace = {
+                        showAddSpaceDialog = true
+                    },
+                )
             }
         }
+    }
+
+    if (showAddSpaceDialog) {
+        AddSpaceDialog(
+            name = newSpaceName,
+            onNameChanged = {
+                newSpaceName = it
+                viewModel.onAction(GardenAction.ClearAddSpaceError)
+            },
+            errorMessage = state.addSpaceError,
+            isLoading = state.isAddingSpace,
+            onAdd = {
+                viewModel.onAction(GardenAction.AddCustomSpace(newSpaceName))
+            },
+            onDismiss = {
+                showAddSpaceDialog = false
+                newSpaceName = ""
+                viewModel.onAction(
+                    GardenAction.ClearAddSpaceError,
+                )
+            },
+        )
     }
 }
