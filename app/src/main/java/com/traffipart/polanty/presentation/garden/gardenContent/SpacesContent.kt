@@ -51,7 +51,7 @@ fun SpacesContent(
             items = state.spaces,
             key = { space -> space.id },
         ) { space ->
-            val plantCount = state.plants.count { plant -> plant.spaceId == plant.id }
+            val plantCount = state.plants.count { plant -> plant.spaceId == space.id }
             Card(modifier = Modifier.fillMaxWidth()) {
                 Row(
                     modifier = Modifier.fillMaxWidth().padding(16.dp),

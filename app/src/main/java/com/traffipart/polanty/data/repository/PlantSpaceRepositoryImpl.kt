@@ -21,5 +21,5 @@ class PlantSpaceRepositoryImpl
 
         override suspend fun insertSpace(space: PlantSpace): Long = dao.insertSpace(space.toEntity())
 
-        override suspend fun deleteSpace(space: PlantSpace) = dao.deleteSpace(space.toEntity())
+        override suspend fun deleteSpaceAndUnassignPlants(spaceId: Long) = dao.deleteSpaceAndUnassignPlants(spaceId)
     }

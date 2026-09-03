@@ -8,5 +8,5 @@ interface PlantSpaceRepository {
 
     suspend fun insertSpace(space: PlantSpace): Long
 
-    suspend fun deleteSpace(space: PlantSpace)
+    suspend fun deleteSpaceAndUnassignPlants(spaceId: Long)
 }

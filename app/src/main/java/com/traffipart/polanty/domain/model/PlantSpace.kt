@@ -6,12 +6,15 @@ data class PlantSpace(
     val type: PlantSpaceType,
 )
 
-enum class PlantSpaceType {
-    LivingRoom,
-    Bedroom,
-    Backyard,
-    Kitchen,
-    Balcony,
-    Office,
-    Custom,
+enum class PlantSpaceType(
+    val displayName: String,
+) {
+    LivingRoom("Living room"),
+    Bedroom("Bedroom"),
+    Bathroom("Bathroom"),
+    Backyard("Backyard"),
+    Kitchen("Kitchen"),
+    Balcony("Balcony"),
+    Office("Office"),
+    Custom("Custom"),
 }

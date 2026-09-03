@@ -2,7 +2,9 @@ package com.traffipart.polanty.presentation.garden
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.traffipart.polanty.domain.model.PlantSpaceType
 import com.traffipart.polanty.domain.usecase.CreateSpaceUseCase
+import com.traffipart.polanty.domain.usecase.InitializeDefaultSpacesUseCase
 import com.traffipart.polanty.domain.usecase.ObservePlantsUseCase
 import com.traffipart.polanty.domain.usecase.ObserveSpacesUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -26,8 +28,13 @@ class GardenViewModel
     constructor(
         private val observePlantsUseCase: ObservePlantsUseCase,
         private val observeSpacesUseCase: ObserveSpacesUseCase,
-        private val createCustomSpaceUseCase: CreateSpaceUseCase,
+        private val createSpaceUseCase: CreateSpaceUseCase,
+        private val initializeDefaultSpacesUseCase: InitializeDefaultSpacesUseCase,
     ) : ViewModel() {
+        init {
+            initializeDefaultSpaces()
+        }
+
         private val spaceCreationState = MutableStateFlow(SpaceCreationState())
         val uiState =
             combine(
@@ -51,7 +58,7 @@ class GardenViewModel
         fun onAction(action: GardenAction) {
             when (action) {
                 is GardenAction.AddCustomSpace -> {
-                    addCustomSpace(action.name)
+                    addSpace(type = action.type, customName = action.customName)
                 }
                 GardenAction.ClearAddSpaceError -> {
                     spaceCreationState.update { it.copy(error = null) }
@@ -59,14 +66,23 @@ class GardenViewModel
             }
         }
 
-        private fun addCustomSpace(name: String) {
+        private fun initializeDefaultSpaces() {
+            viewModelScope.launch {
+                initializeDefaultSpacesUseCase()
+            }
+        }
+
+        private fun addSpace(
+            type: PlantSpaceType,
+            customName: String?,
+        ) {
             viewModelScope.launch {
                 spaceCreationState.update {
                     it.copy(isAdding = true, error = null)
                 }
 
                 try {
-                    createCustomSpaceUseCase(name)
+                    createSpaceUseCase(type = type, customName = customName)
                     spaceCreationState.update {
                         it.copy(isAdding = false)
                     }
