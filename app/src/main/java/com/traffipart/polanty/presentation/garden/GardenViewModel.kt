@@ -57,7 +57,7 @@ class GardenViewModel
 
         fun onAction(action: GardenAction) {
             when (action) {
-                is GardenAction.AddCustomSpace -> {
+                is GardenAction.AddSpace -> {
                     addSpace(type = action.type, customName = action.customName)
                 }
                 GardenAction.ClearAddSpaceError -> {

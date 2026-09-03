@@ -1,9 +1,9 @@
 package com.traffipart.polanty.domain.usecase
 
-import com.traffipart.polanty.data.repository.SpaceInitializationRepository
 import com.traffipart.polanty.domain.model.PlantSpace
 import com.traffipart.polanty.domain.model.PlantSpaceType
 import com.traffipart.polanty.domain.repository.PlantSpaceRepository
+import com.traffipart.polanty.domain.repository.SpaceInitializationRepository
 import jakarta.inject.Inject
 
 class InitializeDefaultSpacesUseCase

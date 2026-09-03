@@ -19,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.traffipart.polanty.domain.model.PlantSpaceType
 import com.traffipart.polanty.presentation.garden.gardenContent.AddSpaceDialog
 import com.traffipart.polanty.presentation.garden.gardenContent.PlantsContent
 import com.traffipart.polanty.presentation.garden.gardenContent.SpacesContent
@@ -41,6 +42,8 @@ fun GardenScreen(
     var showAddSpaceDialog by rememberSaveable { mutableStateOf(false) }
 
     var newSpaceName by rememberSaveable { mutableStateOf("") }
+
+    var newSpaceType by rememberSaveable { mutableStateOf(PlantSpaceType.Bedroom) }
 
     LaunchedEffect(state.isAddingSpace, state.addSpaceError) {
         if (!state.isAddingSpace && state.addSpaceError == null && showAddSpaceDialog) {
@@ -108,19 +111,27 @@ fun GardenScreen(
 
     if (showAddSpaceDialog) {
         AddSpaceDialog(
+            selectedType = newSpaceType,
             name = newSpaceName,
             onNameChanged = {
                 newSpaceName = it
                 viewModel.onAction(GardenAction.ClearAddSpaceError)
             },
+            onTypeChanged = { type ->
+                newSpaceType = type
+                viewModel.onAction(
+                    GardenAction.ClearAddSpaceError,
+                )
+            },
             errorMessage = state.addSpaceError,
             isLoading = state.isAddingSpace,
             onAdd = {
-                viewModel.onAction(GardenAction.AddCustomSpace(newSpaceName))
+                viewModel.onAction(GardenAction.AddSpace(type = newSpaceType, customName = newSpaceName))
             },
             onDismiss = {
                 showAddSpaceDialog = false
                 newSpaceName = ""
+                newSpaceType = PlantSpaceType.Bedroom
                 viewModel.onAction(
                     GardenAction.ClearAddSpaceError,
                 )

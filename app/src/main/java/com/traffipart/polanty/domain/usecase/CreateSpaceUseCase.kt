@@ -28,7 +28,7 @@ class CreateSpaceUseCase
                         }
                         normalizeName
                     }
-                    normalizeName.isEmpty() -> {
+                    normalizeName.isNotEmpty() -> {
                         normalizeName
                     }
                     else -> type.displayName
