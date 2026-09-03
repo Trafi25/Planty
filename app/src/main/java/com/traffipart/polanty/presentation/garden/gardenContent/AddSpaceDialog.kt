@@ -22,6 +22,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.traffipart.polanty.domain.model.PlantSpaceType
 
+/**
+ * A dialog for adding a new plant space.
+ * Allows the user to select a space type and optionally provide a custom name.
+ *
+ * @param selectedType The currently selected [PlantSpaceType].
+ * @param name The current text in the name field.
+ * @param onTypeChanged Callback invoked when the space type is changed.
+ * @param onNameChanged Callback invoked when the space name text is changed.
+ * @param errorMessage An optional error message to display in the dialog.
+ * @param isLoading Whether the space is currently being added.
+ * @param onAdd Callback invoked when the user confirms adding the space.
+ * @param onDismiss Callback invoked when the user cancels or dismisses the dialog.
+ */
 @Composable
 fun AddSpaceDialog(
     selectedType: PlantSpaceType,

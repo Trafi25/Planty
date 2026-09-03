@@ -26,6 +26,13 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.traffipart.polanty.core.common.toMessage
 import com.traffipart.polanty.domain.model.PlantCandidate
 
+/**
+ * Screen for identifying a plant from a photo.
+ * Users can pick a photo, see identification results, and select a candidate plant.
+ *
+ * @param onCandidateSelected Callback invoked when a plant candidate is selected.
+ * @param viewModel The ViewModel providing the state and handling actions for this screen.
+ */
 @Composable
 fun IdentifyPlantScreen(
     onCandidateSelected: (candidate: PlantCandidate, imageUri: String?) -> Unit,

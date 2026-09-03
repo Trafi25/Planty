@@ -1,12 +1,25 @@
 package com.traffipart.polanty.domain.usecase
 
+import com.traffipart.polanty.domain.model.Plant
 import com.traffipart.polanty.domain.repository.PlantRepository
+import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
+/**
+ * Use case to observe a single plant by its unique identifier.
+ *
+ * @property repository The repository to observe the plant from.
+ */
 class ObservePlantUseCase
     @Inject
     constructor(
         private val repository: PlantRepository,
     ) {
-        operator fun invoke(plantId: Long) = repository.observePlant(plantId)
+        /**
+         * Returns a Flow that emits the plant with the specified [plantId] whenever it changes.
+         *
+         * @param plantId The unique ID of the plant to observe.
+         * @return A [Flow] of the [Plant] with the given ID.
+         */
+        operator fun invoke(plantId: Long): Flow<Plant?> = repository.observePlant(plantId)
     }

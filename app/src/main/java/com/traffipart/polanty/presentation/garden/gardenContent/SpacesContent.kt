@@ -18,6 +18,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.traffipart.polanty.presentation.garden.GardenUiState
 
+/**
+ * Composable that displays the list of plant spaces in the garden.
+ * It shows the name of each space and the number of plants assigned to it.
+ *
+ * @param state The current UI state of the garden.
+ * @param onAddSpace Callback invoked when the user wants to add a new space.
+ * @param modifier The modifier to be applied to the layout.
+ */
 @Composable
 fun SpacesContent(
     state: GardenUiState,

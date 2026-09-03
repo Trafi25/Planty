@@ -5,12 +5,28 @@ import com.traffipart.polanty.domain.repository.PlantRepository
 import com.traffipart.polanty.domain.storage.PlantImageStorage
 import jakarta.inject.Inject
 
+/**
+ * Use case to save a new plant to the garden.
+ *
+ * This use case handles saving the plant's image to local storage before saving the plant record
+ * in the repository.
+ *
+ * @property plantRepository The repository to save the plant to.
+ * @property plantImageStorage The storage service to handle plant image saving.
+ */
 class SavePlantUseCase
     @Inject
     constructor(
         private val plantRepository: PlantRepository,
         private val plantImageStorage: PlantImageStorage,
     ) {
+        /**
+         * Saves a new plant.
+         *
+         * @param plant The [Plant] data to save.
+         * @param sourceImageUri The optional URI of the source image to be saved locally.
+         * @return The unique ID of the newly saved plant.
+         */
         suspend operator fun invoke(
             plant: Plant,
             sourceImageUri: String?,

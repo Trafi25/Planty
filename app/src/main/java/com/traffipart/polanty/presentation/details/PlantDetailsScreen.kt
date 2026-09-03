@@ -19,6 +19,14 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
 
+/**
+ * Screen displaying the details of a specific plant.
+ * Allows the user to view plant information and delete the plant.
+ *
+ * @param onBack Callback invoked when the user wants to go back to the previous screen.
+ * @param onDeleted Callback invoked when the plant has been successfully deleted.
+ * @param viewModel The ViewModel providing the state and handling actions for this screen.
+ */
 @Composable
 fun PlantDetailsScreen(
     onBack: () -> Unit,

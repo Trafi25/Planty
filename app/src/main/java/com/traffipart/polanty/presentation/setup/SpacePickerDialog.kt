@@ -17,6 +17,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.traffipart.polanty.domain.model.PlantSpace
 
+/**
+ * A dialog for picking a space from a list of available spaces.
+ *
+ * @param spaces The list of [PlantSpace]s to choose from.
+ * @param selectedSpaceId The ID of the currently selected space, if any.
+ * @param onSpaceSelected Callback invoked when a space is selected.
+ * @param onDismiss Callback invoked when the user cancels or dismisses the dialog.
+ */
 @Composable
 fun SpacePickerDialog(
     spaces: List<PlantSpace>,

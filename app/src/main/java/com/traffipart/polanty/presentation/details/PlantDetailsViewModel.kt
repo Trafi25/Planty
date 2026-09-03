@@ -16,6 +16,13 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+/**
+ * ViewModel responsible for displaying and managing the details of a specific plant.
+ *
+ * @param savedStateHandle Handle to saved state, used to retrieve the [plantId].
+ * @property observePlantUseCase Use case to observe a specific plant by its ID.
+ * @property deletePlantUseCase Use case to delete a plant.
+ */
 @HiltViewModel
 class PlantDetailsViewModel
     @Inject
@@ -27,6 +34,10 @@ class PlantDetailsViewModel
         private val plantId: Long = checkNotNull(savedStateHandle.get<Long>("plantId"))
 
         private val _uiState = MutableStateFlow(PlantDetailsUiState())
+
+        /**
+         * The current UI state for the plant details screen.
+         */
         val uiState: StateFlow<PlantDetailsUiState> = _uiState.asStateFlow()
 
         init {
@@ -41,12 +52,20 @@ class PlantDetailsViewModel
                 }.launchIn(viewModelScope)
         }
 
+        /**
+         * Processes user actions from the plant details screen.
+         *
+         * @param action The action to be performed.
+         */
         fun onAction(action: PlantDetailsAction) {
             when (action) {
                 PlantDetailsAction.DeletePlant -> deletePlant()
             }
         }
 
+        /**
+         * Triggers the deletion of the current plant.
+         */
         private fun deletePlant() {
             val plant = _uiState.value.plant ?: return
             viewModelScope.launch {

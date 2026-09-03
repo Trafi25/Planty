@@ -29,6 +29,14 @@ private enum class GardenTab {
     Spaces,
 }
 
+/**
+ * The main screen for the garden, displaying plants and spaces.
+ * It allows users to switch between viewing plants and spaces, and to add new plants or spaces.
+ *
+ * @param onAddPlant Callback invoked when the user wants to add a new plant.
+ * @param onPlantSelected Callback invoked when a plant is selected, providing its ID.
+ * @param viewModel The ViewModel that provides the state and handles actions for this screen.
+ */
 @Composable
 fun GardenScreen(
     onAddPlant: () -> Unit,

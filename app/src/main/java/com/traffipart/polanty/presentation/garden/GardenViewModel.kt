@@ -17,11 +17,26 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+/**
+ * Represents the state of a space creation operation.
+ *
+ * @property isAdding Whether a space is currently being added.
+ * @property error An optional error message if the space creation failed.
+ */
 data class SpaceCreationState(
     val isAdding: Boolean = false,
     val error: String? = null,
 )
 
+/**
+ * ViewModel responsible for managing the garden screen.
+ * It handles observing plants and spaces, as well as creating new spaces.
+ *
+ * @property observePlantsUseCase Use case to observe the list of all plants.
+ * @property observeSpacesUseCase Use case to observe the list of all plant spaces.
+ * @property createSpaceUseCase Use case to create a new plant space.
+ * @property initializeDefaultSpacesUseCase Use case to initialize the default plant spaces if they don't exist.
+ */
 @HiltViewModel
 class GardenViewModel
     @Inject
@@ -36,6 +51,10 @@ class GardenViewModel
         }
 
         private val spaceCreationState = MutableStateFlow(SpaceCreationState())
+
+        /**
+         * The UI state for the garden screen, combining plants, spaces, and space creation status.
+         */
         val uiState =
             combine(
                 observePlantsUseCase(),
@@ -55,6 +74,11 @@ class GardenViewModel
                 initialValue = GardenUiState(),
             )
 
+        /**
+         * Processes user actions from the garden screen.
+         *
+         * @param action The action to be performed.
+         */
         fun onAction(action: GardenAction) {
             when (action) {
                 is GardenAction.AddSpace -> {
@@ -72,6 +96,12 @@ class GardenViewModel
             }
         }
 
+        /**
+         * Adds a new plant space.
+         *
+         * @param type The type of the space to add.
+         * @param customName An optional custom name for the space.
+         */
         private fun addSpace(
             type: PlantSpaceType,
             customName: String?,

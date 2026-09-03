@@ -30,6 +30,16 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
 import com.traffipart.polanty.domain.model.PlantCandidate
 
+/**
+ * Screen for setting up a new plant before adding it to the garden.
+ * Users can provide a nickname, select a space, and confirm saving the plant.
+ *
+ * @param candidate The plant candidate selected from the identification results.
+ * @param onPlantSaved Callback invoked when the plant has been successfully saved, providing its ID.
+ * @param onBack Callback invoked to navigate back to the previous screen.
+ * @param imageUri The URI of the image taken or selected for identification.
+ * @param viewModel The ViewModel providing the state and handling actions for this screen.
+ */
 @Composable
 fun PlantSetupScreen(
     candidate: PlantCandidate,

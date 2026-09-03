@@ -18,6 +18,15 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.traffipart.polanty.presentation.garden.GardenUiState
 
+/**
+ * Composable that displays the list of plants in the garden.
+ * If the list is empty, it displays a message and a button to add the first plant.
+ *
+ * @param state The current UI state of the garden.
+ * @param onAddPlant Callback invoked when the user wants to add a plant.
+ * @param onPlantSelected Callback invoked when a plant is selected, providing its ID.
+ * @param modifier The modifier to be applied to the layout.
+ */
 @Composable
 fun PlantsContent(
     state: GardenUiState,
