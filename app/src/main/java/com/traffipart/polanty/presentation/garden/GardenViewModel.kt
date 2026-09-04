@@ -10,8 +10,11 @@ import com.traffipart.polanty.domain.usecase.space.InitializeDefaultSpacesUseCas
 import com.traffipart.polanty.domain.usecase.space.ObserveSpacesUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -67,6 +70,9 @@ class GardenViewModel
         private val spaceCreationState = MutableStateFlow(SpaceCreationState())
 
         private val spaceDeletionState = MutableStateFlow(SpaceDeletionState())
+
+        private val _events = MutableSharedFlow<GardenEvent>()
+        val events: SharedFlow<GardenEvent> = _events.asSharedFlow()
 
         /**
          * The UI state for the garden screen, combining plants, spaces, and space creation status.
@@ -130,6 +136,7 @@ class GardenViewModel
                     spaceDeletionState.update {
                         it.copy(isDeleting = false)
                     }
+                    _events.emit(GardenEvent.SpaceDeleted)
                 } catch (e: CancellationException) {
                     throw e
                 } catch (e: Exception) {
@@ -169,6 +176,7 @@ class GardenViewModel
                     spaceCreationState.update {
                         it.copy(isAdding = false)
                     }
+                    _events.emit(GardenEvent.SpaceCreated)
                 } catch (
                     e: CancellationException,
                 ) {

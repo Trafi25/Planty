@@ -15,10 +15,10 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.traffipart.polanty.ui.theme.spacing
 
 @Composable
@@ -27,7 +27,7 @@ fun SpaceDetailsScreen(
     onPlantSelected: (Long) -> Unit,
     viewModel: SpaceDetailsViewModel = hiltViewModel(),
 ) {
-    val state by viewModel.uiState.collectAsState()
+    val state by viewModel.uiState.collectAsStateWithLifecycle()
 
     Column(
         modifier =
@@ -55,7 +55,7 @@ fun SpaceDetailsScreen(
                 if (state.plants.size == 1) {
                     "1 plant"
                 } else {
-                    " ${state.plants.size} plants"
+                    "${state.plants.size} plants"
                 },
             style = MaterialTheme.typography.bodySmall,
         )

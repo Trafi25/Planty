@@ -76,15 +76,16 @@ fun GardenScreen(
             space.id == spaceIdToDelete
         }
 
-    LaunchedEffect(state.isAddingSpace, state.addSpaceError, state.spaces) {
-        if (!state.isAddingSpace && state.addSpaceError == null && showAddSpaceDialog) {
-            dismissAddSpace()
-        }
-    }
-
-    LaunchedEffect(state.isDeletingSpace, state.deleteSpaceError, state.spaces) {
-        if (!state.isDeletingSpace && state.deleteSpaceError == null && spaceIdToDelete != null) {
-            dismissDeleteSpace()
+    LaunchedEffect(viewModel) {
+        viewModel.events.collect { event ->
+            when (event) {
+                GardenEvent.SpaceCreated -> {
+                    dismissAddSpace()
+                }
+                GardenEvent.SpaceDeleted -> {
+                    dismissDeleteSpace()
+                }
+            }
         }
     }
 
