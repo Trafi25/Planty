@@ -16,9 +16,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import com.traffipart.polanty.domain.model.PlantSpace
 import com.traffipart.polanty.presentation.garden.GardenUiState
+import com.traffipart.polanty.ui.theme.spacing
 
 /**
  * Composable that displays the list of plant spaces in the garden.
@@ -41,8 +41,8 @@ fun SpacesContent(
         modifier =
             modifier
                 .fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(12.dp),
-        contentPadding = PaddingValues(bottom = 24.dp),
+        verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.mediumSmall),
+        contentPadding = PaddingValues(bottom = MaterialTheme.spacing.large),
     ) {
         if (state.spaces.isEmpty()) {
             item {
@@ -50,9 +50,9 @@ fun SpacesContent(
                     modifier =
                         Modifier
                             .fillMaxWidth()
-                            .padding(vertical = 32.dp),
+                            .padding(vertical = MaterialTheme.spacing.extraLarge),
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                    verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.mediumSmall),
                 ) {
                     Text(
                         text = "No spaces in your garden yet",
@@ -87,7 +87,7 @@ fun SpacesContent(
                     modifier =
                         Modifier
                             .fillMaxWidth()
-                            .padding(16.dp),
+                            .padding(MaterialTheme.spacing.medium),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Column(modifier = Modifier.weight(1f)) {

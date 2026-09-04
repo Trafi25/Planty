@@ -9,13 +9,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import com.traffipart.polanty.domain.model.PlantSpace
+import com.traffipart.polanty.ui.theme.spacing
 
 /**
  * A dialog for picking a space from a list of available spaces.
@@ -41,7 +42,7 @@ fun SpacePickerDialog(
                     Modifier
                         .fillMaxWidth()
                         .verticalScroll(rememberScrollState()),
-                verticalArrangement = Arrangement.spacedBy(4.dp),
+                verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.extraSmall),
             ) {
                 spaces.forEach { space ->
                     Row(
@@ -50,7 +51,7 @@ fun SpacePickerDialog(
                                 .fillMaxWidth()
                                 .clickable {
                                     onSpaceSelected(space.id)
-                                }.padding(vertical = 12.dp, horizontal = 8.dp),
+                                }.padding(vertical = MaterialTheme.spacing.mediumSmall, horizontal = MaterialTheme.spacing.small),
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
                         Text(

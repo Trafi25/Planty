@@ -10,6 +10,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -17,6 +18,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.traffipart.polanty.presentation.garden.GardenUiState
+import com.traffipart.polanty.ui.theme.spacing
 
 /**
  * Composable that displays the list of plants in the garden.
@@ -35,7 +37,7 @@ fun PlantsContent(
     modifier: Modifier = Modifier,
 ) {
     if (state.plants.isEmpty()) {
-        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        Column(verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.mediumSmall)) {
             Text("No plants in your garden yet.")
             Button(onClick = onAddPlant) {
                 Text("Add first plant")
@@ -45,8 +47,8 @@ fun PlantsContent(
     }
     LazyColumn(
         modifier = modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(12.dp),
-        contentPadding = PaddingValues(bottom = 24.dp),
+        verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.mediumSmall),
+        contentPadding = PaddingValues(bottom = MaterialTheme.spacing.large),
     ) {
         items(
             items = state.plants,
@@ -57,7 +59,7 @@ fun PlantsContent(
                 onClick = { onPlantSelected(plant.id) },
             ) {
                 Column(
-                    modifier = Modifier.padding(16.dp),
+                    modifier = Modifier.padding(MaterialTheme.spacing.medium),
                 ) {
                     plant.imageUri?.let { imageUri ->
                         AsyncImage(

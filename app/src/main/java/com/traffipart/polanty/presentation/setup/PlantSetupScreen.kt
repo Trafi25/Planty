@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
@@ -24,11 +23,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
 import com.traffipart.polanty.domain.model.PlantCandidate
+import com.traffipart.polanty.ui.theme.spacing
 
 /**
  * Screen for setting up a new plant before adding it to the garden.
@@ -73,9 +72,9 @@ fun PlantSetupScreen(
         modifier =
             Modifier
                 .fillMaxSize()
-                .padding(24.dp),
+                .padding(MaterialTheme.spacing.large),
         verticalArrangement =
-            Arrangement.spacedBy(16.dp),
+            Arrangement.spacedBy(MaterialTheme.spacing.medium),
     ) {
         Button(
             onClick = onBack,
@@ -90,7 +89,7 @@ fun PlantSetupScreen(
                 Modifier
                     .fillMaxWidth()
                     .aspectRatio(16 / 9f)
-                    .clip(RoundedCornerShape(12.dp)),
+                    .clip(MaterialTheme.shapes.medium),
             contentScale = ContentScale.Crop,
         )
 
@@ -123,7 +122,7 @@ fun PlantSetupScreen(
             },
         ) {
             Row(
-                modifier = Modifier.padding(16.dp),
+                modifier = Modifier.padding(MaterialTheme.spacing.medium),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Column(modifier = Modifier.weight(1f)) {
