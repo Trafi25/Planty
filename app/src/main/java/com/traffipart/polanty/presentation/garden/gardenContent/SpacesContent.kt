@@ -33,6 +33,7 @@ import com.traffipart.polanty.presentation.garden.GardenUiState
 fun SpacesContent(
     state: GardenUiState,
     onAddSpace: () -> Unit,
+    onSpaceSelected: (Long) -> Unit,
     onSpaceLongClicked: (PlantSpace) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -73,11 +74,14 @@ fun SpacesContent(
                 modifier =
                     Modifier
                         .fillMaxWidth()
-                        .combinedClickable(onClick = { }, onLongClick = {
-                            onSpaceLongClicked(
-                                space,
-                            )
-                        }),
+                        .combinedClickable(
+                            onClick = { onSpaceSelected(space.id) },
+                            onLongClick = {
+                                onSpaceLongClicked(
+                                    space,
+                                )
+                            },
+                        ),
             ) {
                 Row(
                     modifier =

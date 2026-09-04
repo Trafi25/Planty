@@ -1,4 +1,4 @@
-package com.traffipart.polanty.presentation
+package com.traffipart.polanty.presentation.root
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -16,19 +16,7 @@ import com.traffipart.polanty.presentation.details.PlantDetailsScreen
 import com.traffipart.polanty.presentation.garden.GardenScreen
 import com.traffipart.polanty.presentation.scan.IdentifyPlantScreen
 import com.traffipart.polanty.presentation.setup.PlantSetupScreen
-
-private object PlantRoute {
-    const val GARDEN = "garden"
-    const val IDENTIFY = "identify"
-    const val SETUP = "setup"
-
-    const val PLANT_ID = "plantId"
-
-    const val DETAILS =
-        "plant/{$PLANT_ID}"
-
-    fun details(plantId: Long): String = "plant/$plantId"
-}
+import com.traffipart.polanty.presentation.spaceDetails.SpaceDetailsScreen
 
 @Composable
 fun PlantyRoot() {
@@ -53,6 +41,7 @@ fun PlantyRoot() {
                     navController.navigate(PlantRoute.IDENTIFY)
                 },
                 onPlantSelected = { plantId -> navController.navigate(PlantRoute.details(plantId)) },
+                onSpaceSelected = { spaceId -> navController.navigate(PlantRoute.spaceDetails(spaceId)) },
             )
         }
         composable(route = PlantRoute.IDENTIFY) {
@@ -100,6 +89,20 @@ fun PlantyRoot() {
                 onDeleted = {
                     navController.popBackStack()
                 },
+            )
+        }
+        composable(
+            route = PlantRoute.SPACE_DETAILS,
+            arguments =
+                listOf(
+                    navArgument(PlantRoute.SPACE_ID) {
+                        type = NavType.LongType
+                    },
+                ),
+        ) {
+            SpaceDetailsScreen(
+                onBackClick = { navController.popBackStack() },
+                onPlantSelected = { navController.navigate(PlantRoute.details(it)) },
             )
         }
     }

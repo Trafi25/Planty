@@ -41,6 +41,7 @@ private enum class GardenTab {
 @Composable
 fun GardenScreen(
     onAddPlant: () -> Unit,
+    onSpaceSelected: (Long) -> Unit,
     onPlantSelected: (Long) -> Unit,
     viewModel: GardenViewModel = hiltViewModel(),
 ) {
@@ -146,6 +147,7 @@ fun GardenScreen(
                             GardenAction.ClearDeleteSpaceError,
                         )
                     },
+                    onSpaceSelected = onSpaceSelected,
                 )
             }
         }
