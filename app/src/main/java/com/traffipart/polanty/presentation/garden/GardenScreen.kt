@@ -21,6 +21,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.traffipart.polanty.domain.model.PlantSpaceType
 import com.traffipart.polanty.presentation.garden.gardenContent.AddSpaceDialog
+import com.traffipart.polanty.presentation.garden.gardenContent.DeleteSpaceDialog
 import com.traffipart.polanty.presentation.garden.gardenContent.PlantsContent
 import com.traffipart.polanty.presentation.garden.gardenContent.SpacesContent
 
@@ -53,9 +54,36 @@ fun GardenScreen(
 
     var newSpaceType by rememberSaveable { mutableStateOf(PlantSpaceType.Bedroom) }
 
-    LaunchedEffect(state.isAddingSpace, state.addSpaceError) {
+    var spaceIdToDelete by rememberSaveable {
+        mutableStateOf<Long?>(null)
+    }
+
+    val dismissAddSpace = {
+        showAddSpaceDialog = false
+        newSpaceName = ""
+        newSpaceType = PlantSpaceType.Bedroom
+        viewModel.onAction(GardenAction.ClearAddSpaceError)
+    }
+
+    val dismissDeleteSpace = {
+        spaceIdToDelete = null
+        viewModel.onAction(GardenAction.ClearDeleteSpaceError)
+    }
+
+    val spaceToDelete =
+        state.spaces.firstOrNull { space ->
+            space.id == spaceIdToDelete
+        }
+
+    LaunchedEffect(state.isAddingSpace, state.addSpaceError, state.spaces) {
         if (!state.isAddingSpace && state.addSpaceError == null && showAddSpaceDialog) {
-            showAddSpaceDialog = false
+            dismissAddSpace()
+        }
+    }
+
+    LaunchedEffect(state.isDeletingSpace, state.deleteSpaceError, state.spaces) {
+        if (!state.isDeletingSpace && state.deleteSpaceError == null && spaceIdToDelete != null) {
+            dismissDeleteSpace()
         }
     }
 
@@ -112,6 +140,12 @@ fun GardenScreen(
                     onAddSpace = {
                         showAddSpaceDialog = true
                     },
+                    onSpaceLongClicked = { space ->
+                        spaceIdToDelete = space.id
+                        viewModel.onAction(
+                            GardenAction.ClearDeleteSpaceError,
+                        )
+                    },
                 )
             }
         }
@@ -136,14 +170,23 @@ fun GardenScreen(
             onAdd = {
                 viewModel.onAction(GardenAction.AddSpace(type = newSpaceType, customName = newSpaceName))
             },
-            onDismiss = {
-                showAddSpaceDialog = false
-                newSpaceName = ""
-                newSpaceType = PlantSpaceType.Bedroom
+            onDismiss = dismissAddSpace,
+        )
+    }
+
+    spaceToDelete?.let { space ->
+        val plantCount = state.plants.count { plant -> plant.spaceId == space.id }
+        DeleteSpaceDialog(
+            space = space,
+            plantCount = plantCount,
+            isLoading = state.isDeletingSpace,
+            errorMessage = state.deleteSpaceError,
+            onDelete = {
                 viewModel.onAction(
-                    GardenAction.ClearAddSpaceError,
+                    GardenAction.DeleteSpace(spaceId = space.id),
                 )
             },
+            onDismiss = dismissDeleteSpace,
         )
     }
 }

@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.traffipart.polanty.domain.model.PlantSpaceType
 import com.traffipart.polanty.domain.usecase.CreateSpaceUseCase
+import com.traffipart.polanty.domain.usecase.DeleteSpaceUseCase
 import com.traffipart.polanty.domain.usecase.InitializeDefaultSpacesUseCase
 import com.traffipart.polanty.domain.usecase.ObservePlantsUseCase
 import com.traffipart.polanty.domain.usecase.ObserveSpacesUseCase
@@ -29,13 +30,25 @@ data class SpaceCreationState(
 )
 
 /**
+ * Represents the state of a space deletion operation.
+ *
+ * @property isDeleting Whether a space is currently being deleted.
+ * @property error An optional error message if the deletion failed.
+ */
+data class SpaceDeletionState(
+    val isDeleting: Boolean = false,
+    val error: String? = null,
+)
+
+/**
  * ViewModel responsible for managing the garden screen.
- * It handles observing plants and spaces, as well as creating new spaces.
+ * It handles observing plants and spaces, as well as creating and deleting spaces.
  *
  * @property observePlantsUseCase Use case to observe the list of all plants.
  * @property observeSpacesUseCase Use case to observe the list of all plant spaces.
  * @property createSpaceUseCase Use case to create a new plant space.
  * @property initializeDefaultSpacesUseCase Use case to initialize the default plant spaces if they don't exist.
+ * @property deleteSpaceUseCase Use case to delete a plant space and unassign its plants.
  */
 @HiltViewModel
 class GardenViewModel
@@ -45,12 +58,15 @@ class GardenViewModel
         private val observeSpacesUseCase: ObserveSpacesUseCase,
         private val createSpaceUseCase: CreateSpaceUseCase,
         private val initializeDefaultSpacesUseCase: InitializeDefaultSpacesUseCase,
+        private val deleteSpaceUseCase: DeleteSpaceUseCase,
     ) : ViewModel() {
         init {
             initializeDefaultSpaces()
         }
 
         private val spaceCreationState = MutableStateFlow(SpaceCreationState())
+
+        private val spaceDeletionState = MutableStateFlow(SpaceDeletionState())
 
         /**
          * The UI state for the garden screen, combining plants, spaces, and space creation status.
@@ -60,13 +76,16 @@ class GardenViewModel
                 observePlantsUseCase(),
                 observeSpacesUseCase(),
                 spaceCreationState,
-            ) { plants, spaces, creationState ->
+                spaceDeletionState,
+            ) { plants, spaces, creationState, deletionState ->
                 GardenUiState(
                     plants = plants,
                     spaces = spaces,
                     isLoading = false,
                     isAddingSpace = creationState.isAdding,
                     addSpaceError = creationState.error,
+                    isDeletingSpace = deletionState.isDeleting,
+                    deleteSpaceError = deletionState.error,
                 )
             }.stateIn(
                 scope = viewModelScope,
@@ -84,12 +103,46 @@ class GardenViewModel
                 is GardenAction.AddSpace -> {
                     addSpace(type = action.type, customName = action.customName)
                 }
+                is GardenAction.DeleteSpace -> {
+                    deleteSpace(spaceId = action.spaceId)
+                }
                 GardenAction.ClearAddSpaceError -> {
                     spaceCreationState.update { it.copy(error = null) }
+                }
+                GardenAction.ClearDeleteSpaceError -> {
+                    spaceDeletionState.update { it.copy(error = null) }
                 }
             }
         }
 
+        /**
+         * Deletes a plant space by its ID.
+         *
+         * @param spaceId The unique identifier of the space to delete.
+         */
+        private fun deleteSpace(spaceId: Long) {
+            viewModelScope.launch {
+                spaceDeletionState.update {
+                    it.copy(isDeleting = true, error = null)
+                }
+                try {
+                    deleteSpaceUseCase(spaceId)
+                    spaceDeletionState.update {
+                        it.copy(isDeleting = false)
+                    }
+                } catch (e: CancellationException) {
+                    throw e
+                } catch (e: Exception) {
+                    spaceDeletionState.update {
+                        it.copy(isDeleting = false, error = "Could not delete space")
+                    }
+                }
+            }
+        }
+
+        /**
+         * Initializes default plant spaces if they haven't been created yet.
+         */
         private fun initializeDefaultSpaces() {
             viewModelScope.launch {
                 initializeDefaultSpacesUseCase()

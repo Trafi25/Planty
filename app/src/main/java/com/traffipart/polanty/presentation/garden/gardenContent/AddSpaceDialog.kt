@@ -66,7 +66,6 @@ fun AddSpaceDialog(
                 verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
                 Text("Type")
-
                 Column {
                     OutlinedButton(
                         modifier = Modifier.fillMaxWidth(),

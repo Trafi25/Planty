@@ -1,5 +1,6 @@
 package com.traffipart.polanty.presentation.garden.gardenContent
 
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -16,6 +17,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.traffipart.polanty.domain.model.PlantSpace
 import com.traffipart.polanty.presentation.garden.GardenUiState
 
 /**
@@ -24,23 +26,30 @@ import com.traffipart.polanty.presentation.garden.GardenUiState
  *
  * @param state The current UI state of the garden.
  * @param onAddSpace Callback invoked when the user wants to add a new space.
+ * @param onSpaceLongClicked Callback invoked when a space is long-clicked, typically for deletion.
  * @param modifier The modifier to be applied to the layout.
  */
 @Composable
 fun SpacesContent(
     state: GardenUiState,
     onAddSpace: () -> Unit,
+    onSpaceLongClicked: (PlantSpace) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     LazyColumn(
-        modifier = modifier.fillMaxWidth(),
+        modifier =
+            modifier
+                .fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(12.dp),
         contentPadding = PaddingValues(bottom = 24.dp),
     ) {
         if (state.spaces.isEmpty()) {
             item {
                 Column(
-                    modifier = Modifier.fillMaxWidth().padding(vertical = 32.dp),
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 32.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.spacedBy(12.dp),
                 ) {
@@ -60,9 +69,21 @@ fun SpacesContent(
             key = { space -> space.id },
         ) { space ->
             val plantCount = state.plants.count { plant -> plant.spaceId == space.id }
-            Card(modifier = Modifier.fillMaxWidth()) {
+            Card(
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .combinedClickable(onClick = { }, onLongClick = {
+                            onSpaceLongClicked(
+                                space,
+                            )
+                        }),
+            ) {
                 Row(
-                    modifier = Modifier.fillMaxWidth().padding(16.dp),
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Column(modifier = Modifier.weight(1f)) {

@@ -18,6 +18,20 @@ sealed interface GardenAction {
     ) : GardenAction
 
     /**
+     * Action to delete an existing plant space.
+     *
+     * @property spaceId The unique identifier of the space to delete.
+     */
+    data class DeleteSpace(
+        val spaceId: Long,
+    ) : GardenAction
+
+    /**
+     * Action to clear the error message related to deleting a space.
+     */
+    data object ClearDeleteSpaceError : GardenAction
+
+    /**
      * Action to clear the error message related to adding a space.
      */
     data object ClearAddSpaceError :

@@ -39,7 +39,5 @@ abstract class RepositoryModule {
 
     @Binds
     @Singleton
-    abstract fun bindSpaceInitializationRepository(
-        repository: SpaceInitializationRepositoryImpl,
-    ): SpaceInitializationRepository
+    abstract fun bindSpaceInitializationRepository(repository: SpaceInitializationRepositoryImpl): SpaceInitializationRepository
 }

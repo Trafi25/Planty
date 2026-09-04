@@ -11,6 +11,8 @@ import com.traffipart.polanty.domain.model.PlantSpace
  * @property isLoading Whether the data is still being loaded.
  * @property isAddingSpace Whether a new space is currently being added.
  * @property addSpaceError An optional error message if adding a space failed.
+ * @property isDeletingSpace Whether a space is currently being deleted.
+ * @property deleteSpaceError An optional error message if deleting a space failed.
  */
 data class GardenUiState(
     val plants: List<Plant> = emptyList(),
@@ -18,4 +20,6 @@ data class GardenUiState(
     val isLoading: Boolean = true,
     val isAddingSpace: Boolean = false,
     val addSpaceError: String? = null,
+    val isDeletingSpace: Boolean = false,
+    val deleteSpaceError: String? = null,
 )
