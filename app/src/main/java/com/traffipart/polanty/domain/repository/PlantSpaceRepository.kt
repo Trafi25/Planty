@@ -12,6 +12,8 @@ interface PlantSpaceRepository {
      */
     fun observeSpaces(): Flow<List<PlantSpace>>
 
+    fun observeSpace(spaceId: Long): Flow<PlantSpace?>
+
     /**
      * Inserts a new plant space or updates an existing one.
      *

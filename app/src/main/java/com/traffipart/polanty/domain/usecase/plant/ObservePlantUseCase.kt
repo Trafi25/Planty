@@ -1,4 +1,4 @@
-package com.traffipart.polanty.domain.usecase
+package com.traffipart.polanty.domain.usecase.plant
 
 import com.traffipart.polanty.domain.model.Plant
 import com.traffipart.polanty.domain.repository.PlantRepository
@@ -19,7 +19,7 @@ class ObservePlantUseCase
          * Returns a Flow that emits the plant with the specified [plantId] whenever it changes.
          *
          * @param plantId The unique ID of the plant to observe.
-         * @return A [Flow] of the [Plant] with the given ID.
+         * @return A [kotlinx.coroutines.flow.Flow] of the [com.traffipart.polanty.domain.model.Plant] with the given ID.
          */
         operator fun invoke(plantId: Long): Flow<Plant?> = repository.observePlant(plantId)
     }

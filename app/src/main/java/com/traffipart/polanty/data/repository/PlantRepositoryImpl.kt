@@ -19,6 +19,9 @@ class PlantRepositoryImpl
                 plants.map { it.toDomain() }
             }
 
+        override fun observePlantsBySpace(spaceId: Long): Flow<List<Plant>> =
+            plantDao.observePlantsBySpace(spaceId).map { plants -> plants.map { it.toDomain() } }
+
         override suspend fun savePlant(plant: Plant): Long = plantDao.insertPlant(plant.toEntity())
 
         override suspend fun deletePlant(plant: Plant) {

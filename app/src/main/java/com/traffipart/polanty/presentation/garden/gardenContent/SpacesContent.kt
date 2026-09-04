@@ -58,7 +58,7 @@ fun SpacesContent(
                         style = MaterialTheme.typography.titleMedium,
                     )
                     Text(
-                        text = "Add a space to start adding plants.",
+                        text = "Add a space to organize your plants.",
                         style = MaterialTheme.typography.bodyMedium,
                     )
                 }

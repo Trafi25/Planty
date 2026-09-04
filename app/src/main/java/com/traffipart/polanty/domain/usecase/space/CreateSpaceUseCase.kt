@@ -1,4 +1,4 @@
-package com.traffipart.polanty.domain.usecase
+package com.traffipart.polanty.domain.usecase.space
 
 import com.traffipart.polanty.domain.model.PlantSpace
 import com.traffipart.polanty.domain.model.PlantSpaceType
@@ -9,7 +9,7 @@ import javax.inject.Inject
  * Use case to create a new plant space.
  *
  * This use case handles name normalization and ensures that custom spaces have a valid name.
- * It uses the display name of the [PlantSpaceType] if no custom name is provided for non-custom types.
+ * It uses the display name of the [com.traffipart.polanty.domain.model.PlantSpaceType] if no custom name is provided for non-custom types.
  *
  * @property repository The repository to insert the new space into.
  */
@@ -22,7 +22,7 @@ class CreateSpaceUseCase
          * Creates and inserts a new plant space.
          *
          * @param customName The optional name provided by the user.
-         * @param type The [PlantSpaceType] of the new space.
+         * @param type The [com.traffipart.polanty.domain.model.PlantSpaceType] of the new space.
          * @return The unique ID of the newly created space.
          * @throws IllegalArgumentException If a custom space is requested without a valid name.
          */

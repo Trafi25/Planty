@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.traffipart.polanty.core.common.Result
 import com.traffipart.polanty.domain.model.PlantImage
-import com.traffipart.polanty.domain.usecase.IdentifyPlantUseCase
+import com.traffipart.polanty.domain.usecase.plant.IdentifyPlantUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow

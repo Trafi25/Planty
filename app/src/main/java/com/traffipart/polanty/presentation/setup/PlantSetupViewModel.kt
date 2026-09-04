@@ -4,8 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.traffipart.polanty.domain.model.Plant
 import com.traffipart.polanty.domain.model.PlantCandidate
-import com.traffipart.polanty.domain.usecase.ObserveSpacesUseCase
-import com.traffipart.polanty.domain.usecase.SavePlantUseCase
+import com.traffipart.polanty.domain.usecase.plant.SavePlantUseCase
+import com.traffipart.polanty.domain.usecase.space.ObserveSpacesUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow

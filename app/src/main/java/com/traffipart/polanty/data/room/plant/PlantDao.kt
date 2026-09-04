@@ -11,6 +11,9 @@ interface PlantDao {
     @Query("SELECT * FROM plants")
     fun observePlants(): Flow<List<PlantEntity>>
 
+    @Query("SELECT * FROM plants WHERE spaceId = :spaceId")
+    fun observePlantsBySpace(spaceId: Long): Flow<List<PlantEntity>>
+
     @Query("SELECT * FROM plants WHERE id = :plantId LIMIT 1")
     fun observePlant(plantId: Long): Flow<PlantEntity?>
 

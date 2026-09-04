@@ -3,11 +3,11 @@ package com.traffipart.polanty.presentation.garden
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.traffipart.polanty.domain.model.PlantSpaceType
-import com.traffipart.polanty.domain.usecase.CreateSpaceUseCase
-import com.traffipart.polanty.domain.usecase.DeleteSpaceUseCase
-import com.traffipart.polanty.domain.usecase.InitializeDefaultSpacesUseCase
-import com.traffipart.polanty.domain.usecase.ObservePlantsUseCase
-import com.traffipart.polanty.domain.usecase.ObserveSpacesUseCase
+import com.traffipart.polanty.domain.usecase.plant.ObservePlantsUseCase
+import com.traffipart.polanty.domain.usecase.space.CreateSpaceUseCase
+import com.traffipart.polanty.domain.usecase.space.DeleteSpaceUseCase
+import com.traffipart.polanty.domain.usecase.space.InitializeDefaultSpacesUseCase
+import com.traffipart.polanty.domain.usecase.space.ObserveSpacesUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableStateFlow

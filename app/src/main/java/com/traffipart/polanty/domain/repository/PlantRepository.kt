@@ -12,6 +12,8 @@ interface PlantRepository {
      */
     fun observePlants(): Flow<List<Plant>>
 
+    fun observePlantsBySpace(spaceId: Long): Flow<List<Plant>>
+
     /**
      * Saves a plant to the repository.
      *

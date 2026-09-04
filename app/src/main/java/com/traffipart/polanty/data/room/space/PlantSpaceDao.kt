@@ -11,6 +11,9 @@ interface PlantSpaceDao {
     @Query("SELECT * FROM plant_spaces ORDER BY name")
     fun observeSpaces(): Flow<List<PlantSpaceEntity>>
 
+    @Query("SELECT * FROM plant_spaces WHERE id = :spaceId")
+    fun observeSpace(spaceId: Long): Flow<PlantSpaceEntity?>
+
     @Insert
     suspend fun insertSpace(space: PlantSpaceEntity): Long
 

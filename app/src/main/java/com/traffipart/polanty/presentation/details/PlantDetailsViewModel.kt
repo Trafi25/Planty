@@ -3,8 +3,8 @@ package com.traffipart.polanty.presentation.details
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.traffipart.polanty.domain.usecase.DeletePlantUseCase
-import com.traffipart.polanty.domain.usecase.ObservePlantUseCase
+import com.traffipart.polanty.domain.usecase.plant.DeletePlantUseCase
+import com.traffipart.polanty.domain.usecase.plant.ObservePlantUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableStateFlow

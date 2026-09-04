@@ -1,4 +1,4 @@
-package com.traffipart.polanty.domain.usecase
+package com.traffipart.polanty.domain.usecase.space
 
 import com.traffipart.polanty.domain.model.PlantSpace
 import com.traffipart.polanty.domain.model.PlantSpaceType

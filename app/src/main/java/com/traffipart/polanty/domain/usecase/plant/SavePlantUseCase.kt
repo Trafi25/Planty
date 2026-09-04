@@ -1,4 +1,4 @@
-package com.traffipart.polanty.domain.usecase
+package com.traffipart.polanty.domain.usecase.plant
 
 import com.traffipart.polanty.domain.model.Plant
 import com.traffipart.polanty.domain.repository.PlantRepository
@@ -23,7 +23,7 @@ class SavePlantUseCase
         /**
          * Saves a new plant.
          *
-         * @param plant The [Plant] data to save.
+         * @param plant The [com.traffipart.polanty.domain.model.Plant] data to save.
          * @param sourceImageUri The optional URI of the source image to be saved locally.
          * @return The unique ID of the newly saved plant.
          */

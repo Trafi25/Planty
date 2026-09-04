@@ -19,6 +19,11 @@ class PlantSpaceRepositoryImpl
                 entities.map { it.toDomain() }
             }
 
+        override fun observeSpace(spaceId: Long): Flow<PlantSpace?> =
+            dao
+                .observeSpace(spaceId = spaceId)
+                .map { entity -> entity?.toDomain() }
+
         override suspend fun insertSpace(space: PlantSpace): Long = dao.insertSpace(space.toEntity())
 
         override suspend fun deleteSpaceAndUnassignPlants(spaceId: Long) = dao.deleteSpaceAndUnassignPlants(spaceId)

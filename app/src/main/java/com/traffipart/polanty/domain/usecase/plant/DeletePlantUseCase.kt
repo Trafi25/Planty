@@ -1,4 +1,4 @@
-package com.traffipart.polanty.domain.usecase
+package com.traffipart.polanty.domain.usecase.plant
 
 import com.traffipart.polanty.domain.model.Plant
 import com.traffipart.polanty.domain.repository.PlantRepository
