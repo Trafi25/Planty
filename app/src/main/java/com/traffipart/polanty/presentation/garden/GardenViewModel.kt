@@ -6,7 +6,6 @@ import com.traffipart.polanty.domain.model.PlantSpaceType
 import com.traffipart.polanty.domain.usecase.plant.ObservePlantsUseCase
 import com.traffipart.polanty.domain.usecase.space.CreateSpaceUseCase
 import com.traffipart.polanty.domain.usecase.space.DeleteSpaceUseCase
-import com.traffipart.polanty.domain.usecase.space.InitializeDefaultSpacesUseCase
 import com.traffipart.polanty.domain.usecase.space.ObserveSpacesUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CancellationException
@@ -50,7 +49,6 @@ data class SpaceDeletionState(
  * @property observePlantsUseCase Use case to observe the list of all plants.
  * @property observeSpacesUseCase Use case to observe the list of all plant spaces.
  * @property createSpaceUseCase Use case to create a new plant space.
- * @property initializeDefaultSpacesUseCase Use case to initialize the default plant spaces if they don't exist.
  * @property deleteSpaceUseCase Use case to delete a plant space and unassign its plants.
  */
 @HiltViewModel
@@ -60,13 +58,8 @@ class GardenViewModel
         private val observePlantsUseCase: ObservePlantsUseCase,
         private val observeSpacesUseCase: ObserveSpacesUseCase,
         private val createSpaceUseCase: CreateSpaceUseCase,
-        private val initializeDefaultSpacesUseCase: InitializeDefaultSpacesUseCase,
         private val deleteSpaceUseCase: DeleteSpaceUseCase,
     ) : ViewModel() {
-        init {
-            initializeDefaultSpaces()
-        }
-
         private val spaceCreationState = MutableStateFlow(SpaceCreationState())
 
         private val spaceDeletionState = MutableStateFlow(SpaceDeletionState())
@@ -144,15 +137,6 @@ class GardenViewModel
                         it.copy(isDeleting = false, error = "Could not delete space")
                     }
                 }
-            }
-        }
-
-        /**
-         * Initializes default plant spaces if they haven't been created yet.
-         */
-        private fun initializeDefaultSpaces() {
-            viewModelScope.launch {
-                initializeDefaultSpacesUseCase()
             }
         }
 
