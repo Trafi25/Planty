@@ -75,10 +75,10 @@ fun PlantyRoot(rootViewModel: PlantyRootViewModel = hiltViewModel()) {
             composable(route = PlantRoute.HOME) {
                 HomeScreen(
                     onOpenGarden = {
-                        navController.navigate(PlantRoute.GARDEN)
+                        navController.navigateToTopLevel(PlantRoute.GARDEN)
                     },
                     onScanPlant = {
-                        navController.navigate(PlantRoute.IDENTIFY)
+                        navController.navigateToTopLevel(PlantRoute.IDENTIFY)
                     },
                 )
             }
@@ -88,7 +88,7 @@ fun PlantyRoot(rootViewModel: PlantyRootViewModel = hiltViewModel()) {
             composable(route = PlantRoute.GARDEN) {
                 GardenScreen(
                     onAddPlant = {
-                        navController.navigate(PlantRoute.IDENTIFY)
+                        navController.navigateToTopLevel(PlantRoute.IDENTIFY)
                     },
                     onPlantSelected = { plantId -> navController.navigate(PlantRoute.details(plantId)) },
                     onSpaceSelected = { spaceId -> navController.navigate(PlantRoute.spaceDetails(spaceId)) },
