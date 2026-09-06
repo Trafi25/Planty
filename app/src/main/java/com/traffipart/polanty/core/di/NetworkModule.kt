@@ -3,7 +3,9 @@ package com.traffipart.polanty.core.di
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import com.traffipart.polanty.BuildConfig
+import com.traffipart.polanty.core.network.PerenualAuthInterceptor
 import com.traffipart.polanty.core.network.PlantNetAuthInterceptor
+import com.traffipart.polanty.data.remote.knowledge.PerenualApi
 import com.traffipart.polanty.data.remote.plant.PlantNetApi
 import dagger.Module
 import dagger.Provides
@@ -68,4 +70,30 @@ object NetworkModule {
     @Provides
     @Singleton
     fun providePlantApi(retrofit: Retrofit): PlantNetApi = retrofit.create(PlantNetApi::class.java)
+
+    @Provides
+    @Singleton
+    fun providePerenualApi(
+        moshi: Moshi,
+        loggingInterceptor: HttpLoggingInterceptor,
+        perenualAuthInterceptor: PerenualAuthInterceptor,
+    ): PerenualApi {
+        val client =
+            OkHttpClient
+                .Builder()
+                .addInterceptor(loggingInterceptor)
+                .addInterceptor(perenualAuthInterceptor)
+                .connectTimeout(20, TimeUnit.SECONDS)
+                .readTimeout(20, TimeUnit.SECONDS)
+                .build()
+        return Retrofit
+            .Builder()
+            .baseUrl("https://perenual.com/api/")
+            .client(client)
+            .addConverterFactory(MoshiConverterFactory.create(moshi))
+            .build()
+            .create(
+                PerenualApi::class.java,
+            )
+    }
 }

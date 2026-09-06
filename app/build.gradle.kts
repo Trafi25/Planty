@@ -53,6 +53,11 @@ android {
             "PLANT_NET_API_KEY",
             "\"${properties["PLANT_NET_API_KEY"]}\"",
         )
+        buildConfigField(
+            "String",
+            "PERENUAL_API_KEY",
+            "\"${properties["PERENUAL_API_KEY"] ?: ""}\"",
+        )
     }
 
     testOptions {
