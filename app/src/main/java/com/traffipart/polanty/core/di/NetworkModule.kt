@@ -3,6 +3,8 @@ package com.traffipart.polanty.core.di
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import com.traffipart.polanty.BuildConfig
+import com.traffipart.polanty.core.di.PerenualClient
+import com.traffipart.polanty.core.di.PlantNetClient
 import com.traffipart.polanty.core.network.PerenualAuthInterceptor
 import com.traffipart.polanty.core.network.PlantNetAuthInterceptor
 import com.traffipart.polanty.data.remote.knowledge.PerenualApi
@@ -18,15 +20,21 @@ import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import java.util.concurrent.TimeUnit
 
+/**
+ * Hilt module for providing network-related dependencies.
+ */
 @Module
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
-    private const val BASE_URL = "https://my-api.plantnet.org/"
+    private const val PLANTNET_BASE_URL = "https://my-api.plantnet.org/"
+    private const val PERENUAL_BASE_URL = "https://perenual.com/api/"
 
+    /** Provides the global [Moshi] instance for JSON serialization/deserialization. */
     @Provides
     @Singleton
     fun provideMoshi(): Moshi = Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
 
+    /** Provides a logging interceptor that only logs in debug builds. */
     @Provides
     @Singleton
     fun provideLoggingInterceptor(): HttpLoggingInterceptor =
@@ -39,61 +47,70 @@ object NetworkModule {
                 }
         }
 
+    /** Provides a base [OkHttpClient.Builder] with shared timeout configurations. */
     @Provides
-    @Singleton
-    fun provideHttpClient(
-        interceptor: HttpLoggingInterceptor,
-        plantNetAuthInterceptor: PlantNetAuthInterceptor,
-    ): OkHttpClient =
-        OkHttpClient
-            .Builder()
-            .addInterceptor(interceptor)
-            .addInterceptor(plantNetAuthInterceptor)
+    fun provideBaseHttpClientBuilder(loggingInterceptor: HttpLoggingInterceptor): OkHttpClient.Builder =
+        OkHttpClient.Builder()
+            .addInterceptor(loggingInterceptor)
             .connectTimeout(20, TimeUnit.SECONDS)
             .readTimeout(30, TimeUnit.SECONDS)
             .writeTimeout(30, TimeUnit.SECONDS)
-            .build()
 
+    /** Provides the [OkHttpClient] specialized for the PlantNet API. */
     @Provides
     @Singleton
-    fun provideRetrofit(
+    @PlantNetClient
+    fun providePlantNetHttpClient(
+        builder: OkHttpClient.Builder,
+        plantNetAuthInterceptor: PlantNetAuthInterceptor,
+    ): OkHttpClient = builder.addInterceptor(plantNetAuthInterceptor).build()
+
+    /** Provides the [OkHttpClient] specialized for the Perenual API. */
+    @Provides
+    @Singleton
+    @PerenualClient
+    fun providePerenualHttpClient(
+        builder: OkHttpClient.Builder,
+        perenualAuthInterceptor: PerenualAuthInterceptor,
+    ): OkHttpClient = builder.addInterceptor(perenualAuthInterceptor).build()
+
+    /** Provides the [Retrofit] instance for the PlantNet API. */
+    @Provides
+    @Singleton
+    @PlantNetClient
+    fun providePlantNetRetrofit(
         moshi: Moshi,
-        httpClient: OkHttpClient,
+        @PlantNetClient httpClient: OkHttpClient,
     ): Retrofit =
-        Retrofit
-            .Builder()
-            .baseUrl(BASE_URL)
+        Retrofit.Builder()
+            .baseUrl(PLANTNET_BASE_URL)
             .client(httpClient)
             .addConverterFactory(MoshiConverterFactory.create(moshi))
             .build()
 
+    /** Provides the [Retrofit] instance for the Perenual API. */
     @Provides
     @Singleton
-    fun providePlantApi(retrofit: Retrofit): PlantNetApi = retrofit.create(PlantNetApi::class.java)
-
-    @Provides
-    @Singleton
-    fun providePerenualApi(
+    @PerenualClient
+    fun providePerenualRetrofit(
         moshi: Moshi,
-        loggingInterceptor: HttpLoggingInterceptor,
-        perenualAuthInterceptor: PerenualAuthInterceptor,
-    ): PerenualApi {
-        val client =
-            OkHttpClient
-                .Builder()
-                .addInterceptor(loggingInterceptor)
-                .addInterceptor(perenualAuthInterceptor)
-                .connectTimeout(20, TimeUnit.SECONDS)
-                .readTimeout(20, TimeUnit.SECONDS)
-                .build()
-        return Retrofit
-            .Builder()
-            .baseUrl("https://perenual.com/api/")
-            .client(client)
+        @PerenualClient httpClient: OkHttpClient,
+    ): Retrofit =
+        Retrofit.Builder()
+            .baseUrl(PERENUAL_BASE_URL)
+            .client(httpClient)
             .addConverterFactory(MoshiConverterFactory.create(moshi))
             .build()
-            .create(
-                PerenualApi::class.java,
-            )
-    }
+
+    /** Provides the [PlantNetApi] service. */
+    @Provides
+    @Singleton
+    fun providePlantApi(@PlantNetClient retrofit: Retrofit): PlantNetApi =
+        retrofit.create(PlantNetApi::class.java)
+
+    /** Provides the [PerenualApi] service. */
+    @Provides
+    @Singleton
+    fun providePerenualApi(@PerenualClient retrofit: Retrofit): PerenualApi =
+        retrofit.create(PerenualApi::class.java)
 }

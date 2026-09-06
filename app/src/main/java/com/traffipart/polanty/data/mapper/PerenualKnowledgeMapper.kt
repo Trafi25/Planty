@@ -9,6 +9,14 @@ import com.traffipart.polanty.domain.model.PlantToxicity
 import com.traffipart.polanty.domain.model.ToxicityLevel
 import com.traffipart.polanty.domain.model.WateringProfile
 
+/**
+ * Maps the [PerenualSpeciesDetailsDto] to the domain [PlantKnowledge] model.
+ *
+ * This mapper handles unit conversions for dimensions, string normalization for
+ * light requirements, and regex parsing for watering intervals.
+ *
+ * @return The mapped [PlantKnowledge] or null if scientific name is missing.
+ */
 fun PerenualSpeciesDetailsDto.toDomain(): PlantKnowledge? {
     val scientificName = scientificNames.firstOrNull() ?: return null
     val wateringRange = wateringBenchmark?.value.toDayRange()
