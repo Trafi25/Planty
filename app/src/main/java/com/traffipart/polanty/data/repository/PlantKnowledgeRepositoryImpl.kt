@@ -26,13 +26,13 @@ class PlantKnowledgeRepositoryImpl
          */
         override suspend fun getPlantKnowledge(scientificName: String): PlantKnowledge? {
             val searchResult = perenualApi.searchSpecies(scientificName)
-            val exactMathc =
+            val exactMatch =
                 searchResult.data.firstOrNull { species ->
                     species.scientificNames.any { name ->
                         name.equals(other = scientificName, ignoreCase = true)
                     }
                 } ?: return null
-            val details = perenualApi.getSpeciesDetails(exactMathc.id)
+            val details = perenualApi.getSpeciesDetails(exactMatch.id)
             return details.toDomain()
         }
     }

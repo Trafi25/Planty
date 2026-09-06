@@ -32,7 +32,7 @@ fun PerenualSpeciesDetailsDto.toDomain(): PlantKnowledge? {
                     WateringProfile(
                         soilCheckIntervalDaysMin = wateringRange.first,
                         soilCheckIntervalDaysMax = wateringRange.second,
-                        instruction = watering ?: "Check the soil before watering.",
+                        instruction = "Check the soil before watering.", // todo improve behavior
                     ),
                 light = lightRequirement,
                 humidity = null,
@@ -48,7 +48,7 @@ fun PerenualSpeciesDetailsDto.toDomain(): PlantKnowledge? {
                 scientificName = scientificName,
                 commonName = commonName,
                 description = description.orEmpty(),
-                origin = origin?.joinToString(", ") ?: "Unknown",
+                origin = origin?.joinToString(", "),
                 toxicity =
                     PlantToxicity(
                         pets = poisonousToPets.toToxicity(),
@@ -99,7 +99,12 @@ private fun Boolean?.toToxicity(): ToxicityLevel =
     }
 
 private fun List<String>?.toLightRequirement(): LightRequirement? {
-    val values = this?.joinToString(" ")?.lowercase() ?: return null
+    val values =
+        this
+            ?.joinToString(" ")
+            ?.lowercase()
+            ?.replace("_", " ")
+            ?.replace("-", " ") ?: return null
 
     return when {
         "full sun" in values ->

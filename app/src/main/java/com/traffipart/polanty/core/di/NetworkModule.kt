@@ -3,8 +3,6 @@ package com.traffipart.polanty.core.di
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import com.traffipart.polanty.BuildConfig
-import com.traffipart.polanty.core.di.PerenualClient
-import com.traffipart.polanty.core.di.PlantNetClient
 import com.traffipart.polanty.core.network.PerenualAuthInterceptor
 import com.traffipart.polanty.core.network.PlantNetAuthInterceptor
 import com.traffipart.polanty.data.remote.knowledge.PerenualApi
@@ -27,7 +25,7 @@ import java.util.concurrent.TimeUnit
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
     private const val PLANTNET_BASE_URL = "https://my-api.plantnet.org/"
-    private const val PERENUAL_BASE_URL = "https://perenual.com/api/"
+    private const val PERENUAL_BASE_URL = "https://perenual.com/"
 
     /** Provides the global [Moshi] instance for JSON serialization/deserialization. */
     @Provides
@@ -50,7 +48,8 @@ object NetworkModule {
     /** Provides a base [OkHttpClient.Builder] with shared timeout configurations. */
     @Provides
     fun provideBaseHttpClientBuilder(loggingInterceptor: HttpLoggingInterceptor): OkHttpClient.Builder =
-        OkHttpClient.Builder()
+        OkHttpClient
+            .Builder()
             .addInterceptor(loggingInterceptor)
             .connectTimeout(20, TimeUnit.SECONDS)
             .readTimeout(30, TimeUnit.SECONDS)
@@ -82,7 +81,8 @@ object NetworkModule {
         moshi: Moshi,
         @PlantNetClient httpClient: OkHttpClient,
     ): Retrofit =
-        Retrofit.Builder()
+        Retrofit
+            .Builder()
             .baseUrl(PLANTNET_BASE_URL)
             .client(httpClient)
             .addConverterFactory(MoshiConverterFactory.create(moshi))
@@ -96,7 +96,8 @@ object NetworkModule {
         moshi: Moshi,
         @PerenualClient httpClient: OkHttpClient,
     ): Retrofit =
-        Retrofit.Builder()
+        Retrofit
+            .Builder()
             .baseUrl(PERENUAL_BASE_URL)
             .client(httpClient)
             .addConverterFactory(MoshiConverterFactory.create(moshi))
@@ -105,12 +106,14 @@ object NetworkModule {
     /** Provides the [PlantNetApi] service. */
     @Provides
     @Singleton
-    fun providePlantApi(@PlantNetClient retrofit: Retrofit): PlantNetApi =
-        retrofit.create(PlantNetApi::class.java)
+    fun providePlantApi(
+        @PlantNetClient retrofit: Retrofit,
+    ): PlantNetApi = retrofit.create(PlantNetApi::class.java)
 
     /** Provides the [PerenualApi] service. */
     @Provides
     @Singleton
-    fun providePerenualApi(@PerenualClient retrofit: Retrofit): PerenualApi =
-        retrofit.create(PerenualApi::class.java)
+    fun providePerenualApi(
+        @PerenualClient retrofit: Retrofit,
+    ): PerenualApi = retrofit.create(PerenualApi::class.java)
 }
