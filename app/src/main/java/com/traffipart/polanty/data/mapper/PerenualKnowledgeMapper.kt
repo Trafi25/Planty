@@ -18,7 +18,7 @@ import com.traffipart.polanty.domain.model.WateringProfile
  * @return The mapped [PlantKnowledge] or null if scientific name is missing.
  */
 fun PerenualSpeciesDetailsDto.toDomain(): PlantKnowledge? {
-    val scientificName = scientificNames.firstOrNull() ?: return null
+    val scientificName = scientificNames?.firstOrNull() ?: return null
     val wateringRange = wateringBenchmark?.value.toDayRange()
     val lightRequirement = sunlight?.toLightRequirement()
 
@@ -32,7 +32,7 @@ fun PerenualSpeciesDetailsDto.toDomain(): PlantKnowledge? {
                     WateringProfile(
                         soilCheckIntervalDaysMin = wateringRange.first,
                         soilCheckIntervalDaysMax = wateringRange.second,
-                        instruction = "Check the soil before watering.", // todo improve behavior
+                        instruction = watering ?: "Check the soil before watering.",
                     ),
                 light = lightRequirement,
                 humidity = null,
@@ -107,14 +107,18 @@ private fun List<String>?.toLightRequirement(): LightRequirement? {
             ?.replace("-", " ") ?: return null
 
     return when {
-        "full sun" in values ->
+        "full sun" in values || "direct" in values ->
             LightRequirement.Direct
-        "part shade" in values ->
+
+        "part shade" in values || "part sun" in values || "medium" in values ->
             LightRequirement.MediumIndirect
-        "full shade" in values ->
+
+        "full shade" in values || "low" in values ->
             LightRequirement.Low
-        "indirect" in values ->
+
+        "indirect" in values || "bright" in values ->
             LightRequirement.BrightIndirect
+
         else -> null
     }
 }

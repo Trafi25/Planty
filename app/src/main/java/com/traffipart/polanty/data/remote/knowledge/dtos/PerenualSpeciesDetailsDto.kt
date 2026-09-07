@@ -24,7 +24,7 @@ data class PerenualSpeciesDetailsDto(
     @Json(name = "common_name")
     val commonName: String?,
     @Json(name = "scientific_name")
-    val scientificNames: List<String>,
+    val scientificNames: List<String>?,
     val origin: List<String>?,
     val dimensions: PerenualDimensionsDto?,
     val watering: String?,

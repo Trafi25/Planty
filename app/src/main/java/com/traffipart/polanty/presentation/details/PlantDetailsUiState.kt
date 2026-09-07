@@ -10,6 +10,7 @@ import com.traffipart.polanty.domain.model.Plant
  * @property isDeleting Whether the plant is currently being deleted.
  * @property isDeleted Whether the plant has been successfully deleted.
  * @property errorMessage An optional error message if an operation failed.
+ * @property knowledgeState The current state of botanical knowledge retrieval.
  */
 data class PlantDetailsUiState(
     val plant: Plant? = null,
@@ -17,4 +18,5 @@ data class PlantDetailsUiState(
     val isDeleting: Boolean = false,
     val isDeleted: Boolean = false,
     val errorMessage: String? = null,
+    val knowledgeState: PlantKnowledgeUiState = PlantKnowledgeUiState.Idle,
 )

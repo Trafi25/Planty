@@ -1,5 +1,6 @@
 package com.traffipart.polanty.data.repository
 
+import android.util.Log
 import com.traffipart.polanty.data.mapper.toDomain
 import com.traffipart.polanty.data.remote.knowledge.PerenualApi
 import com.traffipart.polanty.domain.model.PlantKnowledge
@@ -25,14 +26,32 @@ class PlantKnowledgeRepositoryImpl
          * @return The plant knowledge or null if not found or no exact match exists.
          */
         override suspend fun getPlantKnowledge(scientificName: String): PlantKnowledge? {
+            Log.d("PlantKnowledgeRepo", "Searching for knowledge: $scientificName")
             val searchResult = perenualApi.searchSpecies(scientificName)
-            val exactMatch =
+            Log.d("PlantKnowledgeRepo", "Found ${searchResult.data.size} potential matches")
+
+            val match =
                 searchResult.data.firstOrNull { species ->
-                    species.scientificNames.any { name ->
+                    species.scientificNames?.any { name ->
                         name.equals(other = scientificName, ignoreCase = true)
-                    }
-                } ?: return null
-            val details = perenualApi.getSpeciesDetails(exactMatch.id)
-            return details.toDomain()
+                    } == true
+                } ?: searchResult.data.firstOrNull()
+
+            if (match == null) {
+                Log.w("PlantKnowledgeRepo", "No matching species found for $scientificName")
+                return null
+            }
+
+            Log.d("PlantKnowledgeRepo", "Fetching details for ID: ${match.id} (${match.commonName})")
+            val details = perenualApi.getSpeciesDetails(match.id)
+            val domainModel = details.toDomain()
+
+            if (domainModel == null) {
+                Log.e("PlantKnowledgeRepo", "Failed to map details to domain model for ID: ${match.id}")
+            } else {
+                Log.d("PlantKnowledgeRepo", "Successfully retrieved knowledge for $scientificName")
+            }
+
+            return domainModel
         }
     }
