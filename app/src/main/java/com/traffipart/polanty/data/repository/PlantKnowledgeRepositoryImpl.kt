@@ -44,6 +44,21 @@ class PlantKnowledgeRepositoryImpl
 
             Log.d("PlantKnowledgeRepo", "Fetching details for ID: ${match.id} (${match.commonName})")
             val details = perenualApi.getSpeciesDetails(match.id)
+            Log.d(
+                "PlantKnowledgeRepo",
+                """
+    DETAILS:
+    scientificNames=${details.scientificNames}
+    watering=${details.watering}
+    wateringBenchmark=${details.wateringBenchmark}
+    sunlight=${details.sunlight}
+    origin=${details.origin}
+    dimensions=${details.dimensions}
+    description=${details.description}
+    poisonousToPets=${details.poisonousToPets}
+    poisonousToHumans=${details.poisonousToHumans}
+    """.trimIndent(),
+            )
             val domainModel = details.toDomain()
 
             if (domainModel == null) {

@@ -61,21 +61,27 @@ fun CareGuideContent(knowledge: PlantKnowledge) {
         Text("Detailed care information is not available.")
         return
     }
-    Text(
-        text =
-            "Check soil every " +
-                "${careProfile.watering.soilCheckIntervalDaysMin}" +
-                "–" +
-                "${careProfile.watering.soilCheckIntervalDaysMax}" +
-                " days",
-    )
+    careProfile.watering?.let { watering ->
+        Text(
+            text =
+                "Check soil every " +
+                        "${watering.soilCheckIntervalDaysMin}" +
+                        "–" +
+                        "${watering.soilCheckIntervalDaysMax}" +
+                        " days",
+        )
+
     Text(
         text =
             careProfile.watering.instruction,
     )
-    Text(
-        text = "Light: ${careProfile.light.toDisplayText()}",
-    )
+    }
+    careProfile.light?.let { light ->
+        Text(
+            text =
+                "Light: ${light.toDisplayText()}",
+        )
+    }
 }
 
 /**

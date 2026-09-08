@@ -20,36 +20,35 @@ import com.squareup.moshi.JsonClass
  */
 @JsonClass(generateAdapter = true)
 data class PerenualSpeciesDetailsDto(
-    val id: Int,
-    @Json(name = "common_name")
-    val commonName: String?,
     @Json(name = "scientific_name")
-    val scientificNames: List<String>?,
-    val origin: List<String>?,
-    val dimensions: PerenualDimensionsDto?,
-    val watering: String?,
-    @Json(
-        name = "watering_general_benchmark",
-    )
-    val wateringBenchmark: PerenualWateringBenchmarkDto?,
-    val sunlight: List<String>?,
-    @Json(name = "poisonous_to_humans")
-    val poisonousToHumans: Boolean?,
+    val scientificNames: List<String>? = null,
+    @Json(name = "common_name")
+    val commonName: String? = null,
+    val description: String? = null,
+    val origin: List<String>? = null,
+    val watering: String? = null,
+    val sunlight: List<String>? = null,
+    @Json(name = "watering_general_benchmark")
+    val wateringBenchmark: PerenualWateringBenchmarkDto? = null,
+    val dimensions: List<PerenualDimensionsDto>? = null,
     @Json(name = "poisonous_to_pets")
-    val poisonousToPets: Boolean?,
-    val description: String?,
+    val poisonousToPets: Boolean? = null,
+    @Json(name = "poisonous_to_humans")
+    val poisonousToHumans: Boolean? = null,
 )
+
 
 /**
  * Physical dimensions of the plant (height, spread).
  */
 @JsonClass(generateAdapter = true)
 data class PerenualDimensionsDto(
+    val type: String? = null,
     @Json(name = "min_value")
-    val minValue: Double?,
+    val minValue: Double? = null,
     @Json(name = "max_value")
-    val maxValue: Double?,
-    val unit: String?,
+    val maxValue: Double? = null,
+    val unit: String? = null,
 )
 
 /**
@@ -57,6 +56,6 @@ data class PerenualDimensionsDto(
  */
 @JsonClass(generateAdapter = true)
 data class PerenualWateringBenchmarkDto(
-    val value: Any?,
-    val unit: String?,
+    val value: String? = null,
+    val unit: String? = null,
 )

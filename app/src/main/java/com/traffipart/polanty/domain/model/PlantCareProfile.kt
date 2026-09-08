@@ -2,8 +2,8 @@ package com.traffipart.polanty.domain.model
 
 data class PlantCareProfile(
     val scientificName: String,
-    val watering: WateringProfile,
-    val light: LightRequirement,
+    val watering: WateringProfile?,
+    val light: LightRequirement?,
     val humidity: HumidityRange?,
     val temperature: TemperatureRange?,
     val fertilizing: String?,

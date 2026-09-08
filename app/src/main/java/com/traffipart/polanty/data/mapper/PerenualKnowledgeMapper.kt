@@ -22,18 +22,20 @@ fun PerenualSpeciesDetailsDto.toDomain(): PlantKnowledge? {
     val wateringRange = wateringBenchmark?.value.toDayRange()
     val lightRequirement = sunlight?.toLightRequirement()
 
+    val wateringProfile =
+        wateringRange?.let { range ->
+            WateringProfile(
+                soilCheckIntervalDaysMin = range.first,
+                soilCheckIntervalDaysMax = range.second,
+                instruction = watering ?: "Check the soil before watering.",
+            )
+        }
+
     val careProfile =
-        if (
-            wateringRange != null && lightRequirement != null
-        ) {
+        if (wateringProfile != null || lightRequirement != null) {
             PlantCareProfile(
                 scientificName = scientificName,
-                watering =
-                    WateringProfile(
-                        soilCheckIntervalDaysMin = wateringRange.first,
-                        soilCheckIntervalDaysMax = wateringRange.second,
-                        instruction = watering ?: "Check the soil before watering.",
-                    ),
+                watering = wateringProfile,
                 light = lightRequirement,
                 humidity = null,
                 temperature = null,
@@ -42,6 +44,11 @@ fun PerenualSpeciesDetailsDto.toDomain(): PlantKnowledge? {
         } else {
             null
         }
+
+    // Try to find height in the dimensions list, otherwise fallback to the first one available
+    val heightDimension = dimensions?.firstOrNull { it.type?.contains("height", ignoreCase = true) == true }
+        ?: dimensions?.firstOrNull()
+
     return PlantKnowledge(
         speciesInfo =
             PlantSpeciesInfo(
@@ -55,8 +62,8 @@ fun PerenualSpeciesDetailsDto.toDomain(): PlantKnowledge? {
                         humans = poisonousToHumans.toToxicity(),
                         notes = null,
                     ),
-                typicalHeightCmMin = dimensions?.minValue?.toCentimeters(dimensions.unit),
-                typicalHeightCmMax = dimensions?.maxValue?.toCentimeters(dimensions.unit),
+                typicalHeightCmMin = heightDimension?.minValue?.toCentimeters(heightDimension.unit),
+                typicalHeightCmMax = heightDimension?.maxValue?.toCentimeters(heightDimension.unit),
             ),
         careProfile = careProfile,
     )

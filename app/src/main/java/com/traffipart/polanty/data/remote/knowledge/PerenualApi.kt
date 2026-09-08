@@ -17,7 +17,7 @@ interface PerenualApi {
      * @param query The search query (e.g., scientific or common name).
      * @return A list of species summaries matching the query.
      */
-    @GET("api/species-list")
+    @GET("api/v2/species-list")
     suspend fun searchSpecies(
         @Query("q") query: String,
     ): PerenualSpeciesListResponseDto
@@ -28,7 +28,7 @@ interface PerenualApi {
      * @param id The unique identifier for the species in the Perenual database.
      * @return The detailed botanical information for the requested species.
      */
-    @GET("api/species/details/{id}")
+    @GET("api/v2/species/details/{id}")
     suspend fun getSpeciesDetails(
         @Path("id") id: Int,
     ): PerenualSpeciesDetailsDto
