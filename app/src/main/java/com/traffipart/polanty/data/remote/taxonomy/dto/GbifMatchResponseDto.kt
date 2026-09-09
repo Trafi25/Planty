@@ -12,8 +12,10 @@ data class GbifMatchResponseDto (
 
 @JsonClass(generateAdapter = true)
 data class GbifNameUsageDto(
+    val key: String? = null,
     val name: String? = null,
     val canonicalName: String? = null,
     val genericName: String? = null,
     val specificEpithet: String? = null,
+    val rank: String? = null,
 )

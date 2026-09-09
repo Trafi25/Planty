@@ -6,7 +6,6 @@ import com.traffipart.polanty.data.remote.knowledge.PerenualApi
 import com.traffipart.polanty.domain.model.PlantKnowledge
 import com.traffipart.polanty.domain.repository.PlantKnowledgeRepository
 import com.traffipart.polanty.domain.repository.PlantNameResolver
-import com.traffipart.polanty.domain.storage.PlantImageStorage
 import javax.inject.Inject
 
 /**
@@ -30,25 +29,35 @@ class PlantKnowledgeRepositoryImpl
          */
         override suspend fun getPlantKnowledge(scientificName: String): PlantKnowledge? {
             val candidateNames = plantNameResolver.resolveNames(scientificName)
-            Log.d("PlantKnowledgeRepo", "Searching for knowledge: $scientificName")
+            Log.d(
+                "PlantKnowledgeRepo",
+                "Resolved $scientificName -> $candidateNames",
+            )
             for (candidate in candidateNames) {
+                Log.d(
+                    "PlantKnowledgeRepo",
+                    "Trying Perenual name: $candidate",
+                )
+
                 val searchResult = perenualApi.searchSpecies(candidate)
-                Log.d("PlantKnowledgeRepo", "Found ${searchResult.data.size} potential matches")
                 val match =
                     searchResult.data.firstOrNull { species ->
                         species.scientificNames?.any { name ->
                             name.equals(other = candidate, ignoreCase = true)
                         } == true
                     } ?: continue
-                if (match == null) {
-                    Log.w("PlantKnowledgeRepo", "No matching species found for $scientificName")
-                    return null
-                }
-                Log.d("PlantKnowledgeRepo", "Fetching details for ID: ${match.id} (${match.commonName})")
+                Log.d(
+                    "PlantKnowledgeRepo",
+                    "Exact Perenual match: ${match.id} ${match.commonName}",
+                )
                 val details = perenualApi.getSpeciesDetails(match.id)
                 val domainModel = details.toDomain()
                 if (domainModel != null) return domainModel
-            }          
+            }
+            Log.w(
+                "PlantKnowledgeRepo",
+                "No knowledge found for $scientificName",
+            )
             return null
         }
 
