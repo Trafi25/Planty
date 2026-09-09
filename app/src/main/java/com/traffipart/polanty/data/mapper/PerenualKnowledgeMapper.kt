@@ -45,9 +45,6 @@ fun PerenualSpeciesDetailsDto.toDomain(): PlantKnowledge? {
             null
         }
 
-    // Try to find height in the dimensions list, otherwise fallback to the first one available
-    val heightDimension = dimensions?.firstOrNull { it.type?.contains("height", ignoreCase = true) == true }
-        ?: dimensions?.firstOrNull()
 
     return PlantKnowledge(
         speciesInfo =
@@ -62,8 +59,16 @@ fun PerenualSpeciesDetailsDto.toDomain(): PlantKnowledge? {
                         humans = poisonousToHumans.toToxicity(),
                         notes = null,
                     ),
-                typicalHeightCmMin = heightDimension?.minValue?.toCentimeters(heightDimension.unit),
-                typicalHeightCmMax = heightDimension?.maxValue?.toCentimeters(heightDimension.unit),
+                typicalHeightCmMin = dimensions
+                    ?.minValue
+                    ?.toCentimeters(
+                        dimensions.unit,
+                    ),
+                typicalHeightCmMax = dimensions
+                    ?.maxValue
+                    ?.toCentimeters(
+                        dimensions.unit,
+                    ),
             ),
         careProfile = careProfile,
     )

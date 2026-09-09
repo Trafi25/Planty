@@ -16,7 +16,7 @@ interface GbifApi {
 
     @GET("v1/species/{usageKey}/synonyms")
     suspend fun getSynonyms(
-    @Path("userKey")
+    @Path("usageKey")
     usagKey: String,
     @Query("limit")
     limit: Int = 100,

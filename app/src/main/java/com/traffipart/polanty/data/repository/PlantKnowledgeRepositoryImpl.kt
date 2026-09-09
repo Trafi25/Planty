@@ -50,7 +50,15 @@ class PlantKnowledgeRepositoryImpl
                     "PlantKnowledgeRepo",
                     "Exact Perenual match: ${match.id} ${match.commonName}",
                 )
+                Log.d(
+                    "PlantKnowledgeRepo",
+                    "Requesting Perenual details for ID=${match.id}",
+                )
                 val details = perenualApi.getSpeciesDetails(match.id)
+                Log.d(
+                    "PlantKnowledgeRepo",
+                    "Perenual details parsed successfully for ID=${match.id}",
+                )
                 val domainModel = details.toDomain()
                 if (domainModel != null) return domainModel
             }

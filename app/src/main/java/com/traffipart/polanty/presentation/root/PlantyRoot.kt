@@ -51,7 +51,7 @@ fun PlantyRoot(rootViewModel: PlantyRootViewModel = hiltViewModel()) {
     val currentRoute = backStackEntry?.destination?.route
     val showBottomBar =
         TopLevelDestination.entries.any { destination ->
-            destination.route == currentRoute
+            destination.route == currentRoute || currentRoute?.startsWith(destination.route) == true
         }
 
     Scaffold(
@@ -84,15 +84,19 @@ fun PlantyRoot(rootViewModel: PlantyRootViewModel = hiltViewModel()) {
             composable(route = PlantRoute.PROGRESS) {
                 ProgressScreen()
             }
-            composable(route = PlantRoute.GARDEN) {
-                GardenScreen(
-                    onAddPlant = {
-                        navController.navigateToTopLevel(PlantRoute.IDENTIFY)
-                    },
-                    onPlantSelected = { plantId -> navController.navigate(PlantRoute.details(plantId)) },
-                    onSpaceSelected = { spaceId -> navController.navigate(PlantRoute.spaceDetails(spaceId)) },
-                )
-            }
+        composable(route = PlantRoute.GARDEN) {
+            GardenScreen(
+                onAddPlant = {
+                    navController.navigateToTopLevel(PlantRoute.IDENTIFY)
+                },
+                onPlantSelected = { plantId ->
+                    navController.navigate(PlantRoute.details(plantId))
+                },
+                onSpaceSelected = { spaceId ->
+                    navController.navigate(PlantRoute.spaceDetails(spaceId))
+                },
+            )
+        }
             composable(route = PlantRoute.IDENTIFY) {
                 IdentifyPlantScreen(
                     onCandidateSelected = { candidate, imageUri ->
@@ -114,10 +118,8 @@ fun PlantyRoot(rootViewModel: PlantyRootViewModel = hiltViewModel()) {
                         onPlantSaved = {
                             selectedCandidate = null
                             selectedImageUri = null
-                            navController.navigate(PlantRoute.GARDEN) {
-                                popUpTo(PlantRoute.GARDEN)
-                                launchSingleTop = true
-                            }
+                            // Clear identification flow and return to garden
+                            navController.navigateToTopLevel(PlantRoute.GARDEN)
                         },
                     )
                 }

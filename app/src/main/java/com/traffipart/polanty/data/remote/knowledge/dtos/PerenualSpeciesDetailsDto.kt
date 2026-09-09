@@ -30,7 +30,7 @@ data class PerenualSpeciesDetailsDto(
     val sunlight: List<String>? = null,
     @Json(name = "watering_general_benchmark")
     val wateringBenchmark: PerenualWateringBenchmarkDto? = null,
-    val dimensions: List<PerenualDimensionsDto>? = null,
+    val dimensions: PerenualDimensionsDto? = null,
     @Json(name = "poisonous_to_pets")
     val poisonousToPets: Boolean? = null,
     @Json(name = "poisonous_to_humans")
@@ -56,6 +56,6 @@ data class PerenualDimensionsDto(
  */
 @JsonClass(generateAdapter = true)
 data class PerenualWateringBenchmarkDto(
-    val value: String? = null,
+    val value: Any? = null,
     val unit: String? = null,
 )
