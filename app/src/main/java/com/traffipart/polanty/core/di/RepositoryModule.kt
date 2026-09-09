@@ -1,5 +1,6 @@
 package com.traffipart.polanty.core.di
 
+import com.traffipart.polanty.data.repository.GbifPlantNameResolverImpl
 import com.traffipart.polanty.data.repository.PlantIdentificationRepositoryImpl
 import com.traffipart.polanty.data.repository.PlantKnowledgeRepositoryImpl
 import com.traffipart.polanty.data.repository.PlantRepositoryImpl
@@ -8,6 +9,7 @@ import com.traffipart.polanty.data.repository.SpaceInitializationRepositoryImpl
 import com.traffipart.polanty.data.storage.PlantImageStorageImpl
 import com.traffipart.polanty.domain.repository.PlantIdentificationRepository
 import com.traffipart.polanty.domain.repository.PlantKnowledgeRepository
+import com.traffipart.polanty.domain.repository.PlantNameResolver
 import com.traffipart.polanty.domain.repository.PlantRepository
 import com.traffipart.polanty.domain.repository.PlantSpaceRepository
 import com.traffipart.polanty.domain.repository.SpaceInitializationRepository
@@ -46,4 +48,8 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindPlantKnowledgeRepository(repository: PlantKnowledgeRepositoryImpl): PlantKnowledgeRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindPlantNameResolver(resolver: GbifPlantNameResolverImpl) : PlantNameResolver
 }

@@ -2,8 +2,8 @@ package com.traffipart.polanty.presentation.details
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.material.Text
-import androidx.compose.material.TextButton
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -73,7 +73,7 @@ fun CareGuideContent(knowledge: PlantKnowledge) {
 
     Text(
         text =
-            careProfile.watering.instruction,
+            watering.instruction,
     )
     }
     careProfile.light?.let { light ->
