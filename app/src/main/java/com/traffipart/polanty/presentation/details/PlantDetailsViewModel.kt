@@ -98,7 +98,7 @@ class PlantDetailsViewModel
             } catch (
                 e: Exception,
             ) {
-                Log.e("PlantDetailsVM", "Care info error: ${e.message}", e)
+                Log.e("PlantDetails", "Care info error: ${e.message}", e)
                 _uiState.update {
                     it.copy(
                         knowledgeState = PlantKnowledgeUiState.Error("Could not load care information."),
