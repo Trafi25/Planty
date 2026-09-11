@@ -51,5 +51,5 @@ abstract class RepositoryModule {
 
     @Binds
     @Singleton
-    abstract fun bindPlantNameResolver(resolver: GbifPlantNameResolverImpl) : PlantNameResolver
+    abstract fun bindPlantNameResolver(resolver: GbifPlantNameResolverImpl): PlantNameResolver
 }

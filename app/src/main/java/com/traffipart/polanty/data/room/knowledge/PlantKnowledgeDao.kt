@@ -7,12 +7,12 @@ import androidx.room.Query
 
 @Dao
 interface PlantKnowledgeDao {
-
-    @Query("SELECT * FROM plant_knowledge " +
-            "WHERE lookupScientificName = :lookupName LIMIT 1")
+    @Query(
+        "SELECT * FROM plant_knowledge " +
+            "WHERE lookupScientificName = :lookupName LIMIT 1",
+    )
     suspend fun getByScientificName(lookupName: String): PlantKnowledgeEntity?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(entity: PlantKnowledgeEntity)
-
 }

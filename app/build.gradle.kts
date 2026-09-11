@@ -7,7 +7,7 @@ plugins {
     alias(libs.plugins.hilt)
     alias(libs.plugins.ksp)
     id("kotlin-parcelize")
-    // id("com.google.gms.google-services")
+    id("com.google.gms.google-services")
 }
 
 val properties =

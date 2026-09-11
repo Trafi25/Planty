@@ -3,7 +3,7 @@ package com.traffipart.polanty.data.remote.taxonomy.dto
 import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
-data class GbifMatchResponseDto (
+data class GbifMatchResponseDto(
     val usage: GbifNameUsageDto? = null,
     val acceptedUsage: GbifNameUsageDto? = null,
     val taxonomicStatus: String? = null,

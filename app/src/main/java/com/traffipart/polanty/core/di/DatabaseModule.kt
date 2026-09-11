@@ -26,8 +26,7 @@ class DatabaseModule {
                 "planty.db",
             ).addMigrations(
                 MIGRATION_2_3,
-            )
-            .build()
+            ).build()
 
     @Provides
     @Singleton

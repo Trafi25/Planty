@@ -37,7 +37,6 @@ data class PerenualSpeciesDetailsDto(
     val poisonousToHumans: Boolean? = null,
 )
 
-
 /**
  * Physical dimensions of the plant (height, spread).
  */

@@ -2,10 +2,10 @@ package com.traffipart.polanty.presentation.details
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.traffipart.polanty.domain.model.LightRequirement
@@ -32,7 +32,10 @@ fun PlantKnowledgeContent(
     ) {
         when (state) {
             PlantKnowledgeUiState.Idle -> Unit
-            PlantKnowledgeUiState.Loading -> CircularProgressIndicator()
+            PlantKnowledgeUiState.Loading -> {
+                CircularProgressIndicator()
+                Text("Preparing care information…")
+            }
             PlantKnowledgeUiState.Unavailable -> Text("Care information is not available for this species.")
             is PlantKnowledgeUiState.Error -> {
                 Text(state.message)
@@ -65,16 +68,16 @@ fun CareGuideContent(knowledge: PlantKnowledge) {
         Text(
             text =
                 "Check soil every " +
-                        "${watering.soilCheckIntervalDaysMin}" +
-                        "–" +
-                        "${watering.soilCheckIntervalDaysMax}" +
-                        " days",
+                    "${watering.soilCheckIntervalDaysMin}" +
+                    "–" +
+                    "${watering.soilCheckIntervalDaysMax}" +
+                    " days",
         )
 
-    Text(
-        text =
-            watering.instruction,
-    )
+        Text(
+            text =
+                watering.instruction,
+        )
     }
     careProfile.light?.let { light ->
         Text(

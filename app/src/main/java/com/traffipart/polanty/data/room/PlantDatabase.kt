@@ -11,11 +11,15 @@ import com.traffipart.polanty.data.room.plant.PlantEntity
 import com.traffipart.polanty.data.room.space.PlantSpaceDao
 import com.traffipart.polanty.data.room.space.PlantSpaceEntity
 
-@Database( entities = [
-    PlantEntity::class,
-    PlantSpaceEntity::class,
-    PlantKnowledgeEntity::class,
-], version = 3, exportSchema = false)
+@Database(
+    entities = [
+        PlantEntity::class,
+        PlantSpaceEntity::class,
+        PlantKnowledgeEntity::class,
+    ],
+    version = 3,
+    exportSchema = false,
+)
 abstract class PlantDatabase : RoomDatabase() {
     abstract fun plantDao(): PlantDao
 
@@ -23,11 +27,10 @@ abstract class PlantDatabase : RoomDatabase() {
 
     abstract fun plantKnowledgeDao(): PlantKnowledgeDao
 }
+
 val MIGRATION_2_3 =
     object : Migration(2, 3) {
-        override fun migrate(
-            database: SupportSQLiteDatabase,
-        ) {
+        override fun migrate(database: SupportSQLiteDatabase) {
             database.execSQL(
                 """
                 CREATE TABLE IF NOT EXISTS plant_knowledge (
@@ -57,4 +60,3 @@ val MIGRATION_2_3 =
             )
         }
     }
-

@@ -78,9 +78,7 @@ object NetworkModule {
     @Provides
     @Singleton
     @GbifClient
-    fun provideGbifHttpClient(
-        builder: OkHttpClient.Builder,
-    ): OkHttpClient = builder.build()
+    fun provideGbifHttpClient(builder: OkHttpClient.Builder): OkHttpClient = builder.build()
 
     /** Provides the [Retrofit] instance for the PlantNet API. */
     @Provides

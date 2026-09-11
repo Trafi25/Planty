@@ -11,9 +11,7 @@ import com.traffipart.polanty.domain.model.TemperatureRange
 import com.traffipart.polanty.domain.model.ToxicityLevel
 import com.traffipart.polanty.domain.model.WateringProfile
 
-fun PlantKnowledge.toEntity(
-    lookupScientificName: String,
-): PlantKnowledgeEntity {
+fun PlantKnowledge.toEntity(lookupScientificName: String): PlantKnowledgeEntity {
     val watering =
         careProfile?.watering
 
@@ -25,69 +23,49 @@ fun PlantKnowledge.toEntity(
 
     return PlantKnowledgeEntity(
         lookupScientificName =
-            lookupScientificName,
-
+        lookupScientificName,
         scientificName =
             speciesInfo.scientificName,
-
         commonName =
             speciesInfo.commonName,
-
         description =
             speciesInfo.description,
-
         origin =
             speciesInfo.origin,
-
         petToxicity =
             speciesInfo.toxicity.pets.name,
-
         humanToxicity =
             speciesInfo.toxicity.humans.name,
-
         toxicityNotes =
             speciesInfo.toxicity.notes,
-
         heightMinCm =
             speciesInfo.typicalHeightCmMin,
-
         heightMaxCm =
             speciesInfo.typicalHeightCmMax,
-
         wateringDaysMin =
             watering?.soilCheckIntervalDaysMin,
-
         wateringDaysMax =
             watering?.soilCheckIntervalDaysMax,
-
         wateringInstruction =
             watering?.instruction,
-
         lightRequirement =
             careProfile?.light?.name,
-
         humidityMinPercent =
             humidity?.minPercent,
-
         humidityMaxPercent =
             humidity?.maxPercent,
-
         temperatureMinCelsius =
             temperature?.minCelsius,
-
         temperatureMaxCelsius =
             temperature?.maxCelsius,
-
         fertilizing =
             careProfile?.fertilizing,
-
         cachedAt =
             System.currentTimeMillis(),
     )
 }
 
-fun PlantKnowledgeEntity.toDomain():
-        PlantKnowledge {
+fun PlantKnowledgeEntity.toDomain(): PlantKnowledge {
     val watering =
         if (
             wateringDaysMin != null &&
@@ -96,11 +74,11 @@ fun PlantKnowledgeEntity.toDomain():
         ) {
             WateringProfile(
                 soilCheckIntervalDaysMin =
-                    wateringDaysMin,
+                wateringDaysMin,
                 soilCheckIntervalDaysMax =
-                    wateringDaysMax,
+                wateringDaysMax,
                 instruction =
-                    wateringInstruction,
+                wateringInstruction,
             )
         } else {
             null
@@ -121,9 +99,9 @@ fun PlantKnowledgeEntity.toDomain():
         ) {
             HumidityRange(
                 minPercent =
-                    humidityMinPercent,
+                humidityMinPercent,
                 maxPercent =
-                    humidityMaxPercent,
+                humidityMaxPercent,
             )
         } else {
             null
@@ -136,9 +114,9 @@ fun PlantKnowledgeEntity.toDomain():
         ) {
             TemperatureRange(
                 minCelsius =
-                    temperatureMinCelsius,
+                temperatureMinCelsius,
                 maxCelsius =
-                    temperatureMaxCelsius,
+                temperatureMaxCelsius,
             )
         } else {
             null
@@ -154,17 +132,17 @@ fun PlantKnowledgeEntity.toDomain():
         ) {
             PlantCareProfile(
                 scientificName =
-                    scientificName,
+                scientificName,
                 watering =
-                    watering,
+                watering,
                 light =
-                    light,
+                light,
                 humidity =
-                    humidity,
+                humidity,
                 temperature =
-                    temperature,
+                temperature,
                 fertilizing =
-                    fertilizing,
+                fertilizing,
             )
         } else {
             null
@@ -174,13 +152,13 @@ fun PlantKnowledgeEntity.toDomain():
         speciesInfo =
             PlantSpeciesInfo(
                 scientificName =
-                    scientificName,
+                scientificName,
                 commonName =
-                    commonName,
+                commonName,
                 description =
-                    description,
+                description,
                 origin =
-                    origin,
+                origin,
                 toxicity =
                     PlantToxicity(
                         pets =
@@ -188,19 +166,19 @@ fun PlantKnowledgeEntity.toDomain():
                         humans =
                             humanToxicity.toToxicityLevel(),
                         notes =
-                            toxicityNotes,
+                        toxicityNotes,
                     ),
                 typicalHeightCmMin =
-                    heightMinCm,
+                heightMinCm,
                 typicalHeightCmMax =
-                    heightMaxCm,
+                heightMaxCm,
             ),
         careProfile =
-            careProfile,
+        careProfile,
     )
 }
-private fun String.toToxicityLevel():
-        ToxicityLevel =
+
+private fun String.toToxicityLevel(): ToxicityLevel =
     runCatching {
         ToxicityLevel.valueOf(this)
     }.getOrDefault(

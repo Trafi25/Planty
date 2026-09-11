@@ -12,12 +12,11 @@ import org.junit.jupiter.api.Test
 import java.io.IOException
 
 class GbifPlantNameResolverImplTest {
-
     private val gbifApi =
         mockk<GbifApi>()
 
     private lateinit var resolver:
-            GbifPlantNameResolverImpl
+        GbifPlantNameResolverImpl
 
     @BeforeEach
     fun setUp() {
@@ -30,37 +29,36 @@ class GbifPlantNameResolverImplTest {
     @Test
     fun `returns original and accepted scientific names`() =
         runTest {
-
             coEvery {
                 gbifApi.matchSpecies(
                     scientificName =
                         "Echinocactus grusonii",
                 )
             } returns
-                    GbifMatchResponseDto(
-                        usage =
-                            GbifNameUsageDto(
-                                canonicalName =
-                                    "Echinocactus grusonii",
-                                genericName =
-                                    "Echinocactus",
-                                specificEpithet =
-                                    "grusonii",
-                                rank =
-                                    "SPECIES",
-                            ),
-                        acceptedUsage =
-                            GbifNameUsageDto(
-                                canonicalName =
-                                    "Kroenleinia grusonii",
-                                genericName =
-                                    "Kroenleinia",
-                                specificEpithet =
-                                    "grusonii",
-                                rank =
-                                    "SPECIES",
-                            ),
-                    )
+                GbifMatchResponseDto(
+                    usage =
+                        GbifNameUsageDto(
+                            canonicalName =
+                                "Echinocactus grusonii",
+                            genericName =
+                                "Echinocactus",
+                            specificEpithet =
+                                "grusonii",
+                            rank =
+                                "SPECIES",
+                        ),
+                    acceptedUsage =
+                        GbifNameUsageDto(
+                            canonicalName =
+                                "Kroenleinia grusonii",
+                            genericName =
+                                "Kroenleinia",
+                            specificEpithet =
+                                "grusonii",
+                            rank =
+                                "SPECIES",
+                        ),
+                )
 
             val result =
                 resolver.resolveNames(
@@ -71,13 +69,12 @@ class GbifPlantNameResolverImplTest {
                 .containsExactly(
                     "Echinocactus grusonii",
                     "Kroenleinia grusonii",
-                )
-                .inOrder()
+                ).inOrder()
         }
+
     @Test
     fun `returns original name when GBIF fails`() =
         runTest {
-
             coEvery {
                 gbifApi.matchSpecies(any())
             } throws IOException()
@@ -99,26 +96,26 @@ class GbifPlantNameResolverImplTest {
             coEvery {
                 gbifApi.matchSpecies(any())
             } returns
-                    GbifMatchResponseDto(
-                        usage =
-                            GbifNameUsageDto(
-                                canonicalName =
-                                    "Astrophytum myriostigma",
-                                specificEpithet =
-                                    "myriostigma",
-                                rank =
-                                    "SPECIES",
-                            ),
-                        acceptedUsage =
-                            GbifNameUsageDto(
-                                canonicalName =
-                                    "Astrophytum myriostigma",
-                                specificEpithet =
-                                    "myriostigma",
-                                rank =
-                                    "SPECIES",
-                            ),
-                    )
+                GbifMatchResponseDto(
+                    usage =
+                        GbifNameUsageDto(
+                            canonicalName =
+                                "Astrophytum myriostigma",
+                            specificEpithet =
+                                "myriostigma",
+                            rank =
+                                "SPECIES",
+                        ),
+                    acceptedUsage =
+                        GbifNameUsageDto(
+                            canonicalName =
+                                "Astrophytum myriostigma",
+                            specificEpithet =
+                                "myriostigma",
+                            rank =
+                                "SPECIES",
+                        ),
+                )
 
             val result =
                 resolver.resolveNames(
@@ -130,5 +127,4 @@ class GbifPlantNameResolverImplTest {
                     "Astrophytum myriostigma",
                 )
         }
-
 }

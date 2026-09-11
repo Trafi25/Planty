@@ -45,7 +45,6 @@ fun PerenualSpeciesDetailsDto.toDomain(): PlantKnowledge? {
             null
         }
 
-
     return PlantKnowledge(
         speciesInfo =
             PlantSpeciesInfo(
@@ -59,16 +58,18 @@ fun PerenualSpeciesDetailsDto.toDomain(): PlantKnowledge? {
                         humans = poisonousToHumans.toToxicity(),
                         notes = null,
                     ),
-                typicalHeightCmMin = dimensions
-                    ?.minValue
-                    ?.toCentimeters(
-                        dimensions.unit,
-                    ),
-                typicalHeightCmMax = dimensions
-                    ?.maxValue
-                    ?.toCentimeters(
-                        dimensions.unit,
-                    ),
+                typicalHeightCmMin =
+                    dimensions
+                        ?.minValue
+                        ?.toCentimeters(
+                            dimensions.unit,
+                        ),
+                typicalHeightCmMax =
+                    dimensions
+                        ?.maxValue
+                        ?.toCentimeters(
+                            dimensions.unit,
+                        ),
             ),
         careProfile = careProfile,
     )

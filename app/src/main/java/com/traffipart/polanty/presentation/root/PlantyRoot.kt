@@ -84,19 +84,19 @@ fun PlantyRoot(rootViewModel: PlantyRootViewModel = hiltViewModel()) {
             composable(route = PlantRoute.PROGRESS) {
                 ProgressScreen()
             }
-        composable(route = PlantRoute.GARDEN) {
-            GardenScreen(
-                onAddPlant = {
-                    navController.navigateToTopLevel(PlantRoute.IDENTIFY)
-                },
-                onPlantSelected = { plantId ->
-                    navController.navigate(PlantRoute.details(plantId))
-                },
-                onSpaceSelected = { spaceId ->
-                    navController.navigate(PlantRoute.spaceDetails(spaceId))
-                },
-            )
-        }
+            composable(route = PlantRoute.GARDEN) {
+                GardenScreen(
+                    onAddPlant = {
+                        navController.navigateToTopLevel(PlantRoute.IDENTIFY)
+                    },
+                    onPlantSelected = { plantId ->
+                        navController.navigate(PlantRoute.details(plantId))
+                    },
+                    onSpaceSelected = { spaceId ->
+                        navController.navigate(PlantRoute.spaceDetails(spaceId))
+                    },
+                )
+            }
             composable(route = PlantRoute.IDENTIFY) {
                 IdentifyPlantScreen(
                     onCandidateSelected = { candidate, imageUri ->
