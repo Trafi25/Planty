@@ -103,7 +103,7 @@ dependencies {
     implementation("com.google.firebase:firebase-appcheck-debug")
     implementation("com.google.firebase:firebase-analytics")
     implementation(libs.firebase.appcheck.playintegrity)
-    implementation(libs.google.ai.client)
+
 
     // Hilt
     implementation(libs.hilt.android)

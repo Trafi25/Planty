@@ -44,7 +44,9 @@ class PlantKnowledgeRepositoryImpl
                 "PlantKnowledgeRepo",
                 "Cache MISS for $scientificName",
             )
-            val remoteKnowledge = loadKnowledgeFromPerenual(scientificName.trim()) ?: return null
+            val remoteKnowledge = loadKnowledgeFromPerenual(scientificName.trim())
+                ?: plantKnowledgeGenerator.generate(scientificName = scientificName.trim(), commonName = null)
+                ?: return null
 
             plantKnowledgeDao.insert(remoteKnowledge.toEntity(normalizedName))
             return remoteKnowledge

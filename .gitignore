@@ -23,7 +23,7 @@ app/build/
 *.log
 
 # Sensitive info
-google-services.json
+app/google-services.json
 
 # Kotlin
 .kotlin/
