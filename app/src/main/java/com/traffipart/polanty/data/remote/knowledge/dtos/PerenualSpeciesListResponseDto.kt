@@ -18,7 +18,7 @@ data class PerenualSpeciesListResponseDto(
 data class PerenualSpeciesSummaryDto(
     val id: Int,
     @Json(name = "common_name")
-    val commonName: String,
+    val commonName: String?,
     @Json(name = "scientific_name")
-    val scientificNames: List<String>,
+    val scientificNames: List<String>?,
 )

@@ -13,6 +13,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
@@ -37,9 +38,19 @@ fun PlantsContent(
     modifier: Modifier = Modifier,
 ) {
     if (state.plants.isEmpty()) {
-        Column(verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.mediumSmall)) {
-            Text("No plants in your garden yet.")
-            Button(onClick = onAddPlant) {
+        Column(
+            modifier = modifier.fillMaxWidth(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            Text(
+                text = "No plants in your garden yet.",
+                style = MaterialTheme.typography.bodyLarge,
+            )
+            Button(
+                modifier = Modifier.padding(top = MaterialTheme.spacing.medium),
+                onClick = onAddPlant,
+            ) {
                 Text("Add first plant")
             }
         }

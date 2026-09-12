@@ -5,7 +5,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -39,7 +38,7 @@ import com.traffipart.polanty.presentation.spaceDetails.SpaceDetailsScreen
 fun PlantyRoot(rootViewModel: PlantyRootViewModel = hiltViewModel()) {
     val navController = rememberNavController()
 
-    var selectedCandidate by remember {
+    var selectedCandidate by rememberSaveable {
         mutableStateOf<PlantCandidate?>(null)
     }
 
@@ -52,7 +51,7 @@ fun PlantyRoot(rootViewModel: PlantyRootViewModel = hiltViewModel()) {
     val currentRoute = backStackEntry?.destination?.route
     val showBottomBar =
         TopLevelDestination.entries.any { destination ->
-            destination.route == currentRoute
+            destination.route == currentRoute || currentRoute?.startsWith(destination.route) == true
         }
 
     Scaffold(
@@ -90,8 +89,12 @@ fun PlantyRoot(rootViewModel: PlantyRootViewModel = hiltViewModel()) {
                     onAddPlant = {
                         navController.navigateToTopLevel(PlantRoute.IDENTIFY)
                     },
-                    onPlantSelected = { plantId -> navController.navigate(PlantRoute.details(plantId)) },
-                    onSpaceSelected = { spaceId -> navController.navigate(PlantRoute.spaceDetails(spaceId)) },
+                    onPlantSelected = { plantId ->
+                        navController.navigate(PlantRoute.details(plantId))
+                    },
+                    onSpaceSelected = { spaceId ->
+                        navController.navigate(PlantRoute.spaceDetails(spaceId))
+                    },
                 )
             }
             composable(route = PlantRoute.IDENTIFY) {
@@ -115,10 +118,8 @@ fun PlantyRoot(rootViewModel: PlantyRootViewModel = hiltViewModel()) {
                         onPlantSaved = {
                             selectedCandidate = null
                             selectedImageUri = null
-                            navController.navigate(PlantRoute.GARDEN) {
-                                popUpTo(PlantRoute.GARDEN)
-                                launchSingleTop = true
-                            }
+                            // Clear identification flow and return to garden
+                            navController.navigateToTopLevel(PlantRoute.GARDEN)
                         },
                     )
                 }

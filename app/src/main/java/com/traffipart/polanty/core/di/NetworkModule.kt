@@ -7,6 +7,7 @@ import com.traffipart.polanty.core.network.PerenualAuthInterceptor
 import com.traffipart.polanty.core.network.PlantNetAuthInterceptor
 import com.traffipart.polanty.data.remote.knowledge.PerenualApi
 import com.traffipart.polanty.data.remote.plant.PlantNetApi
+import com.traffipart.polanty.data.remote.taxonomy.GbifApi
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -26,6 +27,7 @@ import java.util.concurrent.TimeUnit
 object NetworkModule {
     private const val PLANTNET_BASE_URL = "https://my-api.plantnet.org/"
     private const val PERENUAL_BASE_URL = "https://perenual.com/"
+    private const val GBIF_BASE_URL = "https://api.gbif.org/"
 
     /** Provides the global [Moshi] instance for JSON serialization/deserialization. */
     @Provides
@@ -73,6 +75,11 @@ object NetworkModule {
         perenualAuthInterceptor: PerenualAuthInterceptor,
     ): OkHttpClient = builder.addInterceptor(perenualAuthInterceptor).build()
 
+    @Provides
+    @Singleton
+    @GbifClient
+    fun provideGbifHttpClient(builder: OkHttpClient.Builder): OkHttpClient = builder.build()
+
     /** Provides the [Retrofit] instance for the PlantNet API. */
     @Provides
     @Singleton
@@ -103,6 +110,20 @@ object NetworkModule {
             .addConverterFactory(MoshiConverterFactory.create(moshi))
             .build()
 
+    @Provides
+    @Singleton
+    @GbifClient
+    fun provideGbifRetrofit(
+        moshi: Moshi,
+        @GbifClient httpClient: OkHttpClient,
+    ): Retrofit =
+        Retrofit
+            .Builder()
+            .baseUrl(GBIF_BASE_URL)
+            .client(httpClient)
+            .addConverterFactory(MoshiConverterFactory.create(moshi))
+            .build()
+
     /** Provides the [PlantNetApi] service. */
     @Provides
     @Singleton
@@ -116,4 +137,10 @@ object NetworkModule {
     fun providePerenualApi(
         @PerenualClient retrofit: Retrofit,
     ): PerenualApi = retrofit.create(PerenualApi::class.java)
+
+    @Provides
+    @Singleton
+    fun provideGbifApi(
+        @GbifClient retrofit: Retrofit,
+    ): GbifApi = retrofit.create(GbifApi::class.java)
 }

@@ -8,4 +8,9 @@ sealed interface PlantDetailsAction {
      * Action to delete the current plant.
      */
     data object DeletePlant : PlantDetailsAction
+
+    /**
+     * Action to retry fetching plant botanical knowledge.
+     */
+    data object RetryKnowledge : PlantDetailsAction
 }

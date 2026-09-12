@@ -15,3 +15,7 @@ annotation class PlantNetClient
 @Qualifier
 @Retention(AnnotationRetention.BINARY)
 annotation class PerenualClient
+
+@Qualifier
+@Retention(AnnotationRetention.BINARY)
+annotation class GbifClient

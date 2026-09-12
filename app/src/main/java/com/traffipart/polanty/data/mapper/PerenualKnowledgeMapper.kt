@@ -1,5 +1,6 @@
 package com.traffipart.polanty.data.mapper
 
+import com.traffipart.polanty.core.common.trimToNull
 import com.traffipart.polanty.data.remote.knowledge.dtos.PerenualSpeciesDetailsDto
 import com.traffipart.polanty.domain.model.LightRequirement
 import com.traffipart.polanty.domain.model.PlantCareProfile
@@ -18,22 +19,24 @@ import com.traffipart.polanty.domain.model.WateringProfile
  * @return The mapped [PlantKnowledge] or null if scientific name is missing.
  */
 fun PerenualSpeciesDetailsDto.toDomain(): PlantKnowledge? {
-    val scientificName = scientificNames.firstOrNull() ?: return null
+    val scientificName = scientificNames?.firstOrNull() ?: return null
     val wateringRange = wateringBenchmark?.value.toDayRange()
     val lightRequirement = sunlight?.toLightRequirement()
 
+    val wateringProfile =
+        wateringRange?.let { range ->
+            WateringProfile(
+                soilCheckIntervalDaysMin = range.first,
+                soilCheckIntervalDaysMax = range.second,
+                instruction = watering.trimToNull() ?: "Check the soil before watering.",
+            )
+        }
+
     val careProfile =
-        if (
-            wateringRange != null && lightRequirement != null
-        ) {
+        if (wateringProfile != null || lightRequirement != null) {
             PlantCareProfile(
                 scientificName = scientificName,
-                watering =
-                    WateringProfile(
-                        soilCheckIntervalDaysMin = wateringRange.first,
-                        soilCheckIntervalDaysMax = wateringRange.second,
-                        instruction = "Check the soil before watering.", // todo improve behavior
-                    ),
+                watering = wateringProfile,
                 light = lightRequirement,
                 humidity = null,
                 temperature = null,
@@ -42,6 +45,7 @@ fun PerenualSpeciesDetailsDto.toDomain(): PlantKnowledge? {
         } else {
             null
         }
+
     return PlantKnowledge(
         speciesInfo =
             PlantSpeciesInfo(
@@ -55,8 +59,18 @@ fun PerenualSpeciesDetailsDto.toDomain(): PlantKnowledge? {
                         humans = poisonousToHumans.toToxicity(),
                         notes = null,
                     ),
-                typicalHeightCmMin = dimensions?.minValue?.toCentimeters(dimensions.unit),
-                typicalHeightCmMax = dimensions?.maxValue?.toCentimeters(dimensions.unit),
+                typicalHeightCmMin =
+                    dimensions
+                        ?.minValue
+                        ?.toCentimeters(
+                            dimensions.unit,
+                        ),
+                typicalHeightCmMax =
+                    dimensions
+                        ?.maxValue
+                        ?.toCentimeters(
+                            dimensions.unit,
+                        ),
             ),
         careProfile = careProfile,
     )
@@ -107,14 +121,18 @@ private fun List<String>?.toLightRequirement(): LightRequirement? {
             ?.replace("-", " ") ?: return null
 
     return when {
-        "full sun" in values ->
+        "full sun" in values || "direct" in values ->
             LightRequirement.Direct
-        "part shade" in values ->
+
+        "part shade" in values || "part sun" in values || "medium" in values ->
             LightRequirement.MediumIndirect
-        "full shade" in values ->
+
+        "full shade" in values || "low" in values ->
             LightRequirement.Low
-        "indirect" in values ->
+
+        "indirect" in values || "bright" in values ->
             LightRequirement.BrightIndirect
+
         else -> null
     }
 }
