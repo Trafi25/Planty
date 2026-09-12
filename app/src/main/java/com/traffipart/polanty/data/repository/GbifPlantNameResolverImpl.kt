@@ -1,5 +1,6 @@
 package com.traffipart.polanty.data.repository
 
+import com.traffipart.polanty.core.common.trimToNull
 import com.traffipart.polanty.data.remote.taxonomy.GbifApi
 import com.traffipart.polanty.data.remote.taxonomy.dto.GbifNameUsageDto
 import com.traffipart.polanty.domain.repository.PlantNameResolver
@@ -12,8 +13,7 @@ class GbifPlantNameResolverImpl
         private val gbifApi: GbifApi,
     ) : PlantNameResolver {
         override suspend fun resolveNames(scientificName: String): List<String> {
-            val originalName = scientificName.trim()
-            if (originalName.isEmpty()) return emptyList()
+            val originalName = scientificName.trimToNull() ?: return emptyList()
 
             val result =
                 try {

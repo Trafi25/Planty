@@ -1,5 +1,6 @@
 package com.traffipart.polanty.data.mapper
 
+import com.traffipart.polanty.core.common.trimToNull
 import com.traffipart.polanty.data.remote.knowledge.dtos.PerenualSpeciesDetailsDto
 import com.traffipart.polanty.domain.model.LightRequirement
 import com.traffipart.polanty.domain.model.PlantCareProfile
@@ -27,7 +28,7 @@ fun PerenualSpeciesDetailsDto.toDomain(): PlantKnowledge? {
             WateringProfile(
                 soilCheckIntervalDaysMin = range.first,
                 soilCheckIntervalDaysMax = range.second,
-                instruction = watering ?: "Check the soil before watering.",
+                instruction = watering.trimToNull() ?: "Check the soil before watering.",
             )
         }
 

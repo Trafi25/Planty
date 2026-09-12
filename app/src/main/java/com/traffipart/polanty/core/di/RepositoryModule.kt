@@ -57,5 +57,5 @@ abstract class RepositoryModule {
 
     @Binds
     @Singleton
-    abstract fun bindPlantKnowledgeGenerator(generator: GeminiPlantKnowledgeGenerator) : PlantKnowledgeGenerator
+    abstract fun bindPlantKnowledgeGenerator(generator: GeminiPlantKnowledgeGenerator): PlantKnowledgeGenerator
 }

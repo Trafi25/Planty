@@ -104,7 +104,6 @@ dependencies {
     implementation("com.google.firebase:firebase-analytics")
     implementation(libs.firebase.appcheck.playintegrity)
 
-
     // Hilt
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)

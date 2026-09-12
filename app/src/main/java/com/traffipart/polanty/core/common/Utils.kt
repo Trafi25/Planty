@@ -9,3 +9,8 @@ fun File.toMultipart(): MultipartBody.Part {
     val requestBody = asRequestBody("image/jpeg".toMediaType())
     return MultipartBody.Part.createFormData(name = "images", filename = name, body = requestBody)
 }
+
+/**
+ * Trims the string and returns null if the result is empty.
+ */
+fun String?.trimToNull(): String? = this?.trim()?.takeIf { it.isNotEmpty() }

@@ -1,6 +1,7 @@
 package com.traffipart.polanty.data.repository
 
 import android.util.Log
+import com.traffipart.polanty.core.common.trimToNull
 import com.traffipart.polanty.data.mapper.toDomain
 import com.traffipart.polanty.data.mapper.toEntity
 import com.traffipart.polanty.data.remote.knowledge.PerenualApi
@@ -29,8 +30,7 @@ class PlantKnowledgeRepositoryImpl
         private val plantKnowledgeGenerator: PlantKnowledgeGenerator,
     ) : PlantKnowledgeRepository {
         override suspend fun getPlantKnowledge(scientificName: String): PlantKnowledge? {
-            val normalizedName = scientificName.trim().lowercase()
-            if (normalizedName.isEmpty()) return null
+            val normalizedName = scientificName.trimToNull()?.lowercase() ?: return null
             plantKnowledgeDao.getByScientificName(normalizedName).let {
                 if (it != null) {
                     Log.d(
@@ -44,25 +44,42 @@ class PlantKnowledgeRepositoryImpl
                 "PlantKnowledgeRepo",
                 "Cache MISS for $scientificName",
             )
-            val remoteKnowledge = loadKnowledgeFromPerenual(scientificName.trim())
-                ?: plantKnowledgeGenerator.generate(scientificName = scientificName.trim(), commonName = null)
-                ?: return null
 
-            plantKnowledgeDao.insert(remoteKnowledge.toEntity(normalizedName))
-            return remoteKnowledge
+            // Step 1: Resolve names and synonyms
+            val candidateNames = plantNameResolver.resolveNames(normalizedName)
+            Log.d("PlantKnowledgeRepo", "Resolved $scientificName -> $candidateNames")
+
+            // Step 2: Try Perenual with synonyms
+            val perenualResult = loadKnowledgeFromPerenual(candidateNames)
+            if (perenualResult != null) {
+                plantKnowledgeDao.insert(perenualResult.first.toEntity(normalizedName))
+                return perenualResult.first
+            }
+
+            // Step 3: Gemini Fallback
+            // Use the common name found during Perenual search if possible
+            val discoveredCommonName = lastDiscoveredCommonName
+            Log.d("PlantKnowledgeRepo", "Using Gemini fallback for $normalizedName (Common Name: $discoveredCommonName)")
+            
+            val aiKnowledge = plantKnowledgeGenerator.generate(
+                scientificName = normalizedName,
+                commonName = discoveredCommonName
+            ) ?: return null
+
+            plantKnowledgeDao.insert(aiKnowledge.toEntity(normalizedName))
+            return aiKnowledge
         }
 
+        private var lastDiscoveredCommonName: String? = null
+
         /**
-         * Fetches plant knowledge for a specific scientific name.
-         *
-         * @param scientificName The exact scientific name of the plant.
-         * @return The plant knowledge or null if not found or no exact match exists.
+         * Fetches plant knowledge from Perenual by trying various candidate names.
+         * Returns a Pair of the knowledge and the common name discovered during search.
          */
-        private suspend fun loadKnowledgeFromPerenual(scientificName: String): PlantKnowledge? {
-            return try {
-                val candidateNames = plantNameResolver.resolveNames(scientificName)
-                Log.d("PlantKnowledgeRepo", "Resolved $scientificName -> $candidateNames")
-                for (candidate in candidateNames) {
+        private suspend fun loadKnowledgeFromPerenual(candidateNames: List<String>): Pair<PlantKnowledge, String?>? {
+            lastDiscoveredCommonName = null
+            for (candidate in candidateNames) {
+                try {
                     Log.d("PlantKnowledgeRepo", "Trying Perenual name: $candidate")
                     val searchResult = perenualApi.searchSpecies(candidate)
                     val match =
@@ -71,57 +88,27 @@ class PlantKnowledgeRepositoryImpl
                                 name.equals(other = candidate, ignoreCase = true)
                             } == true
                         } ?: continue
+
+                    lastDiscoveredCommonName = match.commonName
                     Log.d(
                         "PlantKnowledgeRepo",
                         "Exact Perenual match: ${match.id} ${match.commonName}",
                     )
-                    val details =
-                        try {
-                            perenualApi.getSpeciesDetails(
-                                match.id,
-                            )
-                        } catch (e: Exception) {
-                            Log.e(
-                                "PlantKnowledgeRepo",
-                                """
-                                Failed to load/parse Perenual details.
-                                id=${match.id}
-                                candidate=$candidate
-                                exception=${e::class.simpleName}
-                                message=${e.message}
-                                """.trimIndent(),
-                                e,
-                            )
-                            throw e
-                        }
-                    Log.d(
-                        "PlantKnowledgeRepo",
-                        "Perenual details parsed successfully for ID=${match.id}",
-                    )
-                    val domainModel = details.toDomain()
-                    if (domainModel != null) return domainModel
-                }
-                Log.w(
-                    "PlantKnowledgeRepo",
-                    "No knowledge found for $scientificName",
-                )
-                return null
-            } catch (e: CancellationException) {
-                throw e
-            } catch (e: HttpException) {
-                Log.w(
-                    "PlantKnowledgeRepo",
-                    "Perenual HTTP ${e.code()}; using Gemini fallback",
-                )
 
-                null
-            } catch (e: Exception) {
-                Log.w(
-                    "PlantKnowledgeRepo",
-                    "Perenual failed; using Gemini fallback",
-                    e,
-                )
-                null
+                    val details = perenualApi.getSpeciesDetails(match.id)
+                    Log.d("PlantKnowledgeRepo", "Perenual details parsed successfully for ID=${match.id}")
+                    
+                    val domainModel = details.toDomain()
+                    if (domainModel != null) return domainModel to match.commonName
+                } catch (e: CancellationException) {
+                    throw e
+                } catch (e: HttpException) {
+                    Log.w("PlantKnowledgeRepo", "Perenual HTTP ${e.code()} for $candidate")
+                    if (e.code() == 429) break // Stop trying synonyms if rate limited
+                } catch (e: Exception) {
+                    Log.w("PlantKnowledgeRepo", "Perenual failed for $candidate", e)
+                }
             }
+            return null
         }
     }
