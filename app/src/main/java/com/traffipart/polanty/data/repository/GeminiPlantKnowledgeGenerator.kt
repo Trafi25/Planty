@@ -17,12 +17,30 @@ import com.traffipart.polanty.domain.model.ToxicityLevel
 import javax.inject.Inject
 import kotlin.coroutines.cancellation.CancellationException
 
+/**
+ * An AI-driven implementation of [PlantKnowledgeGenerator] leveraging the Google Gemini API via Firebase.
+ *
+ * This generator constructs structured prompts requesting detailed botanical care information for specific plant species,
+ * enforces a strict JSON [responseSchema] on the model to guarantee structural validity, and deserializes the resulting
+ * content into safe domain models.
+ *
+ * **Key Logic & Architecture:**
+ * - **Response Schema Enforcement:** Defines an explicit, typed schema for properties including validation constraints (like minimum/maximum values for humidity and temperature). This forces Gemini to return a reliable JSON payload matching [GeminiPlantKnowledgeDto].
+ * - **Structured Prompts:** Supplies context and specific rules to the AI model, ensuring it remains conservative, provides safe default estimates when data is missing, handles ranges correctly, and sticks strictly to the specified enums.
+ * - **Graceful Parsing and Error Handling:** Handles JSON parsing anomalies or connectivity issues cleanly, logging failures and returning `null` rather than propagating raw model or network crashes up the stack.
+ */
 class GeminiPlantKnowledgeGenerator
     @Inject
     constructor(
         private val moshi: Moshi,
     ) : PlantKnowledgeGenerator {
         private val jsonAdapter = moshi.adapter(GeminiPlantKnowledgeDto::class.java)
+
+        /**
+         * The strict JSON schema provided to the Gemini model to regulate its output fields, types, and values.
+         * Enforces strict boundaries such as percentage ranges for humidity, minimum bounds for height, and
+         * enumeration lists for toxicity and lighting needs.
+         */
         private val responseSchema =
             Schema.obj(
                 properties =
@@ -109,6 +127,17 @@ class GeminiPlantKnowledgeGenerator
                         },
                 )
         }
+        /**
+         * Triggers content generation for a specific plant species using Gemini AI.
+         *
+         * This function prepares a customized prompt, calls the Gemini model, verifies and parses the
+         * resulting JSON against the established adapter, and maps the DTO into a valid [PlantKnowledge] domain model.
+         *
+         * @param scientificName The unique botanical or scientific name of the plant.
+         * @param commonName An optional colloquial or common name to give the AI additional context.
+         * @return A valid [PlantKnowledge] object if generation and validation succeed, or `null` if the model response is empty, malformed, or fails domain schema constraints.
+         * @throws CancellationException if the underlying coroutine or network request is cancelled.
+         */
         override suspend fun generate(
             scientificName: String,
             commonName: String?,
@@ -150,6 +179,16 @@ class GeminiPlantKnowledgeGenerator
             }
         }
 
+        /**
+         * Constructs a highly-structured and detailed textual prompt instructing the AI on how to assemble its response.
+         *
+         * Enforces rules like metric constraints (centimeters, Celsius), conservative estimates, safe fallback phrases,
+         * and the exact vocabulary for enum classifications.
+         *
+         * @param scientificName The precise botanical name to write into the prompt requirements.
+         * @param commonName Contextual common name info, incorporated to help the AI narrow down the correct species.
+         * @return A fully formatted string containing instructions for the generative model.
+         */
         private fun createPrompt(
             scientificName: String,
             commonName: String?,
