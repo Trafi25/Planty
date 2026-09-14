@@ -96,6 +96,19 @@ fun GeminiPlantKnowledgeDto.toDomain(
     )
 }
 
+/**
+ * Validates and constructs a [WateringProfile] from the AI-generated numbers.
+ *
+ * **Validation Rules:**
+ * - Minimum and maximum check days must fall within a logical annual range (1 to 365 days).
+ * - The instruction string must not be empty or blank.
+ * - The minimum check days must be less than or equal to the maximum check days.
+ *
+ * @param minDays The AI-provided minimum days between soil checks.
+ * @param maxDays The AI-provided maximum days between soil checks.
+ * @param instruction Narrative guidelines on watering indications.
+ * @return A valid [WateringProfile], or `null` if any validation rule is violated.
+ */
 private fun createWateringProfile(
     minDays: Int?,
     maxDays: Int?,
@@ -121,6 +134,17 @@ private fun createWateringProfile(
     )
 }
 
+/**
+ * Validates and constructs a [HumidityRange] from AI-generated parameters.
+ *
+ * **Validation Rules:**
+ * - Percentages must be clamped between 0% and 100%.
+ * - Minimum humidity must be less than or equal to maximum humidity.
+ *
+ * @param minPercent The AI-provided minimum humidity percentage.
+ * @param maxPercent The AI-provided maximum humidity percentage.
+ * @return A valid [HumidityRange], or `null` if the parameters are inconsistent or out of bounds.
+ */
 private fun createHumidityRange(
     minPercent: Int?,
     maxPercent: Int?,
@@ -142,6 +166,18 @@ private fun createHumidityRange(
     )
 }
 
+/**
+ * Validates and constructs a [TemperatureRange] from AI-generated parameters.
+ *
+ * **Validation Rules:**
+ * - Temperatures must be finite double numbers.
+ * - Values must reside within reasonable global botanical extremes (-50.0°C to 80.0°C).
+ * - Minimum temperature must be less than or equal to maximum temperature.
+ *
+ * @param minCelsius The AI-provided minimum ideal temperature.
+ * @param maxCelsius The AI-provided maximum ideal temperature.
+ * @return A valid [TemperatureRange], or `null` if values are infinite or out of bounds.
+ */
 private fun createTemperatureRange(
     minCelsius: Double?,
     maxCelsius: Double?,
@@ -163,6 +199,17 @@ private fun createTemperatureRange(
     )
 }
 
+/**
+ * Validates and constructs an ideal height range from AI-generated parameters.
+ *
+ * **Validation Rules:**
+ * - Both bounds must be positive, non-zero values (> 0 cm).
+ * - Minimum typical height must be less than or equal to maximum typical height.
+ *
+ * @param minCm The AI-provided minimum typical height in centimeters.
+ * @param maxCm The AI-provided maximum typical height in centimeters.
+ * @return A [Pair] containing verified minimum and maximum heights, or `null` if validation fails.
+ */
 private fun createHeightRange(
     minCm: Int?,
     maxCm: Int?,
@@ -181,6 +228,12 @@ private fun createHeightRange(
     return validMin to validMax
 }
 
+/**
+ * Normalizes a raw string representation of a toxicity level into a robust [ToxicityLevel] enum.
+ * Removes alphanumeric formatting anomalies and strips whitespace before mapping.
+ *
+ * @return The matched [ToxicityLevel], or [ToxicityLevel.Unknown] if the string does not match any entry.
+ */
 private fun String?.toToxicityLevel(): ToxicityLevel {
     val normalizedValue =
         this
@@ -195,6 +248,12 @@ private fun String?.toToxicityLevel(): ToxicityLevel {
     } ?: ToxicityLevel.Unknown
 }
 
+/**
+ * Normalizes a raw string representation of light requirements into a matching [LightRequirement] enum.
+ * Removes non-alphanumeric characters and ignores case during comparison.
+ *
+ * @return The matched [LightRequirement], or `null` if the string doesn't correspond to a known requirement.
+ */
 private fun String?.toLightRequirement(): LightRequirement? {
     val normalizedValue =
         this
