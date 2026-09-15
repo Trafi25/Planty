@@ -127,6 +127,7 @@ class GeminiPlantKnowledgeGenerator
                         },
                 )
         }
+
         /**
          * Triggers content generation for a specific plant species using Gemini AI.
          *
@@ -146,24 +147,25 @@ class GeminiPlantKnowledgeGenerator
             val prompt = createPrompt(cleanScientificName, commonName)
             return try {
                 Log.d(TAG, "Prompt sent to Gemini:\n$prompt")
-                
+
                 val response = model.generateContent(prompt)
                 val responseJson = response.text.trimToNull()
-                
+
                 if (responseJson == null) {
                     Log.w(TAG, "Gemini returned empty response for $cleanScientificName")
                     return null
                 }
-                
+
                 Log.d(TAG, "Raw Gemini JSON: $responseJson")
-                
-                val dto = try {
-                    jsonAdapter.fromJson(responseJson)
-                } catch (e: Exception) {
-                    Log.e(TAG, "JSON Parsing failed for $cleanScientificName. JSON: $responseJson", e)
-                    null
-                } ?: return null
-                
+
+                val dto =
+                    try {
+                        jsonAdapter.fromJson(responseJson)
+                    } catch (e: Exception) {
+                        Log.e(TAG, "JSON Parsing failed for $cleanScientificName. JSON: $responseJson", e)
+                        null
+                    } ?: return null
+
                 val knowledge = dto.toDomain(cleanScientificName, commonName)
                 if (knowledge != null) {
                     Log.d(TAG, "Successfully generated domain model for $cleanScientificName")
@@ -225,7 +227,6 @@ class GeminiPlantKnowledgeGenerator
         }
 
         private companion object {
-
             const val TAG = "GeminiPlantKnowledge"
         }
     }
