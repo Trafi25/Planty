@@ -6,6 +6,7 @@ data class CareTask(
     val type: CareTaskType,
     val dueAt: Long,
     val isCompleted: Boolean,
+    val completedAt: Long?,
     val xpReward: Int,
 )
 

@@ -2,8 +2,8 @@ package com.traffipart.polanty.data.room
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
-import androidx.room.migration.Migration
-import androidx.sqlite.db.SupportSQLiteDatabase
+import com.traffipart.polanty.data.room.care.CareTaskDao
+import com.traffipart.polanty.data.room.care.CareTaskEntity
 import com.traffipart.polanty.data.room.knowledge.PlantKnowledgeDao
 import com.traffipart.polanty.data.room.knowledge.PlantKnowledgeEntity
 import com.traffipart.polanty.data.room.plant.PlantDao
@@ -11,13 +11,23 @@ import com.traffipart.polanty.data.room.plant.PlantEntity
 import com.traffipart.polanty.data.room.space.PlantSpaceDao
 import com.traffipart.polanty.data.room.space.PlantSpaceEntity
 
+/**
+ * Main database definition for the Polanty application managing local botanical data and care tasks.
+ *
+ * This database registers the following key data models:
+ * - [PlantEntity]: Basic records for individual plants.
+ * - [PlantSpaceEntity]: Physical or logical spaces grouping multiple plants together.
+ * - [PlantKnowledgeEntity]: Cached comprehensive botanical profiles retrieved from remote APIs or AI fallbacks.
+ * - [CareTaskEntity]: Logged or upcoming care events tied to specific plants via a cascade-on-delete Foreign Key relationship.
+ */
 @Database(
     entities = [
         PlantEntity::class,
         PlantSpaceEntity::class,
         PlantKnowledgeEntity::class,
+        CareTaskEntity::class,
     ],
-    version = 3,
+    version = 4,
     exportSchema = false,
 )
 abstract class PlantDatabase : RoomDatabase() {
@@ -26,37 +36,9 @@ abstract class PlantDatabase : RoomDatabase() {
     abstract fun plantSpaceDao(): PlantSpaceDao
 
     abstract fun plantKnowledgeDao(): PlantKnowledgeDao
-}
 
-val MIGRATION_2_3 =
-    object : Migration(2, 3) {
-        override fun migrate(database: SupportSQLiteDatabase) {
-            database.execSQL(
-                """
-                CREATE TABLE IF NOT EXISTS plant_knowledge (
-                    lookupScientificName TEXT NOT NULL,
-                    scientificName TEXT NOT NULL,
-                    commonName TEXT,
-                    description TEXT NOT NULL,
-                    origin TEXT,
-                    petToxicity TEXT NOT NULL,
-                    humanToxicity TEXT NOT NULL,
-                    toxicityNotes TEXT,
-                    heightMinCm INTEGER,
-                    heightMaxCm INTEGER,
-                    wateringDaysMin INTEGER,
-                    wateringDaysMax INTEGER,
-                    wateringInstruction TEXT,
-                    lightRequirement TEXT,
-                    humidityMinPercent INTEGER,
-                    humidityMaxPercent INTEGER,
-                    temperatureMinCelsius REAL,
-                    temperatureMaxCelsius REAL,
-                    fertilizing TEXT,
-                    cachedAt INTEGER NOT NULL,
-                    PRIMARY KEY(lookupScientificName)
-                )
-                """.trimIndent(),
-            )
-        }
-    }
+    /**
+     * Provides the data access object for performing care task database operations.
+     */
+    abstract fun careTaskDao(): CareTaskDao
+}

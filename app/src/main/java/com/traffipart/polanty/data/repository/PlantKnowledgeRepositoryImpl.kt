@@ -43,8 +43,9 @@ class PlantKnowledgeRepositoryImpl
          * @return A [PlantKnowledge] domain object containing species information and care guidance, or `null` if all retrieval strategies failed.
          */
         override suspend fun getPlantKnowledge(scientificName: String): PlantKnowledge? {
-            val normalizedName = scientificName.trimToNull()?.lowercase() ?: return null
-            plantKnowledgeDao.getByScientificName(normalizedName).let {
+            val cleanScientificName = scientificName.trimToNull() ?: return null
+            val cacheKey = cleanScientificName.lowercase()
+            plantKnowledgeDao.getByScientificName(cacheKey).let {
                 if (it != null) {
                     Log.d(
                         "PlantKnowledgeRepo",
@@ -56,32 +57,25 @@ class PlantKnowledgeRepositoryImpl
             Log.d("PlantKnowledgeRepo", "Cache MISS for $scientificName")
 
             // Step 1: Resolve names and synonyms
-            val candidateNames = plantNameResolver.resolveNames(normalizedName)
+            val candidateNames = plantNameResolver.resolveNames(cleanScientificName)
             Log.d("PlantKnowledgeRepo", "Resolved $scientificName -> $candidateNames")
 
             // Step 2: Try Perenual with synonyms
             val perenualResult = loadKnowledgeFromPerenual(candidateNames)
-            if (perenualResult != null) {
-                plantKnowledgeDao.insert(perenualResult.knowledge.toEntity(normalizedName))
-                return perenualResult.knowledge
+            perenualResult?.knowledge?.let { knowledge ->
+                plantKnowledgeDao.insert(knowledge.toEntity(cacheKey))
+                return knowledge
             }
-
-            // Step 3: Gemini Fallback
-            // Use the common name found during Perenual search if possible
-            val discoveredCommonName = lastDiscoveredCommonName
-            Log.d("PlantKnowledgeRepo", "Using Gemini fallback for $normalizedName (Common Name: $discoveredCommonName)")
 
             val aiKnowledge =
                 plantKnowledgeGenerator.generate(
-                    scientificName = normalizedName,
-                    commonName = discoveredCommonName,
+                    scientificName = cleanScientificName,
+                    commonName = perenualResult?.commonName,
                 ) ?: return null
 
-            plantKnowledgeDao.insert(aiKnowledge.toEntity(normalizedName))
+            plantKnowledgeDao.insert(aiKnowledge.toEntity(cacheKey))
             return aiKnowledge
         }
-
-        private var lastDiscoveredCommonName: String? = null
 
         /**
          * Sequential search across Perenual endpoints using provided candidate/synonym names.
@@ -91,14 +85,14 @@ class PlantKnowledgeRepositoryImpl
          *
          * **Business Rules:**
          * - If an HTTP 429 (Too Many Requests) is encountered, the search loop is broken immediately to avoid spamming the API and respect rate limits.
-         * - Saves the most recently found common name to [lastDiscoveredCommonName] to serve as fallback context for subsequent steps.
+         * - Saves the most recently found common name to [discoveredCommonName] to serve as fallback context for subsequent steps.
          *
          * @param candidateNames A list of potential scientific names or synonyms sorted by resolution priority.
          * @return A [Pair] containing the successfully mapped [PlantKnowledge] and the discovered common name, or `null` if no match was found or an API error occurred.
          * @throws CancellationException if the coroutine is cancelled during network operations.
          */
-        private suspend fun loadKnowledgeFromPerenual(candidateNames: List<String>): PerenualLookupResult? {
-            lastDiscoveredCommonName = null
+        private suspend fun loadKnowledgeFromPerenual(candidateNames: List<String>): PerenualLookupResult {
+            var discoveredCommonName: String? = null
             for (candidate in candidateNames) {
                 try {
                     Log.d("PlantKnowledgeRepo", "Trying Perenual name: $candidate")
@@ -110,7 +104,7 @@ class PlantKnowledgeRepositoryImpl
                             } == true
                         } ?: continue
 
-                    lastDiscoveredCommonName = match.commonName
+                    discoveredCommonName = match.commonName ?: discoveredCommonName
                     Log.d(
                         "PlantKnowledgeRepo",
                         "Exact Perenual match: ${match.id} ${match.commonName}",
@@ -120,7 +114,7 @@ class PlantKnowledgeRepositoryImpl
                     Log.d("PlantKnowledgeRepo", "Perenual details parsed successfully for ID=${match.id}")
 
                     val domainModel = details.toDomain()
-                    if (domainModel != null) return PerenualLookupResult(domainModel, match.commonName)
+                    if (domainModel != null) return PerenualLookupResult(domainModel, discoveredCommonName)
                 } catch (e: CancellationException) {
                     throw e
                 } catch (e: HttpException) {
@@ -130,11 +124,11 @@ class PlantKnowledgeRepositoryImpl
                     Log.w("PlantKnowledgeRepo", "Perenual failed for $candidate", e)
                 }
             }
-            return null
+            return PerenualLookupResult(null, discoveredCommonName)
         }
     }
 
 private data class PerenualLookupResult(
-    val knowledge: PlantKnowledge,
+    val knowledge: PlantKnowledge?,
     val commonName: String?,
 )

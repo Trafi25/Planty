@@ -15,7 +15,7 @@ import org.junit.jupiter.api.Test
 
 private fun cachedKnowledgeEntity() =
     PlantKnowledgeEntity(
-        lookupScientificName = "kroenleinia grusonii",
+        lookupScientificName = "Kroenleinia grusonii",
         scientificName = "Kroenleinia grusonii",
         commonName = "Golden barrel cactus",
         description = "A globular cactus.",
@@ -69,12 +69,12 @@ class PlantKnowledgeRepositoryImplTest {
     fun `returns cached knowledge without calling remote sources`() =
         runTest {
             coEvery {
-                plantKnowledgeDao.getByScientificName("kroenleinia grusonii")
+                plantKnowledgeDao.getByScientificName("Kroenleinia grusonii")
             } returns cachedKnowledgeEntity()
 
-            val result = repository.getPlantKnowledge("kroenleinia grusonii")
+            val result = repository.getPlantKnowledge("Kroenleinia grusonii")
 
-            assertThat(result?.speciesInfo?.scientificName).isEqualTo("kroenleinia grusonii")
+            assertThat(result?.speciesInfo?.scientificName).isEqualTo("Kroenleinia grusonii")
             coVerify(exactly = 0) {
                 plantNameResolver.resolveNames(any())
             }

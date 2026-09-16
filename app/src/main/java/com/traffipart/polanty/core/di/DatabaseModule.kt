@@ -2,8 +2,8 @@ package com.traffipart.polanty.core.di
 
 import android.content.Context
 import androidx.room.Room
-import com.traffipart.polanty.data.room.MIGRATION_2_3
 import com.traffipart.polanty.data.room.PlantDatabase
+import com.traffipart.polanty.data.room.care.CareTaskDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -24,8 +24,6 @@ class DatabaseModule {
                 context,
                 PlantDatabase::class.java,
                 "planty.db",
-            ).addMigrations(
-                MIGRATION_2_3,
             ).build()
 
     @Provides
@@ -39,4 +37,8 @@ class DatabaseModule {
     @Provides
     @Singleton
     fun providePlantKnowledgeDao(plantDatabase: PlantDatabase) = plantDatabase.plantKnowledgeDao()
+
+    @Provides
+    @Singleton
+    fun provideCareTaskDao(database: PlantDatabase): CareTaskDao = database.careTaskDao()
 }
