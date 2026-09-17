@@ -1,4 +1,4 @@
-package com.traffipart.polanty.domain.repository
+package com.traffipart.polanty.domain.repository.plant
 
 /**
  * Repository for tracking the initialization status of plant spaces.

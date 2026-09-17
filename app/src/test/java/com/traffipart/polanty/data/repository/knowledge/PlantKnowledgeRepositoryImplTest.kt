@@ -1,11 +1,11 @@
-package com.traffipart.polanty.data.repository
+package com.traffipart.polanty.data.repository.knowledge
 
 import com.google.common.truth.Truth.assertThat
 import com.traffipart.polanty.data.remote.knowledge.PerenualApi
 import com.traffipart.polanty.data.room.knowledge.PlantKnowledgeDao
 import com.traffipart.polanty.data.room.knowledge.PlantKnowledgeEntity
 import com.traffipart.polanty.domain.PlantKnowledgeGenerator
-import com.traffipart.polanty.domain.repository.PlantNameResolver
+import com.traffipart.polanty.domain.repository.knowledge.PlantNameResolver
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk

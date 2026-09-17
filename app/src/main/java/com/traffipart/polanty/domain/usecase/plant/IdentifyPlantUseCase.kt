@@ -4,7 +4,7 @@ import com.traffipart.polanty.core.common.DataError
 import com.traffipart.polanty.core.common.Result
 import com.traffipart.polanty.domain.model.PlantIdentification
 import com.traffipart.polanty.domain.model.PlantImage
-import com.traffipart.polanty.domain.repository.PlantIdentificationRepository
+import com.traffipart.polanty.domain.repository.knowledge.PlantIdentificationRepository
 import javax.inject.Inject
 
 /**

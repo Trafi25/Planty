@@ -1,9 +1,9 @@
-package com.traffipart.polanty.data.repository
+package com.traffipart.polanty.data.repository.knowledge
 
 import com.traffipart.polanty.core.common.trimToNull
 import com.traffipart.polanty.data.remote.taxonomy.GbifApi
 import com.traffipart.polanty.data.remote.taxonomy.dto.GbifNameUsageDto
-import com.traffipart.polanty.domain.repository.PlantNameResolver
+import com.traffipart.polanty.domain.repository.knowledge.PlantNameResolver
 import javax.inject.Inject
 import kotlin.coroutines.cancellation.CancellationException
 
@@ -72,7 +72,8 @@ class GbifPlantNameResolverImpl
 
 private fun GbifNameUsageDto.toCanonicalName(): String? {
     val speciesLevel =
-        specificEpithet?.isNotBlank() == true || rank?.uppercase() in
+        specificEpithet?.isNotBlank() == true ||
+            rank?.uppercase() in
             setOf(
                 "SPECIES",
                 "SUBSPECIES",

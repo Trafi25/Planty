@@ -2,7 +2,7 @@ package com.traffipart.polanty.domain.usecase.space
 
 import com.traffipart.polanty.domain.model.PlantSpace
 import com.traffipart.polanty.domain.model.PlantSpaceType
-import com.traffipart.polanty.domain.repository.PlantSpaceRepository
+import com.traffipart.polanty.domain.repository.plant.PlantSpaceRepository
 import javax.inject.Inject
 
 /**

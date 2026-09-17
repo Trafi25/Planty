@@ -1,20 +1,22 @@
 package com.traffipart.polanty.core.di
 
-import com.traffipart.polanty.data.repository.GbifPlantNameResolverImpl
-import com.traffipart.polanty.data.repository.GeminiPlantKnowledgeGenerator
-import com.traffipart.polanty.data.repository.PlantIdentificationRepositoryImpl
-import com.traffipart.polanty.data.repository.PlantKnowledgeRepositoryImpl
-import com.traffipart.polanty.data.repository.PlantRepositoryImpl
-import com.traffipart.polanty.data.repository.PlantSpaceRepositoryImpl
-import com.traffipart.polanty.data.repository.SpaceInitializationRepositoryImpl
+import com.traffipart.polanty.data.repository.care.CareTaskRepositoryImpl
+import com.traffipart.polanty.data.repository.knowledge.GbifPlantNameResolverImpl
+import com.traffipart.polanty.data.repository.knowledge.GeminiPlantKnowledgeGenerator
+import com.traffipart.polanty.data.repository.knowledge.PlantIdentificationRepositoryImpl
+import com.traffipart.polanty.data.repository.knowledge.PlantKnowledgeRepositoryImpl
+import com.traffipart.polanty.data.repository.plant.PlantRepositoryImpl
+import com.traffipart.polanty.data.repository.plant.PlantSpaceRepositoryImpl
+import com.traffipart.polanty.data.repository.plant.SpaceInitializationRepositoryImpl
 import com.traffipart.polanty.data.storage.PlantImageStorageImpl
 import com.traffipart.polanty.domain.PlantKnowledgeGenerator
-import com.traffipart.polanty.domain.repository.PlantIdentificationRepository
-import com.traffipart.polanty.domain.repository.PlantKnowledgeRepository
-import com.traffipart.polanty.domain.repository.PlantNameResolver
-import com.traffipart.polanty.domain.repository.PlantRepository
-import com.traffipart.polanty.domain.repository.PlantSpaceRepository
-import com.traffipart.polanty.domain.repository.SpaceInitializationRepository
+import com.traffipart.polanty.domain.repository.care.CareTaskRepository
+import com.traffipart.polanty.domain.repository.knowledge.PlantIdentificationRepository
+import com.traffipart.polanty.domain.repository.knowledge.PlantKnowledgeRepository
+import com.traffipart.polanty.domain.repository.knowledge.PlantNameResolver
+import com.traffipart.polanty.domain.repository.plant.PlantRepository
+import com.traffipart.polanty.domain.repository.plant.PlantSpaceRepository
+import com.traffipart.polanty.domain.repository.plant.SpaceInitializationRepository
 import com.traffipart.polanty.domain.storage.PlantImageStorage
 import dagger.Binds
 import dagger.Module
@@ -58,4 +60,8 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindPlantKnowledgeGenerator(generator: GeminiPlantKnowledgeGenerator): PlantKnowledgeGenerator
+
+    @Binds
+    @Singleton
+    abstract fun bindCareTaskRepository(repository: CareTaskRepositoryImpl): CareTaskRepository
 }

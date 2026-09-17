@@ -1,7 +1,7 @@
 package com.traffipart.polanty.domain.usecase.plant
 
 import com.traffipart.polanty.domain.model.PlantKnowledge
-import com.traffipart.polanty.domain.repository.PlantKnowledgeRepository
+import com.traffipart.polanty.domain.repository.knowledge.PlantKnowledgeRepository
 import javax.inject.Inject
 
 class GetPlantKnowledgeUseCase

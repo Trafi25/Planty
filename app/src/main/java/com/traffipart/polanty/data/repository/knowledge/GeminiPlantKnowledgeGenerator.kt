@@ -1,4 +1,4 @@
-package com.traffipart.polanty.data.repository
+package com.traffipart.polanty.data.repository.knowledge
 
 import android.util.Log
 import com.google.firebase.Firebase

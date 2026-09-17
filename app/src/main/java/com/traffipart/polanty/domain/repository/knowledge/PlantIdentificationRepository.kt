@@ -1,4 +1,4 @@
-package com.traffipart.polanty.domain.repository
+package com.traffipart.polanty.domain.repository.knowledge
 
 import com.traffipart.polanty.core.common.DataError
 import com.traffipart.polanty.core.common.Result

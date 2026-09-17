@@ -1,4 +1,4 @@
-package com.traffipart.polanty.data.repository
+package com.traffipart.polanty.data.repository.knowledge
 
 import com.squareup.moshi.JsonDataException
 import com.traffipart.polanty.core.common.DataError
@@ -7,7 +7,7 @@ import com.traffipart.polanty.data.mapper.toDomain
 import com.traffipart.polanty.data.remote.plant.PlantNetApi
 import com.traffipart.polanty.domain.model.PlantIdentification
 import com.traffipart.polanty.domain.model.PlantImage
-import com.traffipart.polanty.domain.repository.PlantIdentificationRepository
+import com.traffipart.polanty.domain.repository.knowledge.PlantIdentificationRepository
 import jakarta.inject.Inject
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody

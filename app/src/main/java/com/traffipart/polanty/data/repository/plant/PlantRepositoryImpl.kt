@@ -1,10 +1,10 @@
-package com.traffipart.polanty.data.repository
+package com.traffipart.polanty.data.repository.plant
 
 import com.traffipart.polanty.data.mapper.toDomain
 import com.traffipart.polanty.data.mapper.toEntity
 import com.traffipart.polanty.data.room.plant.PlantDao
 import com.traffipart.polanty.domain.model.Plant
-import com.traffipart.polanty.domain.repository.PlantRepository
+import com.traffipart.polanty.domain.repository.plant.PlantRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject

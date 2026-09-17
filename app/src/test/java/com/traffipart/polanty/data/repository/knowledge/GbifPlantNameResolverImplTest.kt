@@ -1,4 +1,4 @@
-package com.traffipart.polanty.data.repository
+package com.traffipart.polanty.data.repository.knowledge
 
 import com.google.common.truth.Truth.assertThat
 import com.traffipart.polanty.data.remote.taxonomy.GbifApi

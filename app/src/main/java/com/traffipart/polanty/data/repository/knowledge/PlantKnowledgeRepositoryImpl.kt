@@ -1,4 +1,4 @@
-package com.traffipart.polanty.data.repository
+package com.traffipart.polanty.data.repository.knowledge
 
 import android.util.Log
 import com.traffipart.polanty.core.common.trimToNull
@@ -8,8 +8,8 @@ import com.traffipart.polanty.data.remote.knowledge.PerenualApi
 import com.traffipart.polanty.data.room.knowledge.PlantKnowledgeDao
 import com.traffipart.polanty.domain.PlantKnowledgeGenerator
 import com.traffipart.polanty.domain.model.PlantKnowledge
-import com.traffipart.polanty.domain.repository.PlantKnowledgeRepository
-import com.traffipart.polanty.domain.repository.PlantNameResolver
+import com.traffipart.polanty.domain.repository.knowledge.PlantKnowledgeRepository
+import com.traffipart.polanty.domain.repository.knowledge.PlantNameResolver
 import retrofit2.HttpException
 import java.util.concurrent.CancellationException
 import javax.inject.Inject
@@ -62,7 +62,7 @@ class PlantKnowledgeRepositoryImpl
 
             // Step 2: Try Perenual with synonyms
             val perenualResult = loadKnowledgeFromPerenual(candidateNames)
-            perenualResult?.knowledge?.let { knowledge ->
+            perenualResult.knowledge?.let { knowledge ->
                 plantKnowledgeDao.insert(knowledge.toEntity(cacheKey))
                 return knowledge
             }
@@ -70,7 +70,7 @@ class PlantKnowledgeRepositoryImpl
             val aiKnowledge =
                 plantKnowledgeGenerator.generate(
                     scientificName = cleanScientificName,
-                    commonName = perenualResult?.commonName,
+                    commonName = perenualResult.commonName,
                 ) ?: return null
 
             plantKnowledgeDao.insert(aiKnowledge.toEntity(cacheKey))

@@ -1,10 +1,10 @@
-package com.traffipart.polanty.data.repository
+package com.traffipart.polanty.data.repository.plant
 
 import android.content.Context
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.preferencesDataStore
-import com.traffipart.polanty.domain.repository.SpaceInitializationRepository
+import com.traffipart.polanty.domain.repository.plant.SpaceInitializationRepository
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
