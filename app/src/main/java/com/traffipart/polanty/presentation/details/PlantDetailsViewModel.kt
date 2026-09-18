@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.traffipart.polanty.core.common.trimToNull
 import com.traffipart.polanty.domain.usecase.plant.DeletePlantUseCase
 import com.traffipart.polanty.domain.usecase.plant.GetPlantKnowledgeUseCase
 import com.traffipart.polanty.domain.usecase.plant.ObservePlantUseCase
@@ -13,7 +14,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
@@ -61,8 +61,8 @@ class PlantDetailsViewModel
                         )
                     }
                 }.filterNotNull()
-                .map { plant -> plant.scientificName.trim() }
-                .filter { scientificName -> scientificName.isNotEmpty() }
+                .map { it.scientificName.trimToNull() }
+                .filterNotNull()
                 .distinctUntilChanged()
                 .onEach { scientificName -> loadPlantKnowledge(scientificName) }
                 .launchIn(viewModelScope)

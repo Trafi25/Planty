@@ -1,5 +1,6 @@
 package com.traffipart.polanty.data.repository.knowledge
 
+import android.util.Log
 import com.squareup.moshi.JsonDataException
 import com.traffipart.polanty.core.common.DataError
 import com.traffipart.polanty.core.common.Result
@@ -70,6 +71,7 @@ class PlantIdentificationRepositoryImpl
                     DataError.Serialization,
                 )
             } catch (e: Exception) {
+                Log.e("PlantIdRepo", "Identification failed", e)
                 Result.Error(
                     DataError.Unknown,
                 )

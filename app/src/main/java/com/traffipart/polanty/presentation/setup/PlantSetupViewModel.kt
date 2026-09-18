@@ -2,6 +2,7 @@ package com.traffipart.polanty.presentation.setup
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.traffipart.polanty.core.common.trimToNull
 import com.traffipart.polanty.domain.model.Plant
 import com.traffipart.polanty.domain.model.PlantCandidate
 import com.traffipart.polanty.domain.usecase.plant.SavePlantUseCase
@@ -108,7 +109,7 @@ class PlantSetupViewModel
                         Plant(
                             scientificName = candidate.scientificName,
                             commonName = candidate.commonName,
-                            nickname = state.nickname.trim().takeIf { it.isNotEmpty() },
+                            nickname = state.nickname.trimToNull(),
                             spaceId = state.spaceId,
                             imageUri = null,
                         )

@@ -14,6 +14,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.traffipart.polanty.domain.model.PlantSpace
@@ -37,6 +38,11 @@ fun SpacesContent(
     onSpaceLongClicked: (PlantSpace) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val spacePlantCounts =
+        remember(state.plants) {
+            state.plants.groupBy { it.spaceId }.mapValues { it.value.size }
+        }
+
     LazyColumn(
         modifier =
             modifier
@@ -69,7 +75,7 @@ fun SpacesContent(
             items = state.spaces,
             key = { space -> space.id },
         ) { space ->
-            val plantCount = state.plants.count { plant -> plant.spaceId == space.id }
+            val plantCount = spacePlantCounts[space.id] ?: 0
             Card(
                 modifier =
                     Modifier

@@ -11,8 +11,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -59,22 +61,31 @@ fun GardenScreen(
         mutableStateOf<Long?>(null)
     }
 
-    val dismissAddSpace = {
-        showAddSpaceDialog = false
-        newSpaceName = ""
-        newSpaceType = PlantSpaceType.Bedroom
-        viewModel.onAction(GardenAction.ClearAddSpaceError)
-    }
-
-    val dismissDeleteSpace = {
-        spaceIdToDelete = null
-        viewModel.onAction(GardenAction.ClearDeleteSpaceError)
-    }
-
-    val spaceToDelete =
-        state.spaces.firstOrNull { space ->
-            space.id == spaceIdToDelete
+    val dismissAddSpace =
+        remember(viewModel) {
+            {
+                showAddSpaceDialog = false
+                newSpaceName = ""
+                newSpaceType = PlantSpaceType.Bedroom
+                viewModel.onAction(GardenAction.ClearAddSpaceError)
+            }
         }
+
+    val dismissDeleteSpace =
+        remember(viewModel) {
+            {
+                spaceIdToDelete = null
+                viewModel.onAction(GardenAction.ClearDeleteSpaceError)
+            }
+        }
+
+    val spaceToDelete by remember {
+        derivedStateOf {
+            state.spaces.firstOrNull { space ->
+                space.id == spaceIdToDelete
+            }
+        }
+    }
 
     LaunchedEffect(viewModel) {
         viewModel.events.collect { event ->
