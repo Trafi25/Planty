@@ -126,6 +126,7 @@ class PlantDetailsViewModel
          */
         private fun retryPlantKnowledge() {
             val scientificName = _uiState.value.plant?.scientificName ?: return
+            if (_uiState.value.knowledgeState is PlantKnowledgeUiState.Loading) return
 
             viewModelScope.launch {
                 loadPlantKnowledge(scientificName)
@@ -137,6 +138,8 @@ class PlantDetailsViewModel
          */
         private fun deletePlant() {
             val plant = _uiState.value.plant ?: return
+            if (_uiState.value.isDeleting) return
+
             viewModelScope.launch {
                 _uiState.update {
                     it.copy(

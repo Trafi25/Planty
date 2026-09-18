@@ -1,5 +1,6 @@
 package com.traffipart.polanty.data.repository.care
 
+import android.util.Log
 import com.traffipart.polanty.data.mapper.toDomain
 import com.traffipart.polanty.data.mapper.toEntity
 import com.traffipart.polanty.data.room.care.CareTaskDao
@@ -8,6 +9,8 @@ import com.traffipart.polanty.domain.repository.care.CareTaskRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
+
+private const val TAG = "CareTaskRepo"
 
 /**
  * Implementation of [CareTaskRepository] using Room database for persistence.
@@ -47,15 +50,33 @@ class CareTaskRepositoryImpl
         override suspend fun completeTask(
             taskId: Long,
             completedAt: Long,
-        ): Boolean = careTaskDao.completeTask(taskId, completedAt) == 1
+        ): Boolean =
+            try {
+                careTaskDao.completeTask(taskId, completedAt) == 1
+            } catch (e: Exception) {
+                Log.e(TAG, "Error completing task $taskId", e)
+                throw e
+            }
 
         /**
          * Inserts a new care task into the database.
          */
-        override suspend fun createTask(task: CareTask): Long = careTaskDao.insert(task = task.toEntity())
+        override suspend fun createTask(task: CareTask): Long =
+            try {
+                careTaskDao.insert(task = task.toEntity())
+            } catch (e: Exception) {
+                Log.e(TAG, "Error creating task", e)
+                throw e
+            }
 
         /**
          * Deletes a care task from the database.
          */
-        override suspend fun deleteTask(task: CareTask): Boolean = careTaskDao.delete(task = task.toEntity()) == 1
+        override suspend fun deleteTask(task: CareTask): Boolean =
+            try {
+                careTaskDao.delete(task = task.toEntity()) == 1
+            } catch (e: Exception) {
+                Log.e(TAG, "Error deleting task", e)
+                throw e
+            }
     }

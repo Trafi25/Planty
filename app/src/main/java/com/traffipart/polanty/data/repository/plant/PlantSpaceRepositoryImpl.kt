@@ -1,5 +1,6 @@
 package com.traffipart.polanty.data.repository.plant
 
+import android.util.Log
 import com.traffipart.polanty.data.mapper.toDomain
 import com.traffipart.polanty.data.mapper.toEntity
 import com.traffipart.polanty.data.room.space.PlantSpaceDao
@@ -8,6 +9,8 @@ import com.traffipart.polanty.domain.repository.plant.PlantSpaceRepository
 import jakarta.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+
+private const val TAG = "PlantSpaceRepo"
 
 class PlantSpaceRepositoryImpl
     @Inject
@@ -24,7 +27,19 @@ class PlantSpaceRepositoryImpl
                 .observeSpace(spaceId = spaceId)
                 .map { entity -> entity?.toDomain() }
 
-        override suspend fun insertSpace(space: PlantSpace): Long = dao.insertSpace(space.toEntity())
+        override suspend fun insertSpace(space: PlantSpace): Long =
+            try {
+                dao.insertSpace(space.toEntity())
+            } catch (e: Exception) {
+                Log.e(TAG, "Error inserting space", e)
+                throw e
+            }
 
-        override suspend fun deleteSpaceAndUnassignPlants(spaceId: Long) = dao.deleteSpaceAndUnassignPlants(spaceId)
+        override suspend fun deleteSpaceAndUnassignPlants(spaceId: Long) =
+            try {
+                dao.deleteSpaceAndUnassignPlants(spaceId)
+            } catch (e: Exception) {
+                Log.e(TAG, "Error deleting space $spaceId", e)
+                throw e
+            }
     }

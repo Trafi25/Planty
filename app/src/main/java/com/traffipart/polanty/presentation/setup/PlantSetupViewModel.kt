@@ -94,6 +94,7 @@ class PlantSetupViewModel
          */
         private fun savePlant() {
             val state = _uiState.value
+            if (state.isSaving) return
             val candidate = state.candidate ?: return
 
             viewModelScope.launch {

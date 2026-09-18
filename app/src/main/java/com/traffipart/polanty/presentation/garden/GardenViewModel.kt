@@ -120,6 +120,8 @@ class GardenViewModel
          * @param spaceId The unique identifier of the space to delete.
          */
         private fun deleteSpace(spaceId: Long) {
+            if (spaceDeletionState.value.isDeleting) return
+
             viewModelScope.launch {
                 spaceDeletionState.update {
                     it.copy(isDeleting = true, error = null)
@@ -150,6 +152,8 @@ class GardenViewModel
             type: PlantSpaceType,
             customName: String?,
         ) {
+            if (spaceCreationState.value.isAdding) return
+
             viewModelScope.launch {
                 spaceCreationState.update {
                     it.copy(isAdding = true, error = null)

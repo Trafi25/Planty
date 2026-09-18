@@ -1,6 +1,7 @@
 package com.traffipart.polanty.data.repository.plant
 
 import android.content.Context
+import android.util.Log
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.preferencesDataStore
@@ -27,7 +28,12 @@ class SpaceInitializationRepositoryImpl
                 }.first()
 
         override suspend fun markInitialized() {
-            context.spaceDataStore.edit { preferences -> preferences[SPACE_INITIALIZED_KEY] = true }
+            try {
+                context.spaceDataStore.edit { preferences -> preferences[SPACE_INITIALIZED_KEY] = true }
+            } catch (e: Exception) {
+                Log.e("SpaceInitRepo", "Error marking initialized", e)
+                throw e
+            }
         }
 
         private companion object {

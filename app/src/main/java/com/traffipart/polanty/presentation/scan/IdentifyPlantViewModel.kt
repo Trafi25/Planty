@@ -55,6 +55,8 @@ class IdentifyPlantViewModel
          * @param plantImage The image of the plant to identify.
          */
         private fun identifyPlant(plantImage: PlantImage) {
+            if (_uiState.value.isLoading) return
+
             viewModelScope.launch {
                 _uiState.update {
                     it.copy(
