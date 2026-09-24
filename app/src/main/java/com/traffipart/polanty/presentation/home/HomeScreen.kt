@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -14,6 +15,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.traffipart.polanty.domain.model.displayName
 import com.traffipart.polanty.ui.theme.spacing
 
 /**
@@ -58,6 +60,20 @@ fun HomeScreen(
                     .titleLarge,
         )
 
+        if (state.careTasks.isEmpty()) {
+            Text(
+                text =
+                    "No tasks for today.",
+                style =
+                    MaterialTheme.typography
+                        .bodyMedium,
+            )
+        } else {
+            state.careTasks.forEach { task ->
+                HomeCareTaskItem(task = task, onComplete = { viewModel.onAction(HomeAction.CompleteCareTask(task)) })
+            }
+        }
+
         Text(
             text =
                 "Your daily care tasks will appear here.",
@@ -65,7 +81,45 @@ fun HomeScreen(
                 MaterialTheme.typography
                     .bodyMedium,
         )
+
         Button(modifier = Modifier.fillMaxWidth(), onClick = onScanPlant) { Text("Scan a plant") }
         Button(modifier = Modifier.fillMaxWidth(), onClick = onOpenGarden) { Text("Open garden") }
+    }
+}
+
+@Composable
+private fun HomeCareTaskItem(
+    task: HomeCareTaskUiModel,
+    onComplete: () -> Unit,
+) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+    ) {
+        Column(
+            modifier =
+                Modifier.padding(
+                    MaterialTheme.spacing.medium,
+                ),
+            verticalArrangement =
+                Arrangement.spacedBy(
+                    MaterialTheme.spacing.small,
+                ),
+        ) {
+            Text(
+                text = task.plantName,
+                style =
+                    MaterialTheme.typography.titleMedium,
+            )
+            Text(
+                text = task.type.displayName(),
+                style =
+                    MaterialTheme.typography.bodyMedium,
+            )
+            Button(
+                onClick = onComplete,
+            ) {
+                Text("Done")
+            }
+        }
     }
 }

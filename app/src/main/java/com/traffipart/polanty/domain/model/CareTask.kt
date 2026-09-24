@@ -21,3 +21,25 @@ enum class CareTaskType {
     PestInspection,
     Repot,
 }
+
+fun CareTaskType.displayName(): String =
+    when (this) {
+        CareTaskType.Water ->
+            "Water plant"
+        CareTaskType.CheckSoil ->
+            "Check soil"
+        CareTaskType.Fertilize ->
+            "Fertilize"
+        CareTaskType.Rotate ->
+            "Rotate plant"
+        CareTaskType.Prune ->
+            "Prune"
+        CareTaskType.CleanLeaves ->
+            "Clean leaves"
+        CareTaskType.HealthCheck ->
+            "Health check"
+        CareTaskType.PestInspection ->
+            "Check for pests"
+        CareTaskType.Repot ->
+            "Repot"
+    }

@@ -1,10 +1,12 @@
 package com.traffipart.polanty.presentation.setup
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.traffipart.polanty.core.common.trimToNull
 import com.traffipart.polanty.domain.model.Plant
 import com.traffipart.polanty.domain.model.PlantCandidate
+import com.traffipart.polanty.domain.usecase.care.RefreshPlantCarePlanUseCase
 import com.traffipart.polanty.domain.usecase.plant.SavePlantUseCase
 import com.traffipart.polanty.domain.usecase.space.ObserveSpacesUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -30,6 +32,7 @@ class PlantSetupViewModel
     constructor(
         private val savePlantUseCase: SavePlantUseCase,
         private val observeSpacesUseCase: ObserveSpacesUseCase,
+        private val refreshPlantCarePlanUseCase: RefreshPlantCarePlanUseCase,
     ) : ViewModel() {
         private val _uiState = MutableStateFlow(PlantSetupUiState())
 
@@ -115,6 +118,17 @@ class PlantSetupViewModel
                             imageUri = null,
                         )
                     val plantId = savePlantUseCase(plant = plant, sourceImageUri = state.imageUri)
+                    try {
+                        refreshPlantCarePlanUseCase(plantId = plantId, scientificName = candidate.scientificName)
+                    } catch (e: CancellationException) {
+                        throw e
+                    } catch (e: Exception) {
+                        Log.e(
+                            "PlantSetupVM",
+                            "Failed to initialize care plan for plantId=$plantId",
+                            e,
+                        )
+                    }
                     _uiState.update {
                         it.copy(
                             isSaving = false,
@@ -123,7 +137,7 @@ class PlantSetupViewModel
                     }
                 } catch (e: CancellationException) {
                     throw e
-                } catch (e: Exception) {
+                } catch (_: Exception) {
                     _uiState.update {
                         it.copy(
                             isSaving = false,
