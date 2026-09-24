@@ -25,6 +25,7 @@ import kotlin.coroutines.cancellation.CancellationException
  *
  * @property savePlantUseCase Use case to save a new plant to the repository.
  * @property observeSpacesUseCase Use case to observe the list of available plant spaces.
+ * @property refreshPlantCarePlanUseCase Use case to initialize care tasks for the newly saved plant.
  */
 @HiltViewModel
 class PlantSetupViewModel

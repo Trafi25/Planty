@@ -87,6 +87,12 @@ fun HomeScreen(
     }
 }
 
+/**
+ * Renders an individual care task item card on the Home screen with a completion button.
+ *
+ * @param task The [HomeCareTaskUiModel] representing the care task.
+ * @param onComplete Callback invoked when the task completion button is tapped.
+ */
 @Composable
 private fun HomeCareTaskItem(
     task: HomeCareTaskUiModel,

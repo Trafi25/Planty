@@ -4,6 +4,9 @@ import com.traffipart.polanty.data.room.care.CareTaskEntity
 import com.traffipart.polanty.domain.model.CareTask
 import com.traffipart.polanty.domain.model.CareTaskType
 
+/**
+ * Maps a [CareTask] domain model to its corresponding Room database [CareTaskEntity].
+ */
 fun CareTask.toEntity(): CareTaskEntity =
     CareTaskEntity(
         id = id,
@@ -15,6 +18,11 @@ fun CareTask.toEntity(): CareTaskEntity =
         xpReward = xpReward,
     )
 
+/**
+ * Maps a Room database [CareTaskEntity] to its corresponding [CareTask] domain model.
+ *
+ * @return The converted [CareTask], or `null` if the stored task type is unrecognized.
+ */
 fun CareTaskEntity.toDomain(): CareTask? {
     val taskType =
         runCatching {

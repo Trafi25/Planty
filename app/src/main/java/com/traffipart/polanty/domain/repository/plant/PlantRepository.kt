@@ -12,6 +12,11 @@ interface PlantRepository {
      */
     fun observePlants(): Flow<List<Plant>>
 
+    /**
+     * Returns a Flow that emits the list of plants belonging to the specified space.
+     *
+     * @param spaceId The unique ID of the plant space.
+     */
     fun observePlantsBySpace(spaceId: Long): Flow<List<Plant>>
 
     /**

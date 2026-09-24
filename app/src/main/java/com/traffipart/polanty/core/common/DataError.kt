@@ -1,5 +1,8 @@
 package com.traffipart.polanty.core.common
 
+/**
+ * Domain error representations for data and network operations.
+ */
 sealed interface DataError {
     data object NoInternet : DataError
 
@@ -18,6 +21,9 @@ sealed interface DataError {
     data object Unknown : DataError
 }
 
+/**
+ * Maps a [DataError] to a user-friendly error message.
+ */
 fun DataError.toMessage(): String =
     when (this) {
         DataError.NoInternet ->

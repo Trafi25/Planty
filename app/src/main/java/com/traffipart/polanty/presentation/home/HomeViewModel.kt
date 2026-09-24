@@ -20,11 +20,14 @@ import kotlin.coroutines.cancellation.CancellationException
 /**
  * ViewModel for the Home screen.
  *
- * It observes the collection of plants and spaces to provide high-level statistics
- * and dashboard information to the user.
+ * It observes the collection of plants, spaces, and due care tasks to provide high-level statistics
+ * and dashboard action items to the user.
  *
  * @property observePlantsUseCase Use case to observe all plants.
  * @property observeSpacesUseCase Use case to observe all plant spaces.
+ * @property observeDueCareTasksUseCase Use case to observe due care tasks.
+ * @property completeCareTaskUseCase Use case to complete a care task.
+ * @property refreshPlantCarePlanUseCase Use case to recalculate and schedule next care tasks.
  */
 @HiltViewModel
 class HomeViewModel
@@ -37,7 +40,7 @@ class HomeViewModel
         private val refreshPlantCarePlanUseCase: RefreshPlantCarePlanUseCase,
     ) : ViewModel() {
         /**
-         * The UI state for the Home screen, providing plant and space counts.
+         * The UI state for the Home screen, providing plant and space counts and due care tasks.
          */
         val uiState: StateFlow<HomeUiState> =
             combine(
@@ -72,6 +75,11 @@ class HomeViewModel
                 initialValue = HomeUiState(),
             )
 
+        /**
+         * Processes user actions dispatched from the Home screen UI.
+         *
+         * @param action The [HomeAction] triggered by user interaction.
+         */
         fun onAction(action: HomeAction) {
             when (action) {
                 is HomeAction.CompleteCareTask -> {
@@ -80,6 +88,11 @@ class HomeViewModel
             }
         }
 
+        /**
+         * Completes a care task and triggers a care plan refresh to schedule future tasks.
+         *
+         * @param task The [HomeCareTaskUiModel] representing the task to complete.
+         */
         private fun completeCareTask(task: HomeCareTaskUiModel) {
             viewModelScope.launch {
                 val completed = completeCareTaskUseCase(taskId = task.taskId)

@@ -69,7 +69,7 @@ class PlantKnowledgeRepositoryImplTest {
     fun `returns cached knowledge without calling remote sources`() =
         runTest {
             coEvery {
-                plantKnowledgeDao.getByScientificName("Kroenleinia grusonii")
+                plantKnowledgeDao.getByScientificName(any())
             } returns cachedKnowledgeEntity()
 
             val result = repository.getPlantKnowledge("Kroenleinia grusonii")

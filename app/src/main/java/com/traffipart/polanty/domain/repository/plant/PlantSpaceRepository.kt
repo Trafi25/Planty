@@ -12,6 +12,11 @@ interface PlantSpaceRepository {
      */
     fun observeSpaces(): Flow<List<PlantSpace>>
 
+    /**
+     * Returns a Flow that emits the plant space matching [spaceId], or `null` if deleted.
+     *
+     * @param spaceId The unique ID of the space.
+     */
     fun observeSpace(spaceId: Long): Flow<PlantSpace?>
 
     /**
