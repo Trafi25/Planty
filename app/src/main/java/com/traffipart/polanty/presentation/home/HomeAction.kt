@@ -12,4 +12,9 @@ sealed interface HomeAction {
     data class CompleteCareTask(
         val task: HomeCareTaskUiModel,
     ) : HomeAction
+
+    data class SoilCheckResult(
+        val task: HomeCareTaskUiModel,
+        val soilIsDry: Boolean,
+    ) : HomeAction
 }

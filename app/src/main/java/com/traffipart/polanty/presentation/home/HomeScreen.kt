@@ -15,6 +15,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.traffipart.polanty.domain.model.CareTaskType
 import com.traffipart.polanty.domain.model.displayName
 import com.traffipart.polanty.ui.theme.spacing
 
@@ -70,17 +71,14 @@ fun HomeScreen(
             )
         } else {
             state.careTasks.forEach { task ->
-                HomeCareTaskItem(task = task, onComplete = { viewModel.onAction(HomeAction.CompleteCareTask(task)) })
+                HomeCareTaskItem(
+                    task = task,
+                    onComplete = { viewModel.onAction(HomeAction.CompleteCareTask(task)) },
+                    onSoilDry = { viewModel.onAction(HomeAction.SoilCheckResult(task, true)) },
+                    onSoilMoist = { viewModel.onAction(HomeAction.SoilCheckResult(task, false)) },
+                )
             }
         }
-
-        Text(
-            text =
-                "Your daily care tasks will appear here.",
-            style =
-                MaterialTheme.typography
-                    .bodyMedium,
-        )
 
         Button(modifier = Modifier.fillMaxWidth(), onClick = onScanPlant) { Text("Scan a plant") }
         Button(modifier = Modifier.fillMaxWidth(), onClick = onOpenGarden) { Text("Open garden") }
@@ -97,9 +95,12 @@ fun HomeScreen(
 private fun HomeCareTaskItem(
     task: HomeCareTaskUiModel,
     onComplete: () -> Unit,
+    onSoilDry: () -> Unit,
+    onSoilMoist: () -> Unit,
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
+        onClick = onSoilDry,
     ) {
         Column(
             modifier =
@@ -121,10 +122,32 @@ private fun HomeCareTaskItem(
                 style =
                     MaterialTheme.typography.bodyMedium,
             )
-            Button(
-                onClick = onComplete,
-            ) {
-                Text("Done")
+            when (task.type) {
+                CareTaskType.CheckSoil -> {
+                    Button(
+                        modifier = Modifier.fillMaxWidth(),
+                        onClick = onSoilDry,
+                    ) {
+                        Text("Soil is dry")
+                    }
+                    Button(
+                        modifier = Modifier.fillMaxWidth(),
+                        onClick = onSoilMoist,
+                    ) {
+                        Text("Soil is still moist")
+                    }
+                }
+
+                CareTaskType.Water -> {
+                    Button(modifier = Modifier.fillMaxWidth(), onClick = onComplete) {
+                        Text("Watered")
+                    }
+                }
+                else -> {
+                    Button(modifier = Modifier.fillMaxWidth(), onClick = onComplete) {
+                        Text("Done")
+                    }
+                }
             }
         }
     }

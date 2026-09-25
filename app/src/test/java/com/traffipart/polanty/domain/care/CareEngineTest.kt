@@ -11,6 +11,7 @@ import com.traffipart.polanty.domain.model.ToxicityLevel
 import com.traffipart.polanty.domain.model.WateringProfile
 import org.junit.jupiter.api.Test
 import kotlin.time.Duration.Companion.days
+import kotlin.time.Duration.Companion.hours
 
 private fun plantKnowledge(
     wateringMinDays: Int = 7,
@@ -132,5 +133,86 @@ class CareEngineTest {
 
         assertThat(result.single().dueAt)
             .isEqualTo(expectedDueAt)
+    }
+
+    @Test
+    fun `does not create soil check while watering task is open`() {
+        val wateringTask =
+            CareTask(
+                id = 20L,
+                plantId = 1L,
+                type = CareTaskType.Water,
+                dueAt = 1000L,
+                isCompleted = false,
+                completedAt = null,
+                xpReward = 10,
+            )
+        val result =
+            careEngine.generateTasks(
+                plantId = 1L,
+                knowledge = plantKnowledge(),
+                existingTasks = listOf(wateringTask),
+                now = 2000L,
+            )
+
+        assertThat(result).isEmpty()
+    }
+
+    @Test
+    fun `schedules next soil check from latest watering`() {
+        val soilCheckCompletedAt =
+            1_700_000_000_000L
+
+        val wateredAt =
+            soilCheckCompletedAt +
+                2.hours.inWholeMilliseconds
+
+        val soilCheck =
+            CareTask(
+                id = 10L,
+                plantId = 1L,
+                type = CareTaskType.CheckSoil,
+                dueAt = soilCheckCompletedAt,
+                isCompleted = true,
+                completedAt =
+                soilCheckCompletedAt,
+                xpReward = 10,
+            )
+
+        val watering =
+            CareTask(
+                id = 11L,
+                plantId = 1L,
+                type = CareTaskType.Water,
+                dueAt = wateredAt,
+                isCompleted = true,
+                completedAt = wateredAt,
+                xpReward = 10,
+            )
+
+        val result =
+            careEngine.generateTasks(
+                plantId = 1L,
+                knowledge =
+                    plantKnowledge(
+                        wateringMinDays = 7,
+                    ),
+                existingTasks =
+                    listOf(
+                        soilCheck,
+                        watering,
+                    ),
+                now = wateredAt,
+            )
+
+        val expectedDueAt =
+            wateredAt +
+                7.days.inWholeMilliseconds
+
+        assertThat(
+            result.single().dueAt,
+        ).isEqualTo(
+            expectedDueAt,
+        )
     }
 }

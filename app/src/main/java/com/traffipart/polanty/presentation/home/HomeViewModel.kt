@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.traffipart.polanty.domain.usecase.care.CompleteCareTaskUseCase
 import com.traffipart.polanty.domain.usecase.care.ObserveDueCareTasksUseCase
+import com.traffipart.polanty.domain.usecase.care.RecordSoilCheckResultUseCase
 import com.traffipart.polanty.domain.usecase.care.RefreshPlantCarePlanUseCase
 import com.traffipart.polanty.domain.usecase.plant.ObservePlantsUseCase
 import com.traffipart.polanty.domain.usecase.space.ObserveSpacesUseCase
@@ -38,6 +39,7 @@ class HomeViewModel
         private val observeDueCareTasksUseCase: ObserveDueCareTasksUseCase,
         private val completeCareTaskUseCase: CompleteCareTaskUseCase,
         private val refreshPlantCarePlanUseCase: RefreshPlantCarePlanUseCase,
+        private val recordSoilCheckResultUseCase: RecordSoilCheckResultUseCase,
     ) : ViewModel() {
         /**
          * The UI state for the Home screen, providing plant and space counts and due care tasks.
@@ -84,6 +86,33 @@ class HomeViewModel
             when (action) {
                 is HomeAction.CompleteCareTask -> {
                     completeCareTask(action.task)
+                }
+                is HomeAction.SoilCheckResult -> {
+                    recordSoilCheckResult(task = action.task, soilIsDry = action.soilIsDry)
+                }
+            }
+        }
+
+        private fun recordSoilCheckResult(
+            task: HomeCareTaskUiModel,
+            soilIsDry: Boolean,
+        ) {
+            viewModelScope.launch {
+                try {
+                    recordSoilCheckResultUseCase(
+                        taskId = task.taskId,
+                        plantId = task.plantId,
+                        scientificName = task.scientificName,
+                        soilIsDry = soilIsDry,
+                    )
+                } catch (
+                    e: CancellationException,
+                ) {
+                    throw e
+                } catch (
+                    e: Exception,
+                ) {
+                    Log.e("HomeViewModel", "Failed to record soil check", e)
                 }
             }
         }

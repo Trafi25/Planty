@@ -33,18 +33,22 @@ class CareEngine
             val intervalDays = wateringProfile.soilCheckIntervalDaysMin.takeIf { it > 0 } ?: return emptyList()
 
             // Filter tasks for this specific plant and type once for efficiency
-            val plantTasks = existingTasks.filter { it.plantId == plantId && it.type == CareTaskType.CheckSoil }
+            val relevantTasks =
+                existingTasks.filter { task ->
+                    task.plantId == plantId && (task.type == CareTaskType.CheckSoil || task.type == CareTaskType.Water)
+                }
 
             // Rule 1: Don't create a new task if there's already an incomplete one
-            if (plantTasks.any { !it.isCompleted }) {
+            if (relevantTasks.any { task -> !task.isCompleted }) {
                 return emptyList()
             }
 
             // Rule 2: Schedule based on the last completion time or schedule for 'now' if first time
             val lastCompletedAt =
-                plantTasks
-                    .filter { it.isCompleted }
-                    .mapNotNull { it.completedAt }
+                relevantTasks
+                    .asSequence()
+                    .filter { task -> task.isCompleted }
+                    .mapNotNull { task -> task.completedAt }
                     .maxOrNull()
 
             val nextDueAt =
