@@ -7,7 +7,7 @@ import com.traffipart.polanty.domain.model.PlantImage
 
 fun Uri.toPlantImage(context: Context): PlantImage? {
     val contentResolver = context.contentResolver
-    val mimeType = contentResolver.getType(this) ?: return null
+    val mimeType = contentResolver.getType(this) ?: "image/jpeg"
     val bytes =
         contentResolver.openInputStream(this)?.use { inputStream ->
             inputStream.readBytes()
@@ -26,7 +26,7 @@ fun Uri.toPlantImage(context: Context): PlantImage? {
                 } else {
                     null
                 }
-            } ?: "plant_Image"
+            } ?: "plant_image.jpg"
 
     return PlantImage(bytes = bytes, fileName = fileName, mimeType = mimeType)
 }

@@ -6,8 +6,10 @@ import androidx.lifecycle.viewModelScope
 import com.traffipart.polanty.core.common.trimToNull
 import com.traffipart.polanty.domain.model.Plant
 import com.traffipart.polanty.domain.model.PlantCandidate
+import com.traffipart.polanty.domain.model.PlantSpaceType
 import com.traffipart.polanty.domain.usecase.care.RefreshPlantCarePlanUseCase
 import com.traffipart.polanty.domain.usecase.plant.SavePlantUseCase
+import com.traffipart.polanty.domain.usecase.space.CreateSpaceUseCase
 import com.traffipart.polanty.domain.usecase.space.ObserveSpacesUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -25,6 +27,7 @@ import kotlin.coroutines.cancellation.CancellationException
  *
  * @property savePlantUseCase Use case to save a new plant to the repository.
  * @property observeSpacesUseCase Use case to observe the list of available plant spaces.
+ * @property createSpaceUseCase Use case to create new spaces directly from the setup flow.
  * @property refreshPlantCarePlanUseCase Use case to initialize care tasks for the newly saved plant.
  */
 @HiltViewModel
@@ -33,6 +36,7 @@ class PlantSetupViewModel
     constructor(
         private val savePlantUseCase: SavePlantUseCase,
         private val observeSpacesUseCase: ObserveSpacesUseCase,
+        private val createSpaceUseCase: CreateSpaceUseCase,
         private val refreshPlantCarePlanUseCase: RefreshPlantCarePlanUseCase,
     ) : ViewModel() {
         private val _uiState = MutableStateFlow(PlantSetupUiState())
@@ -52,8 +56,8 @@ class PlantSetupViewModel
         private fun observeSpaces() {
             observeSpacesUseCase()
                 .onEach { spaces ->
-                    _uiState.update {
-                        it.copy(
+                    _uiState.update { state ->
+                        state.copy(
                             spaces = spaces,
                         )
                     }
@@ -87,8 +91,33 @@ class PlantSetupViewModel
                         )
                     }
                 }
+                is PlantSetupAction.CreateSpace -> {
+                    createSpace(
+                        customName = action.customName,
+                        type = action.type,
+                    )
+                }
                 is PlantSetupAction.SavePlant -> {
                     savePlant()
+                }
+            }
+        }
+
+        /**
+         * Creates a new space and selects it for the new plant.
+         */
+        private fun createSpace(
+            customName: String?,
+            type: PlantSpaceType,
+        ) {
+            viewModelScope.launch {
+                try {
+                    val newSpaceId = createSpaceUseCase(customName = customName, type = type)
+                    _uiState.update {
+                        it.copy(spaceId = newSpaceId)
+                    }
+                } catch (e: Exception) {
+                    Log.e("PlantSetupVM", "Failed to create space", e)
                 }
             }
         }
@@ -159,13 +188,22 @@ class PlantSetupViewModel
             candidate: PlantCandidate,
             imageUri: String?,
         ) {
-            if (_uiState.value.candidate != null) {
+            val currentState = _uiState.value
+            if (currentState.candidate == candidate &&
+                currentState.imageUri == imageUri &&
+                currentState.savedPlantId == null
+            ) {
                 return
             }
-            _uiState.update {
-                it.copy(
+            _uiState.update { state ->
+                state.copy(
                     candidate = candidate,
                     imageUri = imageUri,
+                    nickname = candidate.commonName ?: candidate.scientificName,
+                    spaceId = null,
+                    savedPlantId = null,
+                    isSaving = false,
+                    saveError = false,
                 )
             }
         }

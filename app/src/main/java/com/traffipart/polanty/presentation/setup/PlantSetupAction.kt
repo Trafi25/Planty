@@ -39,4 +39,15 @@ sealed interface PlantSetupAction {
      * Action to save the plant to the garden.
      */
     data object SavePlant : PlantSetupAction
+
+    /**
+     * Action to create a new space and select it for the plant.
+     *
+     * @property customName The optional custom name for the space.
+     * @property type The type of the space.
+     */
+    data class CreateSpace(
+        val customName: String?,
+        val type: com.traffipart.polanty.domain.model.PlantSpaceType,
+    ) : PlantSetupAction
 }

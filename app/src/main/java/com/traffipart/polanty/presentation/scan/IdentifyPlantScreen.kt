@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
@@ -49,6 +51,7 @@ fun IdentifyPlantScreen(
             contract = ActivityResultContracts.PickVisualMedia(),
         ) { uri ->
             if (uri != null) {
+                viewModel.onAction(IdentifyPlantAction.Reset)
                 selectedImageUri = uri.toString()
                 val plantImage = uri.toPlantImage(context)
                 if (plantImage != null) {
@@ -57,10 +60,15 @@ fun IdentifyPlantScreen(
             }
         }
     Column(
-        modifier = Modifier.fillMaxSize().padding(MaterialTheme.spacing.large),
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .padding(MaterialTheme.spacing.large),
         verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.medium),
     ) {
         Button(
+            modifier = Modifier.fillMaxWidth(),
             onClick = {
                 photoPicker.launch(
                     PickVisualMediaRequest(
@@ -75,25 +83,45 @@ fun IdentifyPlantScreen(
             CircularProgressIndicator()
         }
         state.identification?.let { identification ->
-            Text(text = "Best match: ${identification.bestMatch}")
+            Text(
+                text = "Best match: ${identification.bestMatch}",
+                style = MaterialTheme.typography.titleMedium,
+            )
 
             identification.candidates.forEach { candidate ->
                 Card(
                     modifier =
-                        Modifier.fillMaxWidth().clickable {
-                            onCandidateSelected(candidate, selectedImageUri)
-                        },
+                        Modifier
+                            .fillMaxWidth()
+                            .clickable {
+                                val uri = selectedImageUri
+                                viewModel.onAction(IdentifyPlantAction.Reset)
+                                selectedImageUri = null
+                                onCandidateSelected(candidate, uri)
+                            },
                 ) {
-                    Text(text = candidate.commonName ?: candidate.scientificName)
-                    Text(
-                        text =
-                            "${(candidate.confidence * 100).toInt()}% match",
-                    )
+                    Column(
+                        modifier = Modifier.padding(MaterialTheme.spacing.medium),
+                    ) {
+                        Text(
+                            text = candidate.commonName ?: candidate.scientificName,
+                            style = MaterialTheme.typography.titleMedium,
+                        )
+                        Text(
+                            text =
+                                "${(candidate.confidence * 100).toInt()}% match",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.secondary,
+                        )
+                    }
                 }
             }
         }
         state.error?.let { error ->
-            Text(text = error.toMessage())
+            Text(
+                text = error.toMessage(),
+                color = MaterialTheme.colorScheme.error,
+            )
         }
     }
 }

@@ -133,10 +133,13 @@ class GeminiPlantKnowledgeGenerator
          *
          * This function prepares a customized prompt, calls the Gemini model, verifies and parses the
          * resulting JSON against the established adapter, and maps the DTO into a valid [PlantKnowledge] domain model.
+         * If the model call fails (e.g. due to invalid App Check tokens, network errors, or malformed JSON), it logs
+         * detailed diagnostic warnings and returns a safe fallback [PlantKnowledge] model to prevent application crashes
+         * and ensure care scheduling can continue.
          *
          * @param scientificName The unique botanical or scientific name of the plant.
          * @param commonName An optional colloquial or common name to give the AI additional context.
-         * @return A valid [PlantKnowledge] object if generation and validation succeed, or `null` if the model response is empty, malformed, or fails domain schema constraints.
+         * @return A valid [PlantKnowledge] domain model (generated or fallback defaults).
          * @throws CancellationException if the underlying coroutine or network request is cancelled.
          */
         override suspend fun generate(
@@ -152,8 +155,8 @@ class GeminiPlantKnowledgeGenerator
                 val responseJson = response.text.trimToNull()
 
                 if (responseJson == null) {
-                    Log.w(TAG, "Gemini returned empty response for $cleanScientificName")
-                    return null
+                    Log.w(TAG, "Gemini returned empty response for $cleanScientificName. Using fallback.")
+                    return createFallbackKnowledge(cleanScientificName, commonName)
                 }
 
                 Log.d(TAG, "Raw Gemini JSON: $responseJson")
@@ -164,22 +167,75 @@ class GeminiPlantKnowledgeGenerator
                     } catch (e: Exception) {
                         Log.e(TAG, "JSON Parsing failed for $cleanScientificName. JSON: $responseJson", e)
                         null
-                    } ?: return null
+                    } ?: return createFallbackKnowledge(cleanScientificName, commonName)
 
                 val knowledge = dto.toDomain(cleanScientificName, commonName)
                 if (knowledge != null) {
                     Log.d(TAG, "Successfully generated domain model for $cleanScientificName")
+                    knowledge
                 } else {
-                    Log.w(TAG, "toDomain() returned null for $cleanScientificName")
+                    Log.w(TAG, "toDomain() returned null for $cleanScientificName. Using fallback.")
+                    createFallbackKnowledge(cleanScientificName, commonName)
                 }
-                knowledge
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
-                Log.e(TAG, "Gemini generation CRASHED for $cleanScientificName: ${e.message}", e)
-                null
+                Log.e(TAG, "Gemini generation failed for $cleanScientificName: ${e.message}", e)
+                if (e.message?.contains("App Check", ignoreCase = true) == true ||
+                    e.message?.contains("AppCheck", ignoreCase = true) == true
+                ) {
+                    Log.w(
+                        TAG,
+                        "Firebase App Check token validation failed for $cleanScientificName. " +
+                            "If testing in debug mode, register your Debug App Check secret token in the Firebase Console.",
+                    )
+                }
+                createFallbackKnowledge(cleanScientificName, commonName)
             }
         }
+
+        /**
+         * Creates a safe default [PlantKnowledge] model when AI generation fails or is restricted (e.g. App Check / offline).
+         *
+         * @param scientificName Scientific name of the species.
+         * @param commonName Optional common name.
+         * @return Conservative [PlantKnowledge] model with default care parameters.
+         */
+        private fun createFallbackKnowledge(
+            scientificName: String,
+            commonName: String?,
+        ): PlantKnowledge =
+            PlantKnowledge(
+                speciesInfo =
+                    com.traffipart.polanty.domain.model.PlantSpeciesInfo(
+                        scientificName = scientificName,
+                        commonName = commonName,
+                        description = "Botanical care information for $scientificName.",
+                        origin = null,
+                        toxicity =
+                            com.traffipart.polanty.domain.model.PlantToxicity(
+                                pets = ToxicityLevel.Unknown,
+                                humans = ToxicityLevel.Unknown,
+                                notes = "Toxicity details unavailable.",
+                            ),
+                        typicalHeightCmMin = null,
+                        typicalHeightCmMax = null,
+                    ),
+                careProfile =
+                    com.traffipart.polanty.domain.model.PlantCareProfile(
+                        scientificName = scientificName,
+                        watering =
+                            com.traffipart.polanty.domain.model.WateringProfile(
+                                soilCheckIntervalDaysMin = 7,
+                                soilCheckIntervalDaysMax = 10,
+                                instruction = "Check the top inch of soil before watering.",
+                            ),
+                        light = LightRequirement.MediumIndirect,
+                        humidity = com.traffipart.polanty.domain.model.HumidityRange(minPercent = 40, maxPercent = 60),
+                        temperature = com.traffipart.polanty.domain.model.TemperatureRange(minCelsius = 18.0, maxCelsius = 26.0),
+                        fertilizing = "Fertilize lightly during the active growing season.",
+                    ),
+            )
 
         /**
          * Constructs a highly-structured and detailed textual prompt instructing the AI on how to assemble its response.

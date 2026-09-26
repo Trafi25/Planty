@@ -27,6 +27,8 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
 import com.traffipart.polanty.domain.model.PlantCandidate
+import com.traffipart.polanty.domain.model.PlantSpaceType
+import com.traffipart.polanty.presentation.garden.gardenContent.AddSpaceDialog
 import com.traffipart.polanty.ui.theme.spacing
 
 /**
@@ -50,7 +52,11 @@ fun PlantSetupScreen(
     val state by viewModel.uiState.collectAsStateWithLifecycle()
 
     var showSpacePicker by rememberSaveable { mutableStateOf(false) }
+    var showAddSpaceDialog by rememberSaveable { mutableStateOf(false) }
+    var newSpaceType by rememberSaveable { mutableStateOf(PlantSpaceType.LivingRoom) }
+    var newSpaceName by rememberSaveable { mutableStateOf("") }
 
+    val activeCandidate = state.candidate ?: candidate
     val selectedSpace = state.spaces.firstOrNull { it.id == state.spaceId }
 
     LaunchedEffect(candidate, imageUri) {
@@ -83,7 +89,7 @@ fun PlantSetupScreen(
         }
 
         AsyncImage(
-            model = imageUri,
+            model = state.imageUri ?: imageUri,
             contentDescription = null,
             modifier =
                 Modifier
@@ -95,11 +101,11 @@ fun PlantSetupScreen(
 
         Column {
             Text(
-                text = candidate.commonName ?: candidate.scientificName,
+                text = activeCandidate.commonName ?: activeCandidate.scientificName,
                 style = MaterialTheme.typography.headlineSmall,
             )
             Text(
-                text = "${(candidate.confidence * 100).toInt()}% match",
+                text = "${(activeCandidate.confidence * 100).toInt()}% match",
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.secondary,
             )
@@ -131,7 +137,7 @@ fun PlantSetupScreen(
                         style = MaterialTheme.typography.labelMedium,
                     )
                     Text(
-                        text = selectedSpace?.name ?: "Select a space",
+                        text = selectedSpace?.name ?: "No space",
                         style = MaterialTheme.typography.bodyLarge,
                     )
                 }
@@ -163,7 +169,36 @@ fun PlantSetupScreen(
                 viewModel.onAction(PlantSetupAction.SpaceIdSelected(spaceId))
                 showSpacePicker = false
             },
+            onAddNewSpaceClick = {
+                showSpacePicker = false
+                showAddSpaceDialog = true
+            },
             onDismiss = { showSpacePicker = false },
+        )
+    }
+
+    if (showAddSpaceDialog) {
+        AddSpaceDialog(
+            selectedType = newSpaceType,
+            name = newSpaceName,
+            onTypeChanged = { newSpaceType = it },
+            onNameChanged = { newSpaceName = it },
+            errorMessage = null,
+            isLoading = false,
+            onAdd = {
+                viewModel.onAction(
+                    PlantSetupAction.CreateSpace(
+                        customName = newSpaceName,
+                        type = newSpaceType,
+                    ),
+                )
+                showAddSpaceDialog = false
+                newSpaceName = ""
+            },
+            onDismiss = {
+                showAddSpaceDialog = false
+                newSpaceName = ""
+            },
         )
     }
 }
