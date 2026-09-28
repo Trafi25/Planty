@@ -58,6 +58,9 @@ class CareTaskRepositoryImpl
                 throw e
             }
 
+        /**
+         * Retrieves a single care task by ID from the database and maps it to domain.
+         */
         override suspend fun getTask(taskId: Long): CareTask? = careTaskDao.getTaskById(taskId)?.toDomain()
 
         /**

@@ -1,11 +1,10 @@
-package com.traffipart.polanty.data.remeinder
+package com.traffipart.polanty.data.reminder
 
 import android.Manifest
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
 import android.content.pm.PackageManager
-import androidx.annotation.RequiresPermission
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
@@ -16,6 +15,14 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import javax.inject.Singleton
 
+/**
+ * Singleton manager responsible for creating notification channels and displaying plant care notifications.
+ *
+ * Checks for runtime notification permissions ([Manifest.permission.POST_NOTIFICATIONS]) on Android 13+
+ * prior to building and displaying notifications.
+ *
+ * @property context Application context used for notification system services.
+ */
 @Singleton
 class CareNotificationManager
     @Inject
@@ -23,8 +30,12 @@ class CareNotificationManager
         @ApplicationContext
         private val context: Context,
     ) {
-
-
+        /**
+         * Displays a notification for a due care task if notification permission is granted.
+         *
+         * @param task The [CareTask] for which the reminder notification is being shown.
+         * @param plantName Display name of the plant needing care.
+         */
         fun showCareReminder(
             task: CareTask,
             plantName: String,
@@ -59,8 +70,11 @@ class CareNotificationManager
                 )
         }
 
+        /**
+         * Ensures that the dedicated notification channel for plant care reminders exists.
+         */
         private fun createChannel() {
-            val manager = context.getSystemService(NotificationManager::class.java,)
+            val manager = context.getSystemService(NotificationManager::class.java)
 
             val channel =
                 NotificationChannel(
@@ -68,11 +82,10 @@ class CareNotificationManager
                     "Plant care reminders",
                     NotificationManager.IMPORTANCE_DEFAULT,
                 )
-            manager.createNotificationChannel(channel,)
+            manager.createNotificationChannel(channel)
         }
 
         private companion object {
-            const val CHANNEL_ID =
-                "plant_care_reminders"
+            const val CHANNEL_ID = "plant_care_reminders"
         }
     }

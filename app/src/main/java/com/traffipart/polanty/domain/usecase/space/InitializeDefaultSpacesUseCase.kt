@@ -28,6 +28,7 @@ class InitializeDefaultSpacesUseCase
         suspend operator fun invoke() {
             val existingSpaces = plantSpaceRepository.observeSpaces().first()
             val existingTypes = existingSpaces.map { it.type }.toSet()
+            val existingNames = existingSpaces.map { it.name.trim().lowercase() }.toSet()
 
             val defaultTypes =
                 listOf(
@@ -40,7 +41,7 @@ class InitializeDefaultSpacesUseCase
                 )
 
             for (type in defaultTypes) {
-                if (type !in existingTypes) {
+                if (type !in existingTypes && type.displayName.trim().lowercase() !in existingNames) {
                     plantSpaceRepository.insertSpace(
                         PlantSpace(id = 0, name = type.displayName, type = type),
                     )

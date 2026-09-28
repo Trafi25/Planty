@@ -12,13 +12,20 @@ import com.google.firebase.initialize
 import dagger.hilt.android.HiltAndroidApp
 import javax.inject.Inject
 
+/**
+ * Application entry point for Planty.
+ * Initializes Hilt dependency injection, Firebase App Check, and WorkManager worker factory configuration.
+ */
 @HiltAndroidApp
 class PlantyApp :
     Application(),
     Configuration.Provider {
+
+    /** Factory for injecting dependencies into Hilt-annotated workers. */
     @Inject
     lateinit var workerFactory: HiltWorkerFactory
 
+    /** Provides custom WorkManager configuration featuring the Hilt worker factory. */
     override val workManagerConfiguration: Configuration
         get() =
             Configuration

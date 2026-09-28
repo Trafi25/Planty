@@ -1,17 +1,18 @@
 package com.traffipart.polanty.domain.usecase.care
 
 import com.traffipart.polanty.domain.model.CareTask
-import com.traffipart.polanty.domain.remeinder.CareReminderScheduler
+import com.traffipart.polanty.domain.reminder.CareReminderScheduler
 import com.traffipart.polanty.domain.repository.care.CareTaskRepository
 import javax.inject.Inject
 
 /**
- * Use case for creating and persisting a new plant care task.
+ * Use case for creating and persisting a new plant care task and scheduling its notification reminder.
  *
  * This use case ensures that the task is valid (associated with a plant, has a due date,
- * and a non-negative XP reward) before delegating to the repository.
+ * and a non-negative XP reward) before delegating to the repository and scheduler.
  *
  * @property careRepository The repository to persist the task.
+ * @property careReminderScheduler The scheduler for managing care task reminder notifications.
  */
 class SaveCareTaskUseCase
     @Inject

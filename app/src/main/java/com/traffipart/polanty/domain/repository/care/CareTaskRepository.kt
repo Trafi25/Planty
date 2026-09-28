@@ -31,6 +31,12 @@ interface CareTaskRepository {
         completedAt: Long,
     ): Boolean
 
+    /**
+     * Retrieves a single care task by its unique identifier.
+     *
+     * @param taskId The unique ID of the task to retrieve.
+     * @return The [CareTask] domain model if found, or `null` otherwise.
+     */
     suspend fun getTask(taskId: Long): CareTask?
 
     /**

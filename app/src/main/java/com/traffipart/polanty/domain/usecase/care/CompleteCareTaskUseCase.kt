@@ -1,13 +1,14 @@
 package com.traffipart.polanty.domain.usecase.care
 
-import com.traffipart.polanty.domain.remeinder.CareReminderScheduler
+import com.traffipart.polanty.domain.reminder.CareReminderScheduler
 import com.traffipart.polanty.domain.repository.care.CareTaskRepository
 import javax.inject.Inject
 
 /**
- * Use case for marking a plant care task as completed.
+ * Use case for marking a plant care task as completed and canceling its scheduled reminder.
  *
  * @property careRepository The repository to update the task status.
+ * @property careReminderScheduler The scheduler to cancel the pending reminder notification.
  */
 class CompleteCareTaskUseCase
     @Inject

@@ -34,6 +34,12 @@ interface CareTaskDao {
     @Query("SELECT * FROM care_tasks WHERE plantId = :plantId ORDER BY dueAt ASC")
     fun observePlantTasks(plantId: Long): Flow<List<CareTaskEntity>>
 
+    /**
+     * Retrieves a single care task record by its unique database identifier.
+     *
+     * @param taskId The unique ID of the care task.
+     * @return The [CareTaskEntity] if found, or `null` if no task matches the ID.
+     */
     @Query("""SELECT * FROM care_tasks WHERE id = :taskId LIMIT 1""")
     suspend fun getTaskById(taskId: Long): CareTaskEntity?
 
