@@ -1,5 +1,6 @@
 package com.traffipart.polanty.core.di
 
+import com.traffipart.polanty.data.remeinder.WorkManagerCareReminderScheduler
 import com.traffipart.polanty.data.repository.care.CareTaskRepositoryImpl
 import com.traffipart.polanty.data.repository.knowledge.GbifPlantNameResolverImpl
 import com.traffipart.polanty.data.repository.knowledge.GeminiPlantKnowledgeGenerator
@@ -10,6 +11,7 @@ import com.traffipart.polanty.data.repository.plant.PlantSpaceRepositoryImpl
 import com.traffipart.polanty.data.repository.plant.SpaceInitializationRepositoryImpl
 import com.traffipart.polanty.data.storage.PlantImageStorageImpl
 import com.traffipart.polanty.domain.PlantKnowledgeGenerator
+import com.traffipart.polanty.domain.remeinder.CareReminderScheduler
 import com.traffipart.polanty.domain.repository.care.CareTaskRepository
 import com.traffipart.polanty.domain.repository.knowledge.PlantIdentificationRepository
 import com.traffipart.polanty.domain.repository.knowledge.PlantKnowledgeRepository
@@ -64,4 +66,8 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindCareTaskRepository(repository: CareTaskRepositoryImpl): CareTaskRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindCareReminderScheduler(generator: WorkManagerCareReminderScheduler): CareReminderScheduler
 }

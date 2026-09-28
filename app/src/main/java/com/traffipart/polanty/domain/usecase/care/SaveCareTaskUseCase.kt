@@ -1,6 +1,7 @@
 package com.traffipart.polanty.domain.usecase.care
 
 import com.traffipart.polanty.domain.model.CareTask
+import com.traffipart.polanty.domain.remeinder.CareReminderScheduler
 import com.traffipart.polanty.domain.repository.care.CareTaskRepository
 import javax.inject.Inject
 
@@ -16,6 +17,7 @@ class SaveCareTaskUseCase
     @Inject
     constructor(
         private val careRepository: CareTaskRepository,
+        private val careReminderScheduler: CareReminderScheduler,
     ) {
         /**
          * Saves a new care task.
@@ -34,6 +36,11 @@ class SaveCareTaskUseCase
             require(task.xpReward >= 0) {
                 "XP reward cannot be negative"
             }
-            return careRepository.createTask(task)
+            val taskId = careRepository.createTask(task)
+            careReminderScheduler.schedule(
+                taskId = taskId,
+                dueAt = task.dueAt,
+            )
+            return taskId
         }
     }

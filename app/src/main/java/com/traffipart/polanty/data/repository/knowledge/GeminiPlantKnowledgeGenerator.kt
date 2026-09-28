@@ -231,8 +231,12 @@ class GeminiPlantKnowledgeGenerator
                                 instruction = "Check the top inch of soil before watering.",
                             ),
                         light = LightRequirement.MediumIndirect,
-                        humidity = com.traffipart.polanty.domain.model.HumidityRange(minPercent = 40, maxPercent = 60),
-                        temperature = com.traffipart.polanty.domain.model.TemperatureRange(minCelsius = 18.0, maxCelsius = 26.0),
+                        humidity =
+                            com.traffipart.polanty.domain.model
+                                .HumidityRange(minPercent = 40, maxPercent = 60),
+                        temperature =
+                            com.traffipart.polanty.domain.model
+                                .TemperatureRange(minCelsius = 18.0, maxCelsius = 26.0),
                         fertilizing = "Fertilize lightly during the active growing season.",
                     ),
             )

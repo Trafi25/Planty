@@ -106,7 +106,6 @@ private fun HomeCareTaskItem(
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        onClick = onSoilDry,
     ) {
         Column(
             modifier =

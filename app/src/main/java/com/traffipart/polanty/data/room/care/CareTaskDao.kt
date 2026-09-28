@@ -34,6 +34,9 @@ interface CareTaskDao {
     @Query("SELECT * FROM care_tasks WHERE plantId = :plantId ORDER BY dueAt ASC")
     fun observePlantTasks(plantId: Long): Flow<List<CareTaskEntity>>
 
+    @Query("""SELECT * FROM care_tasks WHERE id = :taskId LIMIT 1""")
+    suspend fun getTaskById(taskId: Long): CareTaskEntity?
+
     /**
      * Inserts a new care task record into the database.
      *

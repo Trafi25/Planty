@@ -39,8 +39,8 @@ class CareTaskRepositoryImpl
          */
         override fun observePlantTasks(plantId: Long): Flow<List<CareTask>> =
             careTaskDao.observePlantTasks(plantId).map { entities ->
-                entities.mapNotNull { entities ->
-                    entities.toDomain()
+                entities.mapNotNull { entity  ->
+                    entity.toDomain()
                 }
             }
 
@@ -57,6 +57,8 @@ class CareTaskRepositoryImpl
                 Log.e(TAG, "Error completing task $taskId", e)
                 throw e
             }
+
+        override suspend fun getTask(taskId: Long): CareTask? = careTaskDao.getTaskById(taskId)?.toDomain()
 
         /**
          * Inserts a new care task into the database.

@@ -31,6 +31,8 @@ interface CareTaskRepository {
         completedAt: Long,
     ): Boolean
 
+    suspend fun getTask(taskId: Long): CareTask?
+
     /**
      * Creates a new care task.
      *

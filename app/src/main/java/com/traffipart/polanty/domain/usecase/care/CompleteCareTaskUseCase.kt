@@ -1,5 +1,6 @@
 package com.traffipart.polanty.domain.usecase.care
 
+import com.traffipart.polanty.domain.remeinder.CareReminderScheduler
 import com.traffipart.polanty.domain.repository.care.CareTaskRepository
 import javax.inject.Inject
 
@@ -12,6 +13,7 @@ class CompleteCareTaskUseCase
     @Inject
     constructor(
         private val careRepository: CareTaskRepository,
+        private val careReminderScheduler: CareReminderScheduler,
     ) {
         /**
          * Completes a specific care task.
@@ -27,6 +29,8 @@ class CompleteCareTaskUseCase
             require(taskId > 0) {
                 "Task ID must be valid"
             }
-            return careRepository.completeTask(taskId, completedAt)
+            val completed = careRepository.completeTask(taskId, completedAt)
+            if (completed) careReminderScheduler.cancel(taskId)
+            return completed
         }
     }

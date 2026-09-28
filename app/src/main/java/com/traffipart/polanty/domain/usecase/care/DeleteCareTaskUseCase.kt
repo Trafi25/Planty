@@ -1,6 +1,7 @@
 package com.traffipart.polanty.domain.usecase.care
 
 import com.traffipart.polanty.domain.model.CareTask
+import com.traffipart.polanty.domain.remeinder.CareReminderScheduler
 import com.traffipart.polanty.domain.repository.care.CareTaskRepository
 import javax.inject.Inject
 
@@ -13,6 +14,7 @@ class DeleteCareTaskUseCase
     @Inject
     constructor(
         private val careRepository: CareTaskRepository,
+        private val careReminderScheduler: CareReminderScheduler,
     ) {
         /**
          * Deletes a care task.
@@ -20,5 +22,10 @@ class DeleteCareTaskUseCase
          * @param task The [CareTask] domain model to be removed.
          * @return True if the deletion was successful, false otherwise.
          */
-        suspend operator fun invoke(task: CareTask): Boolean = careRepository.deleteTask(task)
+        suspend operator fun invoke(task: CareTask): Boolean {
+            val deleted = careRepository.deleteTask(task)
+            if (deleted) careReminderScheduler.cancel(task.id)
+
+            return deleted
+        }
     }
