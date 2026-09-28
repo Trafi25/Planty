@@ -19,7 +19,7 @@ class CareReminderWorker
         @Assisted params: WorkerParameters,
         private val careTaskRepository: CareTaskRepository,
         private val plantRepository: PlantRepository,
-        private val notificationManager: NotificationManager,
+        private val notificationManager: CareNotificationManager,
     ) : CoroutineWorker(context, params) {
         override suspend fun doWork(): Result {
             val taskId = inputData.getLong(KEY_TASK_ID, INVALID_TASK_ID)

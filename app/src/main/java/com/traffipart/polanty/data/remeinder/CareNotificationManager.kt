@@ -23,7 +23,8 @@ class CareNotificationManager
         @ApplicationContext
         private val context: Context,
     ) {
-        @RequiresPermission(Manifest.permission.POST_NOTIFICATIONS)
+
+
         fun showCareReminder(
             task: CareTask,
             plantName: String,
