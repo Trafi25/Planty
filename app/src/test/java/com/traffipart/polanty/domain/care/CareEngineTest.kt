@@ -57,7 +57,7 @@ private val careEngine = CareEngine()
 
 class CareEngineTest {
     @Test
-    fun `creates soil check immediately when plant has no care history`() {
+    fun createsSoilCheckImmediatelyWhenPlantHasNoCareHistory() {
         val now = 1_700_000_000_000L
 
         val result =
@@ -78,7 +78,7 @@ class CareEngineTest {
     }
 
     @Test
-    fun `does not create another soil check when one is already open`() {
+    fun doesNotCreateAnotherSoilCheckWhenOneIsAlreadyOpen() {
         val existingTask =
             CareTask(
                 id = 12L,
@@ -100,7 +100,7 @@ class CareEngineTest {
     }
 
     @Test
-    fun `schedules next soil check after minimum interval`() {
+    fun schedulesNextSoilCheckAfterMinimumInterval() {
         val completedAt =
             1_700_000_000_000L
 
@@ -136,7 +136,7 @@ class CareEngineTest {
     }
 
     @Test
-    fun `does not create soil check while watering task is open`() {
+    fun doesNotCreateSoilCheckWhileWateringTaskIsOpen() {
         val wateringTask =
             CareTask(
                 id = 20L,
@@ -159,7 +159,7 @@ class CareEngineTest {
     }
 
     @Test
-    fun `schedules next soil check from latest watering`() {
+    fun schedulesNextSoilCheckFromLatestWatering() {
         val soilCheckCompletedAt =
             1_700_000_000_000L
 

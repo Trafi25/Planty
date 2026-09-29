@@ -20,7 +20,6 @@ import javax.inject.Inject
 class PlantyApp :
     Application(),
     Configuration.Provider {
-
     /** Factory for injecting dependencies into Hilt-annotated workers. */
     @Inject
     lateinit var workerFactory: HiltWorkerFactory

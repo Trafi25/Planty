@@ -17,4 +17,7 @@ sealed interface HomeAction {
         val task: HomeCareTaskUiModel,
         val soilIsDry: Boolean,
     ) : HomeAction
+
+    data object NotificationPermissionGranted :
+        HomeAction
 }

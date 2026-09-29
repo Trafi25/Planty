@@ -7,6 +7,7 @@ import com.traffipart.polanty.domain.usecase.care.CompleteCareTaskUseCase
 import com.traffipart.polanty.domain.usecase.care.ObserveDueCareTasksUseCase
 import com.traffipart.polanty.domain.usecase.care.RecordSoilCheckResultUseCase
 import com.traffipart.polanty.domain.usecase.care.RefreshPlantCarePlanUseCase
+import com.traffipart.polanty.domain.usecase.care.RescheduleOpenCareRemindersUseCase
 import com.traffipart.polanty.domain.usecase.plant.ObservePlantsUseCase
 import com.traffipart.polanty.domain.usecase.space.ObserveSpacesUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -40,6 +41,7 @@ class HomeViewModel
         private val completeCareTaskUseCase: CompleteCareTaskUseCase,
         private val refreshPlantCarePlanUseCase: RefreshPlantCarePlanUseCase,
         private val recordSoilCheckResultUseCase: RecordSoilCheckResultUseCase,
+        private val rescheduleOpenCareRemindersUseCase: RescheduleOpenCareRemindersUseCase,
     ) : ViewModel() {
         /**
          * The UI state for the Home screen, providing plant and space counts and due care tasks.
@@ -89,6 +91,19 @@ class HomeViewModel
                 }
                 is HomeAction.SoilCheckResult -> {
                     recordSoilCheckResult(task = action.task, soilIsDry = action.soilIsDry)
+                }
+                HomeAction.NotificationPermissionGranted -> rescheduleCareReminders()
+            }
+        }
+
+        private fun rescheduleCareReminders() {
+            viewModelScope.launch {
+                try {
+                    rescheduleOpenCareRemindersUseCase()
+                } catch (e: CancellationException) {
+                    throw e
+                } catch (e: Exception) {
+                    Log.e("HomeViewModel", "Failed to reschedule care reminders", e)
                 }
             }
         }

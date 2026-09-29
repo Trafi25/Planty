@@ -27,7 +27,7 @@ class GbifPlantNameResolverImplTest {
     }
 
     @Test
-    fun `returns original and accepted scientific names`() =
+    fun returnsOriginalAndAcceptedScientificNames() =
         runTest {
             coEvery {
                 gbifApi.matchSpecies(
@@ -73,7 +73,7 @@ class GbifPlantNameResolverImplTest {
         }
 
     @Test
-    fun `returns original name when GBIF fails`() =
+    fun returnsOriginalNameWhenGbifFails() =
         runTest {
             coEvery {
                 gbifApi.matchSpecies(any())
@@ -91,7 +91,7 @@ class GbifPlantNameResolverImplTest {
         }
 
     @Test
-    fun `removes duplicate scientific names`() =
+    fun removesDuplicateScientificNames() =
         runTest {
             coEvery {
                 gbifApi.matchSpecies(any())

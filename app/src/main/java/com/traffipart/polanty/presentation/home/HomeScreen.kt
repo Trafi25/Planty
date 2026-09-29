@@ -1,5 +1,10 @@
 package com.traffipart.polanty.presentation.home
 
+import android.Manifest
+import android.content.pm.PackageManager
+import android.os.Build
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -13,8 +18,14 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.core.content.ContextCompat
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.traffipart.polanty.domain.model.CareTaskType
@@ -34,6 +45,36 @@ fun HomeScreen(
     onScanPlant: () -> Unit,
     viewModel: HomeViewModel = hiltViewModel(),
 ) {
+    val context = LocalContext.current
+    val needNotificationPermission = Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
+    var notificationPermissionGranted by remember {
+        mutableStateOf(
+            !needNotificationPermission ||
+                ContextCompat.checkSelfPermission(
+                    context,
+                    Manifest.permission.POST_NOTIFICATIONS,
+                ) == PackageManager.PERMISSION_GRANTED,
+        )
+    }
+
+    val launcher =
+        rememberLauncherForActivityResult(
+            contract = ActivityResultContracts.RequestPermission(),
+        ) { isGranted ->
+            notificationPermissionGranted = isGranted
+            if (isGranted) {
+                viewModel.onAction(HomeAction.NotificationPermissionGranted)
+            }
+        }
+
+    LaunchedEffect(Unit) {
+        if (needNotificationPermission && !notificationPermissionGranted) {
+            launcher.launch(Manifest.permission.POST_NOTIFICATIONS)
+        } else if (notificationPermissionGranted) {
+            viewModel.onAction(HomeAction.NotificationPermissionGranted)
+        }
+    }
+
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     Column(
         modifier =
@@ -69,20 +110,33 @@ fun HomeScreen(
 
         if (state.careTasks.isEmpty()) {
             Text(
-                text =
-                    "No tasks for today.",
-                style =
-                    MaterialTheme.typography
-                        .bodyMedium,
+                text = "No tasks for today.",
+                style = MaterialTheme.typography.bodyMedium,
             )
         } else {
             state.careTasks.forEach { task ->
-                HomeCareTaskItem(
-                    task = task,
-                    onComplete = { viewModel.onAction(HomeAction.CompleteCareTask(task)) },
-                    onSoilDry = { viewModel.onAction(HomeAction.SoilCheckResult(task, true)) },
-                    onSoilMoist = { viewModel.onAction(HomeAction.SoilCheckResult(task, false)) },
-                )
+                if (needNotificationPermission && !notificationPermissionGranted && state.plantCount > 0) {
+                    HomeCareTaskItem(
+                        task = task,
+                        onComplete = { viewModel.onAction(HomeAction.CompleteCareTask(task)) },
+                        onSoilDry = {
+                            viewModel.onAction(
+                                HomeAction.SoilCheckResult(
+                                    task,
+                                    soilIsDry = true,
+                                ),
+                            )
+                        },
+                        onSoilMoist = {
+                            viewModel.onAction(
+                                HomeAction.SoilCheckResult(
+                                    task,
+                                    soilIsDry = false,
+                                ),
+                            )
+                        },
+                    )
+                }
             }
         }
 
@@ -96,6 +150,8 @@ fun HomeScreen(
  *
  * @param task The [HomeCareTaskUiModel] representing the care task.
  * @param onComplete Callback invoked when the task completion button is tapped.
+ * @param onSoilDry Callback invoked when the user indicates the soil is dry.
+ * @param onSoilMoist Callback invoked when the user indicates the soil is moist.
  */
 @Composable
 private fun HomeCareTaskItem(
@@ -119,13 +175,11 @@ private fun HomeCareTaskItem(
         ) {
             Text(
                 text = task.plantName,
-                style =
-                    MaterialTheme.typography.titleMedium,
+                style = MaterialTheme.typography.titleMedium,
             )
             Text(
                 text = task.type.displayName(),
-                style =
-                    MaterialTheme.typography.bodyMedium,
+                style = MaterialTheme.typography.bodyMedium,
             )
             when (task.type) {
                 CareTaskType.CheckSoil -> {

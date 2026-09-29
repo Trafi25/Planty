@@ -32,7 +32,6 @@ class CareReminderWorker
         private val plantRepository: PlantRepository,
         private val notificationManager: CareNotificationManager,
     ) : CoroutineWorker(context, params) {
-
         /**
          * Execution entry point for the background worker.
          *

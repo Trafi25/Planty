@@ -39,7 +39,7 @@ class CareTaskRepositoryImpl
          */
         override fun observePlantTasks(plantId: Long): Flow<List<CareTask>> =
             careTaskDao.observePlantTasks(plantId).map { entities ->
-                entities.mapNotNull { entity  ->
+                entities.mapNotNull { entity ->
                     entity.toDomain()
                 }
             }

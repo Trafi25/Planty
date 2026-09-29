@@ -66,7 +66,7 @@ class PlantKnowledgeRepositoryImplTest {
     }
 
     @Test
-    fun `returns cached knowledge without calling remote sources`() =
+    fun returnsCachedKnowledgeWithoutCallingRemoteSources() =
         runTest {
             coEvery {
                 plantKnowledgeDao.getByScientificName(any())
