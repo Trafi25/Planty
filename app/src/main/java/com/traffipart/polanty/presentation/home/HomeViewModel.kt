@@ -30,6 +30,8 @@ import kotlin.coroutines.cancellation.CancellationException
  * @property observeDueCareTasksUseCase Use case to observe due care tasks.
  * @property completeCareTaskUseCase Use case to complete a care task.
  * @property refreshPlantCarePlanUseCase Use case to recalculate and schedule next care tasks.
+ * @property recordSoilCheckResultUseCase Use case to record soil check results and adjust watering intervals.
+ * @property rescheduleOpenCareRemindersUseCase Use case to reschedule active care task notification reminders.
  */
 @HiltViewModel
 class HomeViewModel
@@ -96,6 +98,9 @@ class HomeViewModel
             }
         }
 
+        /**
+         * Reschedules notification reminders for all open care tasks.
+         */
         private fun rescheduleCareReminders() {
             viewModelScope.launch {
                 try {
@@ -108,6 +113,12 @@ class HomeViewModel
             }
         }
 
+        /**
+         * Records the result of a soil check task and updates the plant care schedule.
+         *
+         * @param task The [HomeCareTaskUiModel] representing the soil check task.
+         * @param soilIsDry True if the soil was dry, false if it was still moist.
+         */
         private fun recordSoilCheckResult(
             task: HomeCareTaskUiModel,
             soilIsDry: Boolean,

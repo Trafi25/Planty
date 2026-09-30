@@ -3,11 +3,14 @@ package com.traffipart.polanty.data.reminder
 import android.Manifest
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
+import com.traffipart.polanty.MainActivity
 import com.traffipart.polanty.R
 import com.traffipart.polanty.domain.model.CareTask
 import com.traffipart.polanty.domain.model.displayName
@@ -40,6 +43,7 @@ class CareNotificationManager
             task: CareTask,
             plantName: String,
         ) {
+            val contentIntent = createContentIntent(task)
             createChannel()
 
             if (
@@ -58,6 +62,7 @@ class CareNotificationManager
                     .setContentTitle(plantName)
                     .setContentText(task.type.displayName())
                     .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                    .setContentIntent(contentIntent)
                     .setAutoCancel(true)
                     .setOnlyAlertOnce(true)
                     .build()
@@ -68,6 +73,30 @@ class CareNotificationManager
                     task.id.hashCode(),
                     notification,
                 )
+        }
+
+        /**
+         * Creates a [PendingIntent] pointing to [MainActivity] with the target plant ID extra
+         * so tapping the notification launches or brings the app to the plant's detail screen.
+         *
+         * @param task The [CareTask] associated with the notification.
+         * @return The configured [PendingIntent].
+         */
+        private fun createContentIntent(task: CareTask): PendingIntent {
+            val intent =
+                Intent(context, MainActivity::class.java).apply {
+                    putExtra(
+                        MainActivity.EXTRA_NOTIFICATION_PLANT_ID,
+                        task.plantId,
+                    )
+                    flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+                }
+            return PendingIntent.getActivity(
+                context,
+                task.id.hashCode(),
+                intent,
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
+            )
         }
 
         /**

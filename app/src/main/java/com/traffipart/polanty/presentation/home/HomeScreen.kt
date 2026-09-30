@@ -62,16 +62,14 @@ fun HomeScreen(
             contract = ActivityResultContracts.RequestPermission(),
         ) { isGranted ->
             notificationPermissionGranted = isGranted
-            if (isGranted) {
-                viewModel.onAction(HomeAction.NotificationPermissionGranted)
-            }
         }
-
-    LaunchedEffect(Unit) {
-        if (needNotificationPermission && !notificationPermissionGranted) {
-            launcher.launch(Manifest.permission.POST_NOTIFICATIONS)
-        } else if (notificationPermissionGranted) {
-            viewModel.onAction(HomeAction.NotificationPermissionGranted)
+    LaunchedEffect(
+        notificationPermissionGranted,
+    ) {
+        if (notificationPermissionGranted) {
+            viewModel.onAction(
+                HomeAction.NotificationPermissionGranted,
+            )
         }
     }
 
@@ -115,28 +113,43 @@ fun HomeScreen(
             )
         } else {
             state.careTasks.forEach { task ->
-                if (needNotificationPermission && !notificationPermissionGranted && state.plantCount > 0) {
-                    HomeCareTaskItem(
-                        task = task,
-                        onComplete = { viewModel.onAction(HomeAction.CompleteCareTask(task)) },
-                        onSoilDry = {
-                            viewModel.onAction(
-                                HomeAction.SoilCheckResult(
-                                    task,
-                                    soilIsDry = true,
-                                ),
-                            )
-                        },
-                        onSoilMoist = {
-                            viewModel.onAction(
-                                HomeAction.SoilCheckResult(
-                                    task,
-                                    soilIsDry = false,
-                                ),
-                            )
-                        },
+
+                HomeCareTaskItem(
+                    task = task,
+                    onComplete = { viewModel.onAction(HomeAction.CompleteCareTask(task)) },
+                    onSoilDry = {
+                        viewModel.onAction(
+                            HomeAction.SoilCheckResult(
+                                task,
+                                soilIsDry = true,
+                            ),
+                        )
+                    },
+                    onSoilMoist = {
+                        viewModel.onAction(
+                            HomeAction.SoilCheckResult(
+                                task,
+                                soilIsDry = false,
+                            ),
+                        )
+                    },
+                )
+            }
+        }
+
+        if (
+            needNotificationPermission &&
+            !notificationPermissionGranted &&
+            state.plantCount > 0
+        ) {
+            Button(
+                onClick = {
+                    launcher.launch(
+                        Manifest.permission.POST_NOTIFICATIONS,
                     )
-                }
+                },
+            ) {
+                Text("Enable reminders")
             }
         }
 

@@ -3,6 +3,7 @@ package com.traffipart.polanty.presentation.root
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -32,11 +33,25 @@ import com.traffipart.polanty.presentation.spaceDetails.SpaceDetailsScreen
  * It manages the [Scaffold] with a bottom navigation bar and coordinates transitions
  * between different screens like Home, Garden, Identification, and Details.
  *
+ * @param notificationPlantId Target plant ID to navigate to if launched from a care reminder notification.
+ * @param onNotificationPlantHandled Callback invoked after navigating to the notification's target plant.
  * @param rootViewModel The ViewModel handling global app initialization.
  */
 @Composable
-fun PlantyRoot(rootViewModel: PlantyRootViewModel = hiltViewModel()) {
+fun PlantyRoot(
+    notificationPlantId: Long? = null,
+    onNotificationPlantHandled: () -> Unit = {},
+    rootViewModel: PlantyRootViewModel = hiltViewModel(),
+) {
     val navController = rememberNavController()
+
+    LaunchedEffect(notificationPlantId) {
+        val plantId = notificationPlantId ?: return@LaunchedEffect
+        navController.navigate(PlantRoute.details(plantId)) {
+            launchSingleTop = true
+            onNotificationPlantHandled()
+        }
+    }
 
     var selectedCandidate by rememberSaveable {
         mutableStateOf<PlantCandidate?>(null)
