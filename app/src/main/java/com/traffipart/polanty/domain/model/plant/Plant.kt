@@ -1,4 +1,6 @@
-package com.traffipart.polanty.domain.model
+package com.traffipart.polanty.domain.model.plant
+
+import com.traffipart.polanty.domain.model.space.PlantSpace
 
 /**
  * Represents an individual plant in the user's garden.

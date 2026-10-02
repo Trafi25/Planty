@@ -26,8 +26,8 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
-import com.traffipart.polanty.domain.model.PlantCandidate
-import com.traffipart.polanty.domain.model.PlantSpaceType
+import com.traffipart.polanty.domain.model.identification.PlantCandidate
+import com.traffipart.polanty.domain.model.space.PlantSpaceType
 import com.traffipart.polanty.presentation.garden.gardenContent.AddSpaceDialog
 import com.traffipart.polanty.ui.theme.spacing
 

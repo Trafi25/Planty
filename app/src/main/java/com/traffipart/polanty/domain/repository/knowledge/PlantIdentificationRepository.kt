@@ -2,8 +2,8 @@ package com.traffipart.polanty.domain.repository.knowledge
 
 import com.traffipart.polanty.core.common.DataError
 import com.traffipart.polanty.core.common.Result
-import com.traffipart.polanty.domain.model.PlantIdentification
-import com.traffipart.polanty.domain.model.PlantImage
+import com.traffipart.polanty.domain.model.identification.PlantIdentification
+import com.traffipart.polanty.domain.model.plant.PlantImage
 
 /**
  * Repository for identifying plants from images.

@@ -2,15 +2,15 @@ package com.traffipart.polanty.data.mapper
 
 import com.traffipart.polanty.core.common.trimToNull
 import com.traffipart.polanty.data.remote.knowledge.dtos.GeminiPlantKnowledgeDto
-import com.traffipart.polanty.domain.model.HumidityRange
-import com.traffipart.polanty.domain.model.LightRequirement
-import com.traffipart.polanty.domain.model.PlantCareProfile
-import com.traffipart.polanty.domain.model.PlantKnowledge
-import com.traffipart.polanty.domain.model.PlantSpeciesInfo
-import com.traffipart.polanty.domain.model.PlantToxicity
-import com.traffipart.polanty.domain.model.TemperatureRange
-import com.traffipart.polanty.domain.model.ToxicityLevel
-import com.traffipart.polanty.domain.model.WateringProfile
+import com.traffipart.polanty.domain.model.knowledge.HumidityRange
+import com.traffipart.polanty.domain.model.knowledge.LightRequirement
+import com.traffipart.polanty.domain.model.knowledge.PlantCareProfile
+import com.traffipart.polanty.domain.model.knowledge.PlantKnowledge
+import com.traffipart.polanty.domain.model.knowledge.PlantSpeciesInfo
+import com.traffipart.polanty.domain.model.knowledge.PlantToxicity
+import com.traffipart.polanty.domain.model.knowledge.TemperatureRange
+import com.traffipart.polanty.domain.model.knowledge.ToxicityLevel
+import com.traffipart.polanty.domain.model.knowledge.WateringProfile
 
 /**
  * Maps the [GeminiPlantKnowledgeDto] received from the AI model to the domain [PlantKnowledge] model.

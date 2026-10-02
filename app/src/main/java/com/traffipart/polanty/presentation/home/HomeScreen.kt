@@ -28,8 +28,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.ContextCompat
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.traffipart.polanty.domain.model.CareTaskType
-import com.traffipart.polanty.domain.model.displayName
+import com.traffipart.polanty.domain.model.care.CareTaskType
+import com.traffipart.polanty.domain.model.care.displayName
 import com.traffipart.polanty.ui.theme.spacing
 
 /**

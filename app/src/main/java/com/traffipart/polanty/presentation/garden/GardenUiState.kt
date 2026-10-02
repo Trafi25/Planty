@@ -1,7 +1,7 @@
 package com.traffipart.polanty.presentation.garden
 
-import com.traffipart.polanty.domain.model.Plant
-import com.traffipart.polanty.domain.model.PlantSpace
+import com.traffipart.polanty.domain.model.plant.Plant
+import com.traffipart.polanty.domain.model.space.PlantSpace
 
 /**
  * UI state for the Garden screen.

@@ -1,6 +1,6 @@
 package com.traffipart.polanty.presentation.scan
 
-import com.traffipart.polanty.domain.model.PlantImage
+import com.traffipart.polanty.domain.model.plant.PlantImage
 
 /**
  * Actions that can be performed on the Plant Identification screen.

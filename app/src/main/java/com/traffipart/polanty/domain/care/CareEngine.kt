@@ -1,36 +1,49 @@
 package com.traffipart.polanty.domain.care
 
-import com.traffipart.polanty.domain.model.CareTask
-import com.traffipart.polanty.domain.model.CareTaskType
-import com.traffipart.polanty.domain.model.PlantKnowledge
+import com.traffipart.polanty.domain.model.care.CareEnvironment
+import com.traffipart.polanty.domain.model.care.CareTask
+import com.traffipart.polanty.domain.model.care.CareTaskType
+import com.traffipart.polanty.domain.model.knowledge.PlantKnowledge
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.days
 
 /**
- * Engine responsible for calculating and scheduling care tasks for plants based on botanical knowledge.
+ * Engine responsible for calculating and scheduling care tasks for plants based on botanical knowledge and environment.
+ *
+ * @property intervalCalculator Calculator used to adapt soil moisture check intervals based on environmental conditions.
  */
 class CareEngine
     @Inject
-    constructor() {
+    constructor(
+        private val intervalCalculator: SoilCheckIntervalCalculator,
+    ) {
         /**
-         * Determines which care tasks are needed for a specific plant based on its history and botanical requirements.
+         * Determines which care tasks are needed for a specific plant based on its history, botanical requirements, and ambient climate.
          *
          * @param plantId The unique ID of the plant.
-         * @param knowledge The botanical knowledge containing care intervals.
+         * @param knowledge The botanical knowledge containing care intervals and preferred climate ranges.
          * @param existingTasks The current list of tasks for this plant to avoid duplicates.
-         * @param now The current reference timestamp.
+         * @param environment Optional ambient temperature and humidity conditions.
+         * @param now The current reference timestamp in milliseconds.
          * @return A list of new [CareTask]s that should be scheduled.
          */
         fun generateTasks(
             plantId: Long,
             knowledge: PlantKnowledge,
             existingTasks: List<CareTask>,
+            environment: CareEnvironment? = null,
             now: Long = System.currentTimeMillis(),
         ): List<CareTask> {
             require(plantId > 0) { "Plant ID must be valid" }
 
             val wateringProfile = knowledge.careProfile?.watering ?: return emptyList()
-            val intervalDays = wateringProfile.soilCheckIntervalDaysMin.takeIf { it > 0 } ?: return emptyList()
+            val intervalDays =
+                intervalCalculator.calculateDays(
+                    watering = wateringProfile,
+                    humidityRange = knowledge.careProfile.humidity,
+                    temperatureRange = knowledge.careProfile.temperature,
+                    environment = environment,
+                )
 
             // Filter tasks for this specific plant and type once for efficiency
             val relevantTasks =

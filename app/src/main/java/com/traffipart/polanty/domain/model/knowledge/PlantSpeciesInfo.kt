@@ -1,4 +1,4 @@
-package com.traffipart.polanty.domain.model
+package com.traffipart.polanty.domain.model.knowledge
 
 /**
  * Descriptive botanical information for a plant species.

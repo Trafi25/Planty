@@ -20,7 +20,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import com.traffipart.polanty.domain.model.PlantSpaceType
+import com.traffipart.polanty.domain.model.space.PlantSpaceType
 import com.traffipart.polanty.ui.theme.spacing
 
 /**

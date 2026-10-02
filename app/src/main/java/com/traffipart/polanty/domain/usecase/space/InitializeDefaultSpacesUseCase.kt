@@ -1,7 +1,7 @@
 package com.traffipart.polanty.domain.usecase.space
 
-import com.traffipart.polanty.domain.model.PlantSpace
-import com.traffipart.polanty.domain.model.PlantSpaceType
+import com.traffipart.polanty.domain.model.space.PlantSpace
+import com.traffipart.polanty.domain.model.space.PlantSpaceType
 import com.traffipart.polanty.domain.repository.plant.PlantSpaceRepository
 import com.traffipart.polanty.domain.repository.plant.SpaceInitializationRepository
 import jakarta.inject.Inject

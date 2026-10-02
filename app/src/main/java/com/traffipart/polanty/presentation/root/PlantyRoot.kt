@@ -18,7 +18,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.traffipart.polanty.domain.model.PlantCandidate
+import com.traffipart.polanty.domain.model.identification.PlantCandidate
 import com.traffipart.polanty.presentation.details.PlantDetailsScreen
 import com.traffipart.polanty.presentation.garden.GardenScreen
 import com.traffipart.polanty.presentation.home.HomeScreen
@@ -49,8 +49,8 @@ fun PlantyRoot(
         val plantId = notificationPlantId ?: return@LaunchedEffect
         navController.navigate(PlantRoute.details(plantId)) {
             launchSingleTop = true
-            onNotificationPlantHandled()
         }
+        onNotificationPlantHandled()
     }
 
     var selectedCandidate by rememberSaveable {

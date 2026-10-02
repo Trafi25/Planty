@@ -12,7 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
-import com.traffipart.polanty.domain.model.Plant
+import com.traffipart.polanty.domain.model.plant.Plant
 import com.traffipart.polanty.ui.theme.spacing
 
 /**

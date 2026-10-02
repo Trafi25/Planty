@@ -4,7 +4,7 @@ import android.util.Log
 import com.traffipart.polanty.data.mapper.toDomain
 import com.traffipart.polanty.data.mapper.toEntity
 import com.traffipart.polanty.data.room.care.CareTaskDao
-import com.traffipart.polanty.domain.model.CareTask
+import com.traffipart.polanty.domain.model.care.CareTask
 import com.traffipart.polanty.domain.repository.care.CareTaskRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map

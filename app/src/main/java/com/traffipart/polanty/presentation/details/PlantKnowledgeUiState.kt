@@ -1,6 +1,6 @@
 package com.traffipart.polanty.presentation.details
 
-import com.traffipart.polanty.domain.model.PlantKnowledge
+import com.traffipart.polanty.domain.model.knowledge.PlantKnowledge
 
 /**
  * Represents the various states of plant knowledge (botanical and care information)

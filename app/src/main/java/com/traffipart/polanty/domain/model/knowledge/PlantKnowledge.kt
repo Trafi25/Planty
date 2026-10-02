@@ -1,4 +1,4 @@
-package com.traffipart.polanty.domain.model
+package com.traffipart.polanty.domain.model.knowledge
 
 /**
  * Aggregate domain model containing species information and care requirements for a plant.

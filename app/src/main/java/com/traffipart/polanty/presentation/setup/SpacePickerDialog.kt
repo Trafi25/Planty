@@ -16,7 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.traffipart.polanty.domain.model.PlantSpace
+import com.traffipart.polanty.domain.model.space.PlantSpace
 import com.traffipart.polanty.ui.theme.spacing
 
 /**

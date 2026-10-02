@@ -1,6 +1,6 @@
 package com.traffipart.polanty.domain.usecase.plant
 
-import com.traffipart.polanty.domain.model.Plant
+import com.traffipart.polanty.domain.model.plant.Plant
 import com.traffipart.polanty.domain.repository.plant.PlantRepository
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
@@ -18,7 +18,7 @@ class ObservePlantsUseCase
         /**
          * Returns a Flow that emits the current list of all plants whenever it changes.
          *
-         * @return A [kotlinx.coroutines.flow.Flow] of a list of [com.traffipart.polanty.domain.model.Plant]s.
+         * @return A [kotlinx.coroutines.flow.Flow] of a list of [com.traffipart.polanty.domain.model.plant.Plant]s.
          */
         operator fun invoke(): Flow<List<Plant>> = repository.observePlants()
     }

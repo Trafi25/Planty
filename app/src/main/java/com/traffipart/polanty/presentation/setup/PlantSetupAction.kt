@@ -1,6 +1,7 @@
 package com.traffipart.polanty.presentation.setup
 
-import com.traffipart.polanty.domain.model.PlantCandidate
+import com.traffipart.polanty.domain.model.identification.PlantCandidate
+import com.traffipart.polanty.domain.model.space.PlantSpaceType
 
 /**
  * Actions that can be performed on the Plant Setup screen.
@@ -48,6 +49,6 @@ sealed interface PlantSetupAction {
      */
     data class CreateSpace(
         val customName: String?,
-        val type: com.traffipart.polanty.domain.model.PlantSpaceType,
+        val type: PlantSpaceType,
     ) : PlantSetupAction
 }

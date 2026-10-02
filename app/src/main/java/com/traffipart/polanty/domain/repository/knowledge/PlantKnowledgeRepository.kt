@@ -1,6 +1,6 @@
 package com.traffipart.polanty.domain.repository.knowledge
 
-import com.traffipart.polanty.domain.model.PlantKnowledge
+import com.traffipart.polanty.domain.model.knowledge.PlantKnowledge
 
 /**
  * Repository interface for retrieving detailed botanical knowledge about plant species.

@@ -1,6 +1,6 @@
 package com.traffipart.polanty.presentation.home
 
-import com.traffipart.polanty.domain.model.CareTaskType
+import com.traffipart.polanty.domain.model.care.CareTaskType
 
 /**
  * UI state for the Home screen.

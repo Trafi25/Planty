@@ -2,8 +2,8 @@ package com.traffipart.polanty.domain.usecase.plant
 
 import com.traffipart.polanty.core.common.DataError
 import com.traffipart.polanty.core.common.Result
-import com.traffipart.polanty.domain.model.PlantIdentification
-import com.traffipart.polanty.domain.model.PlantImage
+import com.traffipart.polanty.domain.model.identification.PlantIdentification
+import com.traffipart.polanty.domain.model.plant.PlantImage
 import com.traffipart.polanty.domain.repository.knowledge.PlantIdentificationRepository
 import javax.inject.Inject
 
@@ -25,8 +25,8 @@ class IdentifyPlantUseCase
         /**
          * Triggers the plant identification process.
          *
-         * @param image The [com.traffipart.polanty.domain.model.PlantImage] to be identified.
-         * @return A [com.traffipart.polanty.core.common.Result] containing either [com.traffipart.polanty.domain.model.PlantIdentification] on success or [com.traffipart.polanty.core.common.DataError] on failure.
+         * @param image The [com.traffipart.polanty.domain.model.plant.PlantImage] to be identified.
+         * @return A [com.traffipart.polanty.core.common.Result] containing either [com.traffipart.polanty.domain.model.identification.PlantIdentification] on success or [com.traffipart.polanty.core.common.DataError] on failure.
          */
         suspend operator fun invoke(image: PlantImage): Result<PlantIdentification, DataError> {
             if (image.bytes.isEmpty() || image.mimeType !in allowedMimeTypes) {

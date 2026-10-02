@@ -3,7 +3,7 @@ package com.traffipart.polanty.presentation.scan
 import android.content.Context
 import android.net.Uri
 import android.provider.OpenableColumns
-import com.traffipart.polanty.domain.model.PlantImage
+import com.traffipart.polanty.domain.model.plant.PlantImage
 
 fun Uri.toPlantImage(context: Context): PlantImage? {
     val contentResolver = context.contentResolver

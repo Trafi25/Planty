@@ -1,4 +1,4 @@
-package com.traffipart.polanty.domain.model
+package com.traffipart.polanty.domain.model.knowledge
 
 /**
  * Represents comprehensive care instructions for a plant species.

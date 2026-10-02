@@ -1,6 +1,6 @@
 package com.traffipart.polanty.domain.repository.care
 
-import com.traffipart.polanty.domain.model.CareTask
+import com.traffipart.polanty.domain.model.care.CareTask
 import kotlinx.coroutines.flow.Flow
 
 /**

@@ -7,7 +7,7 @@ import com.traffipart.polanty.data.mapper.toEntity
 import com.traffipart.polanty.data.remote.knowledge.PerenualApi
 import com.traffipart.polanty.data.room.knowledge.PlantKnowledgeDao
 import com.traffipart.polanty.domain.PlantKnowledgeGenerator
-import com.traffipart.polanty.domain.model.PlantKnowledge
+import com.traffipart.polanty.domain.model.knowledge.PlantKnowledge
 import com.traffipart.polanty.domain.repository.knowledge.PlantKnowledgeRepository
 import com.traffipart.polanty.domain.repository.knowledge.PlantNameResolver
 import retrofit2.HttpException

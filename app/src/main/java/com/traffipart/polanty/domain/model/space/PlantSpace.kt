@@ -1,4 +1,4 @@
-package com.traffipart.polanty.domain.model
+package com.traffipart.polanty.domain.model.space
 
 /**
  * Domain model representing a physical room or location where plants are grouped.

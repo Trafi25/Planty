@@ -1,6 +1,6 @@
 package com.traffipart.polanty.domain.repository.plant
 
-import com.traffipart.polanty.domain.model.PlantSpace
+import com.traffipart.polanty.domain.model.space.PlantSpace
 import kotlinx.coroutines.flow.Flow
 
 /**

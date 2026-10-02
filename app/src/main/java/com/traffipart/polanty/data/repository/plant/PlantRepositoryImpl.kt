@@ -4,7 +4,7 @@ import android.util.Log
 import com.traffipart.polanty.data.mapper.toDomain
 import com.traffipart.polanty.data.mapper.toEntity
 import com.traffipart.polanty.data.room.plant.PlantDao
-import com.traffipart.polanty.domain.model.Plant
+import com.traffipart.polanty.domain.model.plant.Plant
 import com.traffipart.polanty.domain.repository.plant.PlantRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map

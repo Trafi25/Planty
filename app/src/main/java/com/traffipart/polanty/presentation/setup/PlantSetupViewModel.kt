@@ -4,9 +4,9 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.traffipart.polanty.core.common.trimToNull
-import com.traffipart.polanty.domain.model.Plant
-import com.traffipart.polanty.domain.model.PlantCandidate
-import com.traffipart.polanty.domain.model.PlantSpaceType
+import com.traffipart.polanty.domain.model.identification.PlantCandidate
+import com.traffipart.polanty.domain.model.plant.Plant
+import com.traffipart.polanty.domain.model.space.PlantSpaceType
 import com.traffipart.polanty.domain.usecase.care.RefreshPlantCarePlanUseCase
 import com.traffipart.polanty.domain.usecase.plant.SavePlantUseCase
 import com.traffipart.polanty.domain.usecase.space.CreateSpaceUseCase

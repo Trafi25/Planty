@@ -2,7 +2,7 @@ package com.traffipart.polanty.presentation.garden
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.traffipart.polanty.domain.model.PlantSpaceType
+import com.traffipart.polanty.domain.model.space.PlantSpaceType
 import com.traffipart.polanty.domain.usecase.plant.ObservePlantsUseCase
 import com.traffipart.polanty.domain.usecase.space.CreateSpaceUseCase
 import com.traffipart.polanty.domain.usecase.space.DeleteSpaceUseCase

@@ -1,7 +1,7 @@
 package com.traffipart.polanty.presentation.setup
 
-import com.traffipart.polanty.domain.model.PlantCandidate
-import com.traffipart.polanty.domain.model.PlantSpace
+import com.traffipart.polanty.domain.model.identification.PlantCandidate
+import com.traffipart.polanty.domain.model.space.PlantSpace
 
 /**
  * UI state for the Plant Setup screen.

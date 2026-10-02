@@ -1,6 +1,6 @@
 package com.traffipart.polanty.presentation.details
 
-import com.traffipart.polanty.domain.model.Plant
+import com.traffipart.polanty.domain.model.plant.Plant
 
 /**
  * UI state for the Plant Details screen.

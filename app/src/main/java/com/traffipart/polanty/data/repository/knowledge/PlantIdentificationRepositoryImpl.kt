@@ -6,8 +6,8 @@ import com.traffipart.polanty.core.common.DataError
 import com.traffipart.polanty.core.common.Result
 import com.traffipart.polanty.data.mapper.toDomain
 import com.traffipart.polanty.data.remote.plant.PlantNetApi
-import com.traffipart.polanty.domain.model.PlantIdentification
-import com.traffipart.polanty.domain.model.PlantImage
+import com.traffipart.polanty.domain.model.identification.PlantIdentification
+import com.traffipart.polanty.domain.model.plant.PlantImage
 import com.traffipart.polanty.domain.repository.knowledge.PlantIdentificationRepository
 import jakarta.inject.Inject
 import okhttp3.MediaType.Companion.toMediaType
@@ -46,9 +46,9 @@ class PlantIdentificationRepositoryImpl
                 Result.Success(response)
             } catch (e: CancellationException) {
                 throw e
-            } catch (e: SocketTimeoutException) {
+            } catch (_: SocketTimeoutException) {
                 Result.Error(DataError.RequestTimeout)
-            } catch (e: UnknownHostException) {
+            } catch (_: UnknownHostException) {
                 Result.Error(
                     DataError.NoInternet,
                 )
@@ -66,7 +66,7 @@ class PlantIdentificationRepositoryImpl
                     else ->
                         Result.Error(DataError.Unknown)
                 }
-            } catch (e: JsonDataException) {
+            } catch (_: JsonDataException) {
                 Result.Error(
                     DataError.Serialization,
                 )

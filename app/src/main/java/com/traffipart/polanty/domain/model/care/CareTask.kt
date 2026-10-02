@@ -1,4 +1,4 @@
-package com.traffipart.polanty.domain.model
+package com.traffipart.polanty.domain.model.care
 
 /**
  * Domain model representing a scheduled or completed plant care task.

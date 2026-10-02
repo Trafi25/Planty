@@ -1,6 +1,6 @@
 package com.traffipart.polanty.domain
 
-import com.traffipart.polanty.domain.model.PlantKnowledge
+import com.traffipart.polanty.domain.model.knowledge.PlantKnowledge
 
 /**
  * Interface for AI-backed or automated generation of plant knowledge and care profiles.

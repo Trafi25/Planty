@@ -1,4 +1,4 @@
-package com.traffipart.polanty.domain.model
+package com.traffipart.polanty.domain.model.identification
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize

@@ -4,7 +4,7 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import com.traffipart.polanty.domain.model.PlantSpace
+import com.traffipart.polanty.domain.model.space.PlantSpace
 
 /**
  * A dialog that asks for confirmation before deleting a plant space.

@@ -1,6 +1,6 @@
 package com.traffipart.polanty.domain.usecase.plant
 
-import com.traffipart.polanty.domain.model.Plant
+import com.traffipart.polanty.domain.model.plant.Plant
 import com.traffipart.polanty.domain.repository.plant.PlantRepository
 import com.traffipart.polanty.domain.storage.PlantImageStorage
 import java.util.concurrent.CancellationException

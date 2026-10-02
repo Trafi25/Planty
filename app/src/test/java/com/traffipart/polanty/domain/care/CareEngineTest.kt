@@ -1,14 +1,14 @@
 package com.traffipart.polanty.domain.care
 
 import com.google.common.truth.Truth.assertThat
-import com.traffipart.polanty.domain.model.CareTask
-import com.traffipart.polanty.domain.model.CareTaskType
-import com.traffipart.polanty.domain.model.PlantCareProfile
-import com.traffipart.polanty.domain.model.PlantKnowledge
-import com.traffipart.polanty.domain.model.PlantSpeciesInfo
-import com.traffipart.polanty.domain.model.PlantToxicity
-import com.traffipart.polanty.domain.model.ToxicityLevel
-import com.traffipart.polanty.domain.model.WateringProfile
+import com.traffipart.polanty.domain.model.care.CareTask
+import com.traffipart.polanty.domain.model.care.CareTaskType
+import com.traffipart.polanty.domain.model.knowledge.PlantCareProfile
+import com.traffipart.polanty.domain.model.knowledge.PlantKnowledge
+import com.traffipart.polanty.domain.model.knowledge.PlantSpeciesInfo
+import com.traffipart.polanty.domain.model.knowledge.PlantToxicity
+import com.traffipart.polanty.domain.model.knowledge.ToxicityLevel
+import com.traffipart.polanty.domain.model.knowledge.WateringProfile
 import org.junit.jupiter.api.Test
 import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.hours
@@ -53,7 +53,7 @@ private fun plantKnowledge(
             ),
     )
 
-private val careEngine = CareEngine()
+private val careEngine = CareEngine(intervalCalculator = SoilCheckIntervalCalculator())
 
 class CareEngineTest {
     @Test

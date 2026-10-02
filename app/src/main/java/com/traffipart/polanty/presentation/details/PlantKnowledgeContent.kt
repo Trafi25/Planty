@@ -8,9 +8,9 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import com.traffipart.polanty.domain.model.LightRequirement
-import com.traffipart.polanty.domain.model.PlantKnowledge
-import com.traffipart.polanty.domain.model.ToxicityLevel
+import com.traffipart.polanty.domain.model.knowledge.LightRequirement
+import com.traffipart.polanty.domain.model.knowledge.PlantKnowledge
+import com.traffipart.polanty.domain.model.knowledge.ToxicityLevel
 import com.traffipart.polanty.ui.theme.spacing
 
 /**

@@ -1,7 +1,7 @@
 package com.traffipart.polanty.domain.usecase.care
 
-import com.traffipart.polanty.domain.model.CareTask
-import com.traffipart.polanty.domain.model.CareTaskType
+import com.traffipart.polanty.domain.model.care.CareTask
+import com.traffipart.polanty.domain.model.care.CareTaskType
 import javax.inject.Inject
 
 class RecordSoilCheckResultUseCase

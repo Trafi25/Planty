@@ -1,6 +1,6 @@
 package com.traffipart.polanty.presentation.garden
 
-import com.traffipart.polanty.domain.model.PlantSpaceType
+import com.traffipart.polanty.domain.model.space.PlantSpaceType
 
 /**
  * Actions that can be performed on the Garden screen.

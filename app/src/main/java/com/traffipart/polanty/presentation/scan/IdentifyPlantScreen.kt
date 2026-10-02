@@ -26,7 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.traffipart.polanty.core.common.toMessage
-import com.traffipart.polanty.domain.model.PlantCandidate
+import com.traffipart.polanty.domain.model.identification.PlantCandidate
 import com.traffipart.polanty.ui.theme.spacing
 
 /**

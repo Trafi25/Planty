@@ -11,9 +11,15 @@ import com.traffipart.polanty.core.common.trimToNull
 import com.traffipart.polanty.data.mapper.toDomain
 import com.traffipart.polanty.data.remote.knowledge.dtos.GeminiPlantKnowledgeDto
 import com.traffipart.polanty.domain.PlantKnowledgeGenerator
-import com.traffipart.polanty.domain.model.LightRequirement
-import com.traffipart.polanty.domain.model.PlantKnowledge
-import com.traffipart.polanty.domain.model.ToxicityLevel
+import com.traffipart.polanty.domain.model.knowledge.HumidityRange
+import com.traffipart.polanty.domain.model.knowledge.LightRequirement
+import com.traffipart.polanty.domain.model.knowledge.PlantCareProfile
+import com.traffipart.polanty.domain.model.knowledge.PlantKnowledge
+import com.traffipart.polanty.domain.model.knowledge.PlantSpeciesInfo
+import com.traffipart.polanty.domain.model.knowledge.PlantToxicity
+import com.traffipart.polanty.domain.model.knowledge.TemperatureRange
+import com.traffipart.polanty.domain.model.knowledge.ToxicityLevel
+import com.traffipart.polanty.domain.model.knowledge.WateringProfile
 import javax.inject.Inject
 import kotlin.coroutines.cancellation.CancellationException
 
@@ -207,13 +213,13 @@ class GeminiPlantKnowledgeGenerator
         ): PlantKnowledge =
             PlantKnowledge(
                 speciesInfo =
-                    com.traffipart.polanty.domain.model.PlantSpeciesInfo(
+                    PlantSpeciesInfo(
                         scientificName = scientificName,
                         commonName = commonName,
                         description = "Botanical care information for $scientificName.",
                         origin = null,
                         toxicity =
-                            com.traffipart.polanty.domain.model.PlantToxicity(
+                            PlantToxicity(
                                 pets = ToxicityLevel.Unknown,
                                 humans = ToxicityLevel.Unknown,
                                 notes = "Toxicity details unavailable.",
@@ -222,21 +228,19 @@ class GeminiPlantKnowledgeGenerator
                         typicalHeightCmMax = null,
                     ),
                 careProfile =
-                    com.traffipart.polanty.domain.model.PlantCareProfile(
+                    PlantCareProfile(
                         scientificName = scientificName,
                         watering =
-                            com.traffipart.polanty.domain.model.WateringProfile(
+                            WateringProfile(
                                 soilCheckIntervalDaysMin = 7,
                                 soilCheckIntervalDaysMax = 10,
                                 instruction = "Check the top inch of soil before watering.",
                             ),
                         light = LightRequirement.MediumIndirect,
                         humidity =
-                            com.traffipart.polanty.domain.model
-                                .HumidityRange(minPercent = 40, maxPercent = 60),
+                            HumidityRange(minPercent = 40, maxPercent = 60),
                         temperature =
-                            com.traffipart.polanty.domain.model
-                                .TemperatureRange(minCelsius = 18.0, maxCelsius = 26.0),
+                            TemperatureRange(minCelsius = 18.0, maxCelsius = 26.0),
                         fertilizing = "Fertilize lightly during the active growing season.",
                     ),
             )

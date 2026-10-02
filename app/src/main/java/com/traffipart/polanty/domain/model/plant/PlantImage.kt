@@ -1,4 +1,4 @@
-package com.traffipart.polanty.domain.model
+package com.traffipart.polanty.domain.model.plant
 
 /**
  * Encapsulates image binary data for plant identification calls.
