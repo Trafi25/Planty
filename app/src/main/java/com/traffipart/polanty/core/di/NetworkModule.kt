@@ -8,6 +8,7 @@ import com.traffipart.polanty.core.network.PlantNetAuthInterceptor
 import com.traffipart.polanty.data.remote.knowledge.PerenualApi
 import com.traffipart.polanty.data.remote.plant.PlantNetApi
 import com.traffipart.polanty.data.remote.taxonomy.GbifApi
+import com.traffipart.polanty.data.remote.weather.OpenMeteoApi
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -28,6 +29,8 @@ object NetworkModule {
     private const val PLANTNET_BASE_URL = "https://my-api.plantnet.org/"
     private const val PERENUAL_BASE_URL = "https://perenual.com/"
     private const val GBIF_BASE_URL = "https://api.gbif.org/"
+
+    private const val OPEN_METEO_BASE_URL = "https://api.open-meteo.com/"
 
     /** Provides the global [Moshi] instance for JSON serialization/deserialization. */
     @Provides
@@ -79,6 +82,25 @@ object NetworkModule {
     @Singleton
     @GbifClient
     fun provideGbifHttpClient(builder: OkHttpClient.Builder): OkHttpClient = builder.build()
+
+    @Provides
+    @Singleton
+    @OpenMeteoClient
+    fun provideOpenMeteoHttpClient(builder: OkHttpClient.Builder): OkHttpClient = builder.build()
+
+    @Provides
+    @Singleton
+    @OpenMeteoClient
+    fun provideOpenMeteoRetrofit(
+        moshi: Moshi,
+        @OpenMeteoClient httpClient: OkHttpClient,
+    ): Retrofit =
+        Retrofit
+            .Builder()
+            .baseUrl(OPEN_METEO_BASE_URL)
+            .client(httpClient)
+            .addConverterFactory(MoshiConverterFactory.create(moshi))
+            .build()
 
     /** Provides the [Retrofit] instance for the PlantNet API. */
     @Provides
@@ -143,4 +165,10 @@ object NetworkModule {
     fun provideGbifApi(
         @GbifClient retrofit: Retrofit,
     ): GbifApi = retrofit.create(GbifApi::class.java)
+
+    @Provides
+    @Singleton
+    fun provideOpenMeteoApi(
+        @OpenMeteoClient retrofit: Retrofit,
+    ): OpenMeteoApi = retrofit.create(OpenMeteoApi::class.java)
 }

@@ -19,3 +19,7 @@ annotation class PerenualClient
 @Qualifier
 @Retention(AnnotationRetention.BINARY)
 annotation class GbifClient
+
+@Qualifier
+@Retention(AnnotationRetention.BINARY)
+annotation class OpenMeteoClient
