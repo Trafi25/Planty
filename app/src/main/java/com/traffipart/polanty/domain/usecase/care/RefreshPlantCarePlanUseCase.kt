@@ -1,7 +1,6 @@
 package com.traffipart.polanty.domain.usecase.care
 
 import com.traffipart.polanty.domain.care.CareEngine
-import com.traffipart.polanty.domain.model.care.CareEnvironment
 import com.traffipart.polanty.domain.repository.care.CareTaskRepository
 import com.traffipart.polanty.domain.repository.knowledge.PlantKnowledgeRepository
 import kotlinx.coroutines.flow.first
@@ -25,7 +24,6 @@ class RefreshPlantCarePlanUseCase
         private val careTaskRepository: CareTaskRepository,
         private val plantKnowledgeRepository: PlantKnowledgeRepository,
         private val saveCareTaskUseCase: SaveCareTaskUseCase,
-        private val environment: CareEnvironment? = null,
     ) {
         /**
          * Evaluates care requirements and creates newly needed care tasks for a specific plant.
@@ -48,7 +46,7 @@ class RefreshPlantCarePlanUseCase
             val knowledge = plantKnowledgeRepository.getPlantKnowledge(scientificName) ?: return emptyList()
             val existingTasks = careTaskRepository.observePlantTasks(plantId).first()
 
-            val newTasks = careEngine.generateTasks(plantId, knowledge, existingTasks, environment, now)
+            val newTasks = careEngine.generateTasks(plantId, knowledge, existingTasks, null, now)
 
             val createdTaskIds = mutableListOf<Long>()
 

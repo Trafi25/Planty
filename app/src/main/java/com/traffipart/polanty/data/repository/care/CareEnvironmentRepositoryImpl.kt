@@ -18,8 +18,14 @@ class CareEnvironmentRepositoryImpl
         ): CareEnvironment? =
             try {
                 val current = openMeteoApi.getCurrentWeather(latitude, longitude).current ?: return null
-                val temperatureCelsius = current.temperatureCelsius ?: return null
-                val humidityPercent = current.humidityPercent?.roundToInt().takeIf { it in 0..100 } ?: return null
+                val temperatureCelsius = current.temperatureCelsius
+                val humidityPercent = current.humidityPercent?.roundToInt().takeIf { it in 0..100 }
+
+                if (
+                    temperatureCelsius == null && humidityPercent == null
+                ) {
+                    return null
+                }
                 CareEnvironment(temperatureCelsius, humidityPercent)
             } catch (e: CancellationException) {
                 throw e

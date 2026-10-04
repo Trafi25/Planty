@@ -1,5 +1,6 @@
 package com.traffipart.polanty.core.di
 
+import com.traffipart.polanty.data.location.AndroidDeviceLocationProvider
 import com.traffipart.polanty.data.reminder.WorkManagerCareReminderScheduler
 import com.traffipart.polanty.data.repository.care.CareEnvironmentRepositoryImpl
 import com.traffipart.polanty.data.repository.care.CareTaskRepositoryImpl
@@ -7,17 +8,20 @@ import com.traffipart.polanty.data.repository.knowledge.GbifPlantNameResolverImp
 import com.traffipart.polanty.data.repository.knowledge.GeminiPlantKnowledgeGenerator
 import com.traffipart.polanty.data.repository.knowledge.PlantIdentificationRepositoryImpl
 import com.traffipart.polanty.data.repository.knowledge.PlantKnowledgeRepositoryImpl
+import com.traffipart.polanty.data.repository.location.GardenLocationRepositoryImpl
 import com.traffipart.polanty.data.repository.plant.PlantRepositoryImpl
 import com.traffipart.polanty.data.repository.plant.PlantSpaceRepositoryImpl
 import com.traffipart.polanty.data.repository.plant.SpaceInitializationRepositoryImpl
 import com.traffipart.polanty.data.storage.PlantImageStorageImpl
 import com.traffipart.polanty.domain.PlantKnowledgeGenerator
+import com.traffipart.polanty.domain.location.DeviceLocationProvider
 import com.traffipart.polanty.domain.reminder.CareReminderScheduler
 import com.traffipart.polanty.domain.repository.care.CareEnvironmentRepository
 import com.traffipart.polanty.domain.repository.care.CareTaskRepository
 import com.traffipart.polanty.domain.repository.knowledge.PlantIdentificationRepository
 import com.traffipart.polanty.domain.repository.knowledge.PlantKnowledgeRepository
 import com.traffipart.polanty.domain.repository.knowledge.PlantNameResolver
+import com.traffipart.polanty.domain.repository.location.GardenLocationRepository
 import com.traffipart.polanty.domain.repository.plant.PlantRepository
 import com.traffipart.polanty.domain.repository.plant.PlantSpaceRepository
 import com.traffipart.polanty.domain.repository.plant.SpaceInitializationRepository
@@ -76,4 +80,13 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindCareEnvironmentRepository(repository: CareEnvironmentRepositoryImpl): CareEnvironmentRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindGardenLocationRepository(repository: GardenLocationRepositoryImpl): GardenLocationRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindDeviceLocationProvider(provider: AndroidDeviceLocationProvider): DeviceLocationProvider
+
 }
