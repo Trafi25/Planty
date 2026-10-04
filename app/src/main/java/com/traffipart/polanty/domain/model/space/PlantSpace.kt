@@ -17,16 +17,49 @@ data class PlantSpace(
  * Pre-defined categories for plant locations.
  *
  * @property displayName Default human-readable title for the space type.
+ * @property climateExposure The default [ClimateExposure] associated with this space type.
  */
 enum class PlantSpaceType(
     val displayName: String,
+    val climateExposure: ClimateExposure,
 ) {
-    LivingRoom("Living room"),
-    Bedroom("Bedroom"),
-    Bathroom("Bathroom"),
-    Backyard("Backyard"),
-    Kitchen("Kitchen"),
-    Balcony("Balcony"),
-    Office("Office"),
-    Custom("Custom"),
+    LivingRoom(
+        displayName = "Living room",
+        climateExposure = ClimateExposure.Indirect,
+    ),
+
+    Bedroom(
+        displayName = "Bedroom",
+        climateExposure = ClimateExposure.Indirect,
+    ),
+
+    Bathroom(
+        displayName = "Bathroom",
+        climateExposure = ClimateExposure.Indirect,
+    ),
+
+    Backyard(
+        displayName = "Backyard",
+        climateExposure = ClimateExposure.Direct,
+    ),
+
+    Kitchen(
+        displayName = "Kitchen",
+        climateExposure = ClimateExposure.Indirect,
+    ),
+
+    Balcony(
+        displayName = "Balcony",
+        climateExposure = ClimateExposure.Partial,
+    ),
+
+    Office(
+        displayName = "Office",
+        climateExposure = ClimateExposure.Indirect,
+    ),
+
+    Custom(
+        displayName = "Custom",
+        climateExposure = ClimateExposure.Indirect,
+    ),
 }

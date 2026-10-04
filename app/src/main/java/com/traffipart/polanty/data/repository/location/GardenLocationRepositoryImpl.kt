@@ -13,12 +13,22 @@ import javax.inject.Inject
 
 private val Context.gardenLocationDataStore by preferencesDataStore(name = "garden_location")
 
+/**
+ * Implementation of [GardenLocationRepository] backed by Jetpack Preferences DataStore.
+ *
+ * Persists and retrieves saved garden latitude and longitude coordinates.
+ *
+ * @property context Application context used for accessing the Preferences DataStore delegate.
+ */
 class GardenLocationRepositoryImpl
     @Inject
     constructor(
         @ApplicationContext
         private val context: Context,
     ) : GardenLocationRepository {
+        /**
+         * Observes the saved garden coordinates from Preferences DataStore.
+         */
         override fun observeLocation(): Flow<GeoCoordinates?> =
             context.gardenLocationDataStore
                 .data
@@ -29,6 +39,12 @@ class GardenLocationRepositoryImpl
                     GeoCoordinates(latitude, longitude)
                 }
 
+        /**
+         * Validates and persists new garden coordinates to Preferences DataStore.
+         *
+         * @param coordinates The [GeoCoordinates] to save.
+         * @throws IllegalArgumentException If latitude or longitude fall outside valid geographic bounds.
+         */
         override suspend fun saveLocation(coordinates: GeoCoordinates) {
             require(coordinates.latitude in -90.0..90.0)
             require(coordinates.longitude in -180.0..180.0)
@@ -38,6 +54,9 @@ class GardenLocationRepositoryImpl
             }
         }
 
+        /**
+         * Clears all saved garden location keys from Preferences DataStore.
+         */
         override suspend fun clearLocation() {
             context.gardenLocationDataStore.edit { preferences ->
                 preferences.remove(LATITUDE_KEY)

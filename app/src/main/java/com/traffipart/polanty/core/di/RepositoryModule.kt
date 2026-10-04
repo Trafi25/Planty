@@ -88,5 +88,4 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindDeviceLocationProvider(provider: AndroidDeviceLocationProvider): DeviceLocationProvider
-
 }
