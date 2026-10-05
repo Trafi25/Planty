@@ -27,7 +27,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.traffipart.polanty.core.common.toMessage
 import com.traffipart.polanty.domain.model.identification.PlantCandidate
-import com.traffipart.polanty.ui.theme.spacing
+import com.traffipart.polanty.presentation.theme.spacing
 
 /**
  * Screen for identifying a plant from a photo.

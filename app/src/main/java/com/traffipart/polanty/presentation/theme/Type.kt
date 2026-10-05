@@ -1,4 +1,4 @@
-package com.traffipart.polanty.ui.theme
+package com.traffipart.polanty.presentation.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle

@@ -11,7 +11,7 @@ import androidx.compose.ui.Modifier
 import com.traffipart.polanty.domain.model.knowledge.LightRequirement
 import com.traffipart.polanty.domain.model.knowledge.PlantKnowledge
 import com.traffipart.polanty.domain.model.knowledge.ToxicityLevel
-import com.traffipart.polanty.ui.theme.spacing
+import com.traffipart.polanty.presentation.theme.spacing
 
 /**
  * Composable that displays botanical and care information for a plant based on the current state.

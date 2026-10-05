@@ -21,7 +21,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import com.traffipart.polanty.domain.model.space.PlantSpaceType
-import com.traffipart.polanty.ui.theme.spacing
+import com.traffipart.polanty.presentation.theme.spacing
 
 /**
  * A dialog for adding a new plant space.

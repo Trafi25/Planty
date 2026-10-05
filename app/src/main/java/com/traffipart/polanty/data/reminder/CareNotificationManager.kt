@@ -10,10 +10,10 @@ import android.content.pm.PackageManager
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
-import com.traffipart.polanty.MainActivity
 import com.traffipart.polanty.R
-import com.traffipart.polanty.domain.model.CareTask
-import com.traffipart.polanty.domain.model.displayName
+import com.traffipart.polanty.domain.model.care.CareTask
+import com.traffipart.polanty.domain.model.care.displayName
+import com.traffipart.polanty.presentation.MainActivity
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import javax.inject.Singleton

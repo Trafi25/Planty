@@ -29,7 +29,7 @@ import coil3.compose.AsyncImage
 import com.traffipart.polanty.domain.model.identification.PlantCandidate
 import com.traffipart.polanty.domain.model.space.PlantSpaceType
 import com.traffipart.polanty.presentation.garden.gardenContent.AddSpaceDialog
-import com.traffipart.polanty.ui.theme.spacing
+import com.traffipart.polanty.presentation.theme.spacing
 
 /**
  * Screen for setting up a new plant before adding it to the garden.

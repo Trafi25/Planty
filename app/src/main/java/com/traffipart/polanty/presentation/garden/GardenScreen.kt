@@ -25,7 +25,7 @@ import com.traffipart.polanty.presentation.garden.gardenContent.AddSpaceDialog
 import com.traffipart.polanty.presentation.garden.gardenContent.DeleteSpaceDialog
 import com.traffipart.polanty.presentation.garden.gardenContent.PlantsContent
 import com.traffipart.polanty.presentation.garden.gardenContent.SpacesContent
-import com.traffipart.polanty.ui.theme.spacing
+import com.traffipart.polanty.presentation.theme.spacing
 
 private enum class GardenTab {
     Plants,

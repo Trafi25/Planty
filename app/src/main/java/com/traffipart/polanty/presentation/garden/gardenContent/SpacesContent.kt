@@ -19,7 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.traffipart.polanty.domain.model.space.PlantSpace
 import com.traffipart.polanty.presentation.garden.GardenUiState
-import com.traffipart.polanty.ui.theme.spacing
+import com.traffipart.polanty.presentation.theme.spacing
 
 /**
  * Composable that displays the list of plant spaces in the garden.

@@ -1,4 +1,4 @@
-package com.traffipart.polanty.ui.theme
+package com.traffipart.polanty.presentation.theme
 
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.unit.Dp

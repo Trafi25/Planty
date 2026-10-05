@@ -1,4 +1,4 @@
-package com.traffipart.polanty
+package com.traffipart.polanty.presentation
 
 import android.content.Intent
 import android.os.Bundle
@@ -9,7 +9,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.traffipart.polanty.presentation.root.PlantyRoot
-import com.traffipart.polanty.ui.theme.PolantyTheme
+import com.traffipart.polanty.presentation.theme.PolantyTheme
 import dagger.hilt.android.AndroidEntryPoint
 
 /**

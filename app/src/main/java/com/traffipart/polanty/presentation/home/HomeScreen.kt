@@ -30,7 +30,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.traffipart.polanty.domain.model.care.CareTaskType
 import com.traffipart.polanty.domain.model.care.displayName
-import com.traffipart.polanty.ui.theme.spacing
+import com.traffipart.polanty.presentation.theme.spacing
 
 /**
  * The landing screen of the app, providing a summary of the garden and quick actions.
