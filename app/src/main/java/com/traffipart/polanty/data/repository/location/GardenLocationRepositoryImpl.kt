@@ -35,7 +35,7 @@ class GardenLocationRepositoryImpl
                 .map { preferences ->
                     val latitude = preferences[LATITUDE_KEY] ?: return@map null
                     val longitude = preferences[LONGITUDE_KEY] ?: return@map null
-                    if (latitude !in -90.0..90.0 && longitude !in -180.0..180.0) return@map null
+                    if (latitude !in -90.0..90.0 || longitude !in -180.0..180.0) return@map null
                     GeoCoordinates(latitude, longitude)
                 }
 

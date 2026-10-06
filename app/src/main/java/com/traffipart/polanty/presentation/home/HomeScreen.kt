@@ -31,6 +31,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.traffipart.polanty.domain.model.care.CareTaskType
 import com.traffipart.polanty.domain.model.care.displayName
 import com.traffipart.polanty.presentation.theme.spacing
+import kotlin.contracts.contract
 
 /**
  * The landing screen of the app, providing a summary of the garden and quick actions.
@@ -57,7 +58,7 @@ fun HomeScreen(
         )
     }
 
-    val launcher =
+    val notificationPermissionLauncher  =
         rememberLauncherForActivityResult(
             contract = ActivityResultContracts.RequestPermission(),
         ) { isGranted ->
@@ -144,7 +145,7 @@ fun HomeScreen(
         ) {
             Button(
                 onClick = {
-                    launcher.launch(
+                    notificationPermissionLauncher.launch(
                         Manifest.permission.POST_NOTIFICATIONS,
                     )
                 },
@@ -152,6 +153,8 @@ fun HomeScreen(
                 Text("Enable reminders")
             }
         }
+
+
 
         Button(modifier = Modifier.fillMaxWidth(), onClick = onScanPlant) { Text("Scan a plant") }
         Button(modifier = Modifier.fillMaxWidth(), onClick = onOpenGarden) { Text("Open garden") }
