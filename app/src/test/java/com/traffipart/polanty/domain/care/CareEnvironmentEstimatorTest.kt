@@ -8,9 +8,7 @@ import com.traffipart.polanty.domain.model.space.ClimateExposure
 import org.junit.Test
 
 class CareEnvironmentEstimatorTest {
-
     private val estimator = CareEnvironmentEstimator()
-
 
     @Test
     fun directExposureUsesOutdoorEnvironmentUnchanged() {
@@ -60,7 +58,4 @@ class CareEnvironmentEstimatorTest {
             result.temperatureCelsius,
         ).isGreaterThan(21.0)
     }
-
-
-
 }

@@ -8,8 +8,6 @@ import com.traffipart.polanty.domain.usecase.care.ObserveDueCareTasksUseCase
 import com.traffipart.polanty.domain.usecase.care.RecordSoilCheckResultUseCase
 import com.traffipart.polanty.domain.usecase.care.RefreshPlantCarePlanUseCase
 import com.traffipart.polanty.domain.usecase.care.RescheduleOpenCareRemindersUseCase
-import com.traffipart.polanty.domain.usecase.location.ObserveGardenLocationUseCase
-import com.traffipart.polanty.domain.usecase.location.SaveCurrentGardenLocationUseCase
 import com.traffipart.polanty.domain.usecase.plant.ObservePlantsUseCase
 import com.traffipart.polanty.domain.usecase.space.ObserveSpacesUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -46,8 +44,6 @@ class HomeViewModel
         private val refreshPlantCarePlanUseCase: RefreshPlantCarePlanUseCase,
         private val recordSoilCheckResultUseCase: RecordSoilCheckResultUseCase,
         private val rescheduleOpenCareRemindersUseCase: RescheduleOpenCareRemindersUseCase,
-        private val observeGardenLocationUseCase : ObserveGardenLocationUseCase,
-        private val saveCurrentGardenLocationUseCase: SaveCurrentGardenLocationUseCase,
     ) : ViewModel() {
         /**
          * The UI state for the Home screen, providing plant and space counts and due care tasks.
@@ -57,8 +53,7 @@ class HomeViewModel
                 observePlantsUseCase(),
                 observeSpacesUseCase(),
                 observeDueCareTasksUseCase(),
-                observeGardenLocationUseCase(),
-            ) { plants, spaces, careTasks, gardenLocation ->
+            ) { plants, spaces, careTasks ->
                 val plantsById = plants.associateBy { plant -> plant.id }
                 val taskUiModels =
                     careTasks.mapNotNull { task ->
@@ -79,7 +74,6 @@ class HomeViewModel
                     spaceCount = spaces.size,
                     isLoading = false,
                     careTasks = taskUiModels,
-                    hasGardenLocation = gardenLocation != null,
                 )
             }.stateIn(
                 scope = viewModelScope,
@@ -101,26 +95,10 @@ class HomeViewModel
                     recordSoilCheckResult(task = action.task, soilIsDry = action.soilIsDry)
                 }
                 HomeAction.NotificationPermissionGranted -> rescheduleCareReminders()
-                HomeAction.SaveCurrentGardenLocation -> saveCurrentGardenLocation()
             }
         }
 
-    private fun saveCurrentGardenLocation() {
-        viewModelScope.launch {
-            try {
-                val saved = saveCurrentGardenLocationUseCase()
-                if (!saved) {
-                    Log.w("HomeViewModel","Current location unavailable",)
-                }
-            } catch (e : CancellationException) {
-                throw e
-            } catch (e : Exception) {
-                Log.e("HomeViewModel","Failed to save current location",e)
-            }
-        }
-    }
-
-    /**
+        /**
          * Reschedules notification reminders for all open care tasks.
          */
         private fun rescheduleCareReminders() {

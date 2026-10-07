@@ -5,8 +5,10 @@ import com.traffipart.polanty.domain.repository.location.GardenLocationRepositor
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
-class ObserveGardenLocationUseCase @Inject  constructor(
-    private val repository: GardenLocationRepository
-){
-    operator fun invoke() : Flow<GeoCoordinates?> = repository.observeLocation()
-}
+class ObserveGardenLocationUseCase
+    @Inject
+    constructor(
+        private val repository: GardenLocationRepository,
+    ) {
+        operator fun invoke(): Flow<GeoCoordinates?> = repository.observeLocation()
+    }

@@ -17,7 +17,8 @@ subprojects {
             ktlint(libs.versions.ktlint.get()).editorConfigOverride(
                 mapOf(
                     "ktlint_code_style" to "android",
-                    "ktlint_function_naming_ignore_when_annotated_with" to "Composable"
+                    "ktlint_function_naming_ignore_when_annotated_with" to "Composable",
+                    "ktlint_standard_no-unused-imports" to "enabled"
                 )
             )
         }
