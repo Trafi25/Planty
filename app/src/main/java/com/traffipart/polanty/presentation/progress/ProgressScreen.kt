@@ -8,32 +8,42 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
+import com.traffipart.polanty.presentation.theme.PolantyTheme
 import com.traffipart.polanty.presentation.theme.spacing
 
 /**
  * Screen that displays the user's progress, achievements, and statistics.
  */
 @Composable
-fun ProgressScreen() {
+fun ProgressScreen(modifier: Modifier = Modifier) {
+    ProgressContent(modifier = modifier)
+}
+
+/**
+ * Stateless Progress content composable.
+ */
+@Composable
+fun ProgressContent(modifier: Modifier = Modifier) {
     Column(
-        modifier = Modifier.fillMaxSize().padding(MaterialTheme.spacing.large),
-        verticalArrangement =
-            Arrangement.spacedBy(
-                MaterialTheme.spacing.medium,
-            ),
+        modifier = modifier.fillMaxSize().padding(MaterialTheme.spacing.large),
+        verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.medium),
     ) {
         Text(
             text = "Progress",
-            style =
-                MaterialTheme.typography
-                    .headlineMedium,
+            style = MaterialTheme.typography.headlineMedium,
         )
         Text(
-            text =
-                "XP, streaks, levels and achievements will appear here.",
-            style =
-                MaterialTheme.typography
-                    .bodyMedium,
+            text = "XP, streaks, levels and achievements will appear here.",
+            style = MaterialTheme.typography.bodyMedium,
         )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun ProgressContentPreview() {
+    PolantyTheme {
+        ProgressContent()
     }
 }

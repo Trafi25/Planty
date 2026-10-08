@@ -23,23 +23,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
 import com.traffipart.polanty.domain.model.identification.PlantCandidate
+import com.traffipart.polanty.domain.model.space.PlantSpace
 import com.traffipart.polanty.domain.model.space.PlantSpaceType
 import com.traffipart.polanty.presentation.garden.gardenContent.AddSpaceDialog
+import com.traffipart.polanty.presentation.theme.PolantyTheme
 import com.traffipart.polanty.presentation.theme.spacing
 
 /**
- * Screen for setting up a new plant before adding it to the garden.
- * Users can provide a nickname, select a space, and confirm saving the plant.
- *
- * @param candidate The plant candidate selected from the identification results.
- * @param onPlantSaved Callback invoked when the plant has been successfully saved, providing its ID.
- * @param onBack Callback invoked to navigate back to the previous screen.
- * @param imageUri The URI of the image taken or selected for identification.
- * @param viewModel The ViewModel providing the state and handling actions for this screen.
+ * Stateful wrapper for the Plant Setup screen.
  */
 @Composable
 fun PlantSetupScreen(
@@ -56,9 +52,6 @@ fun PlantSetupScreen(
     var newSpaceType by rememberSaveable { mutableStateOf(PlantSpaceType.LivingRoom) }
     var newSpaceName by rememberSaveable { mutableStateOf("") }
 
-    val activeCandidate = state.candidate ?: candidate
-    val selectedSpace = state.spaces.firstOrNull { it.id == state.spaceId }
-
     LaunchedEffect(candidate, imageUri) {
         viewModel.onAction(
             PlantSetupAction.Initialize(
@@ -74,17 +67,54 @@ fun PlantSetupScreen(
         }
     }
 
+    PlantSetupContent(
+        state = state,
+        candidate = candidate,
+        imageUri = imageUri,
+        onAction = viewModel::onAction,
+        onBack = onBack,
+        showSpacePicker = showSpacePicker,
+        onShowSpacePickerChanged = { showSpacePicker = it },
+        showAddSpaceDialog = showAddSpaceDialog,
+        onShowAddSpaceDialogChanged = { showAddSpaceDialog = it },
+        newSpaceType = newSpaceType,
+        onNewSpaceTypeChanged = { newSpaceType = it },
+        newSpaceName = newSpaceName,
+        onNewSpaceNameChanged = { newSpaceName = it },
+    )
+}
+
+/**
+ * Stateless Plant Setup content composable.
+ */
+@Composable
+fun PlantSetupContent(
+    state: PlantSetupUiState,
+    candidate: PlantCandidate,
+    imageUri: String?,
+    onAction: (PlantSetupAction) -> Unit,
+    onBack: () -> Unit,
+    modifier: Modifier = Modifier,
+    showSpacePicker: Boolean = false,
+    onShowSpacePickerChanged: (Boolean) -> Unit = {},
+    showAddSpaceDialog: Boolean = false,
+    onShowAddSpaceDialogChanged: (Boolean) -> Unit = {},
+    newSpaceType: PlantSpaceType = PlantSpaceType.LivingRoom,
+    onNewSpaceTypeChanged: (PlantSpaceType) -> Unit = {},
+    newSpaceName: String = "",
+    onNewSpaceNameChanged: (String) -> Unit = {},
+) {
+    val activeCandidate = state.candidate ?: candidate
+    val selectedSpace = state.spaces.firstOrNull { it.id == state.spaceId }
+
     Column(
         modifier =
-            Modifier
+            modifier
                 .fillMaxSize()
                 .padding(MaterialTheme.spacing.large),
-        verticalArrangement =
-            Arrangement.spacedBy(MaterialTheme.spacing.medium),
+        verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.medium),
     ) {
-        Button(
-            onClick = onBack,
-        ) {
+        Button(onClick = onBack) {
             Text("Back")
         }
 
@@ -115,7 +145,7 @@ fun PlantSetupScreen(
             modifier = Modifier.fillMaxWidth(),
             value = state.nickname,
             onValueChange = { nickname ->
-                viewModel.onAction(PlantSetupAction.NicknameChanged(nickname))
+                onAction(PlantSetupAction.NicknameChanged(nickname))
             },
             label = { Text("Plant nickname") },
             singleLine = true,
@@ -123,9 +153,7 @@ fun PlantSetupScreen(
 
         Card(
             modifier = Modifier.fillMaxWidth(),
-            onClick = {
-                showSpacePicker = true
-            },
+            onClick = { onShowSpacePickerChanged(true) },
         ) {
             Row(
                 modifier = Modifier.padding(MaterialTheme.spacing.medium),
@@ -148,7 +176,7 @@ fun PlantSetupScreen(
         Button(
             modifier = Modifier.fillMaxWidth(),
             enabled = !state.isSaving,
-            onClick = { viewModel.onAction(PlantSetupAction.SavePlant) },
+            onClick = { onAction(PlantSetupAction.SavePlant) },
         ) {
             if (state.isSaving) {
                 CircularProgressIndicator()
@@ -166,14 +194,14 @@ fun PlantSetupScreen(
             spaces = state.spaces,
             selectedSpaceId = state.spaceId,
             onSpaceSelected = { spaceId ->
-                viewModel.onAction(PlantSetupAction.SpaceIdSelected(spaceId))
-                showSpacePicker = false
+                onAction(PlantSetupAction.SpaceIdSelected(spaceId))
+                onShowSpacePickerChanged(false)
             },
             onAddNewSpaceClick = {
-                showSpacePicker = false
-                showAddSpaceDialog = true
+                onShowSpacePickerChanged(false)
+                onShowAddSpaceDialogChanged(true)
             },
-            onDismiss = { showSpacePicker = false },
+            onDismiss = { onShowSpacePickerChanged(false) },
         )
     }
 
@@ -181,24 +209,41 @@ fun PlantSetupScreen(
         AddSpaceDialog(
             selectedType = newSpaceType,
             name = newSpaceName,
-            onTypeChanged = { newSpaceType = it },
-            onNameChanged = { newSpaceName = it },
+            onTypeChanged = { onNewSpaceTypeChanged(it) },
+            onNameChanged = { onNewSpaceNameChanged(it) },
             errorMessage = null,
             isLoading = false,
             onAdd = {
-                viewModel.onAction(
+                onAction(
                     PlantSetupAction.CreateSpace(
                         customName = newSpaceName,
                         type = newSpaceType,
                     ),
                 )
-                showAddSpaceDialog = false
-                newSpaceName = ""
+                onShowAddSpaceDialogChanged(false)
+                onNewSpaceNameChanged("")
             },
             onDismiss = {
-                showAddSpaceDialog = false
-                newSpaceName = ""
+                onShowAddSpaceDialogChanged(false)
+                onNewSpaceNameChanged("")
             },
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun PlantSetupContentPreview() {
+    PolantyTheme {
+        PlantSetupContent(
+            state =
+                PlantSetupUiState(
+                    spaces = listOf(PlantSpace(1, "Living room", PlantSpaceType.LivingRoom)),
+                ),
+            candidate = PlantCandidate("Monstera deliciosa", "Swiss Cheese Plant", 0.95),
+            imageUri = null,
+            onAction = {},
+            onBack = {},
         )
     }
 }

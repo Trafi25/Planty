@@ -14,17 +14,18 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.traffipart.polanty.domain.model.plant.Plant
+import com.traffipart.polanty.domain.model.space.PlantSpace
+import com.traffipart.polanty.domain.model.space.PlantSpaceType
 import com.traffipart.polanty.presentation.garden.gardenContent.PlantCard
+import com.traffipart.polanty.presentation.theme.PolantyTheme
 import com.traffipart.polanty.presentation.theme.spacing
 
 /**
- * Screen displaying the details of a specific plant space, including all plants assigned to it.
- *
- * @param onBackClick Callback invoked to navigate back.
- * @param onPlantSelected Callback invoked when a plant in the space is selected.
- * @param viewModel The ViewModel supplying space details and associated plants.
+ * Stateful wrapper for the Space Details screen.
  */
 @Composable
 fun SpaceDetailsScreen(
@@ -34,9 +35,26 @@ fun SpaceDetailsScreen(
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
 
+    SpaceDetailsContent(
+        state = state,
+        onBackClick = onBackClick,
+        onPlantSelected = onPlantSelected,
+    )
+}
+
+/**
+ * Stateless Space Details content composable.
+ */
+@Composable
+fun SpaceDetailsContent(
+    state: SpaceDetailsUiState,
+    onBackClick: () -> Unit,
+    onPlantSelected: (Long) -> Unit,
+    modifier: Modifier = Modifier,
+) {
     Column(
         modifier =
-            Modifier
+            modifier
                 .fillMaxSize()
                 .padding(MaterialTheme.spacing.large),
         verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.medium),
@@ -90,5 +108,32 @@ fun SpaceDetailsScreen(
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun SpaceDetailsContentPreview() {
+    PolantyTheme {
+        SpaceDetailsContent(
+            state =
+                SpaceDetailsUiState(
+                    space = PlantSpace(id = 1, name = "Living room", type = PlantSpaceType.LivingRoom),
+                    plants =
+                        listOf(
+                            Plant(
+                                id = 1,
+                                scientificName = "Monstera deliciosa",
+                                commonName = "Swiss Cheese Plant",
+                                nickname = "Monty",
+                                spaceId = 1,
+                                imageUri = null,
+                            ),
+                        ),
+                    isLoading = false,
+                ),
+            onBackClick = {},
+            onPlantSelected = {},
+        )
     }
 }

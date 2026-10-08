@@ -18,27 +18,26 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.traffipart.polanty.domain.model.plant.Plant
+import com.traffipart.polanty.domain.model.space.PlantSpace
 import com.traffipart.polanty.domain.model.space.PlantSpaceType
 import com.traffipart.polanty.presentation.garden.gardenContent.AddSpaceDialog
 import com.traffipart.polanty.presentation.garden.gardenContent.DeleteSpaceDialog
 import com.traffipart.polanty.presentation.garden.gardenContent.PlantsContent
 import com.traffipart.polanty.presentation.garden.gardenContent.SpacesContent
+import com.traffipart.polanty.presentation.theme.PolantyTheme
 import com.traffipart.polanty.presentation.theme.spacing
 
-private enum class GardenTab {
+enum class GardenTab {
     Plants,
     Spaces,
 }
 
 /**
- * The main screen for the garden, displaying plants and spaces.
- * It allows users to switch between viewing plants and spaces, and to add new plants or spaces.
- *
- * @param onAddPlant Callback invoked when the user wants to add a new plant.
- * @param onPlantSelected Callback invoked when a plant is selected, providing its ID.
- * @param viewModel The ViewModel that provides the state and handles actions for this screen.
+ * Stateful wrapper for the Garden screen.
  */
 @Composable
 fun GardenScreen(
@@ -49,17 +48,10 @@ fun GardenScreen(
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
 
-    var selectedTab by rememberSaveable { mutableStateOf(GardenTab.Plants) }
-
     var showAddSpaceDialog by rememberSaveable { mutableStateOf(false) }
-
     var newSpaceName by rememberSaveable { mutableStateOf("") }
-
     var newSpaceType by rememberSaveable { mutableStateOf(PlantSpaceType.Bedroom) }
-
-    var spaceIdToDelete by rememberSaveable {
-        mutableStateOf<Long?>(null)
-    }
+    var spaceIdToDelete by rememberSaveable { mutableStateOf<Long?>(null) }
 
     val dismissAddSpace =
         remember(viewModel) {
@@ -81,28 +73,65 @@ fun GardenScreen(
 
     val spaceToDelete by remember {
         derivedStateOf {
-            state.spaces.firstOrNull { space ->
-                space.id == spaceIdToDelete
-            }
+            state.spaces.firstOrNull { space -> space.id == spaceIdToDelete }
         }
     }
 
     LaunchedEffect(viewModel) {
         viewModel.events.collect { event ->
             when (event) {
-                GardenEvent.SpaceCreated -> {
-                    dismissAddSpace()
-                }
-                GardenEvent.SpaceDeleted -> {
-                    dismissDeleteSpace()
-                }
+                GardenEvent.SpaceCreated -> dismissAddSpace()
+                GardenEvent.SpaceDeleted -> dismissDeleteSpace()
             }
         }
     }
 
+    GardenContent(
+        state = state,
+        onAction = viewModel::onAction,
+        onAddPlant = onAddPlant,
+        onSpaceSelected = onSpaceSelected,
+        onPlantSelected = onPlantSelected,
+        showAddSpaceDialog = showAddSpaceDialog,
+        onShowAddSpaceDialogChanged = { showAddSpaceDialog = it },
+        newSpaceName = newSpaceName,
+        onNewSpaceNameChanged = { newSpaceName = it },
+        newSpaceType = newSpaceType,
+        onNewSpaceTypeChanged = { newSpaceType = it },
+        spaceToDelete = spaceToDelete,
+        onSpaceIdToDeleteChanged = { spaceIdToDelete = it },
+        dismissAddSpace = dismissAddSpace,
+        dismissDeleteSpace = dismissDeleteSpace,
+    )
+}
+
+/**
+ * Stateless Garden screen content composable.
+ */
+@Composable
+fun GardenContent(
+    state: GardenUiState,
+    onAction: (GardenAction) -> Unit,
+    onAddPlant: () -> Unit,
+    onSpaceSelected: (Long) -> Unit,
+    onPlantSelected: (Long) -> Unit,
+    modifier: Modifier = Modifier,
+    showAddSpaceDialog: Boolean = false,
+    onShowAddSpaceDialogChanged: (Boolean) -> Unit = {},
+    newSpaceName: String = "",
+    onNewSpaceNameChanged: (String) -> Unit = {},
+    newSpaceType: PlantSpaceType = PlantSpaceType.Bedroom,
+    onNewSpaceTypeChanged: (PlantSpaceType) -> Unit = {},
+    spaceToDelete: PlantSpace? = null,
+    onSpaceIdToDeleteChanged: (Long?) -> Unit = {},
+    dismissAddSpace: () -> Unit = {},
+    dismissDeleteSpace: () -> Unit = {},
+) {
+    var selectedTab by rememberSaveable { mutableStateOf(GardenTab.Plants) }
+
     Column(
         modifier =
-            Modifier
+            modifier
                 .fillMaxSize()
                 .padding(MaterialTheme.spacing.large),
         verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.medium),
@@ -112,9 +141,7 @@ fun GardenScreen(
             style = MaterialTheme.typography.headlineMedium,
         )
         Text(
-            text =
-                "${state.plants.size} plants · " +
-                    "${state.spaces.size} spaces",
+            text = "${state.plants.size} plants · ${state.spaces.size} spaces",
             style = MaterialTheme.typography.bodySmall,
         )
         Row(
@@ -150,14 +177,10 @@ fun GardenScreen(
                 SpacesContent(
                     modifier = Modifier.weight(1f),
                     state = state,
-                    onAddSpace = {
-                        showAddSpaceDialog = true
-                    },
+                    onAddSpace = { onShowAddSpaceDialogChanged(true) },
                     onSpaceLongClicked = { space ->
-                        spaceIdToDelete = space.id
-                        viewModel.onAction(
-                            GardenAction.ClearDeleteSpaceError,
-                        )
+                        onSpaceIdToDeleteChanged(space.id)
+                        onAction(GardenAction.ClearDeleteSpaceError)
                     },
                     onSpaceSelected = onSpaceSelected,
                 )
@@ -170,19 +193,17 @@ fun GardenScreen(
             selectedType = newSpaceType,
             name = newSpaceName,
             onNameChanged = {
-                newSpaceName = it
-                viewModel.onAction(GardenAction.ClearAddSpaceError)
+                onNewSpaceNameChanged(it)
+                onAction(GardenAction.ClearAddSpaceError)
             },
             onTypeChanged = { type ->
-                newSpaceType = type
-                viewModel.onAction(
-                    GardenAction.ClearAddSpaceError,
-                )
+                onNewSpaceTypeChanged(type)
+                onAction(GardenAction.ClearAddSpaceError)
             },
             errorMessage = state.addSpaceError,
             isLoading = state.isAddingSpace,
             onAdd = {
-                viewModel.onAction(GardenAction.AddSpace(type = newSpaceType, customName = newSpaceName))
+                onAction(GardenAction.AddSpace(type = newSpaceType, customName = newSpaceName))
             },
             onDismiss = dismissAddSpace,
         )
@@ -196,11 +217,41 @@ fun GardenScreen(
             isLoading = state.isDeletingSpace,
             errorMessage = state.deleteSpaceError,
             onDelete = {
-                viewModel.onAction(
-                    GardenAction.DeleteSpace(spaceId = space.id),
-                )
+                onAction(GardenAction.DeleteSpace(spaceId = space.id))
             },
             onDismiss = dismissDeleteSpace,
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun GardenContentPreview() {
+    PolantyTheme {
+        GardenContent(
+            state =
+                GardenUiState(
+                    plants =
+                        listOf(
+                            Plant(
+                                id = 1,
+                                scientificName = "Monstera deliciosa",
+                                commonName = "Swiss Cheese Plant",
+                                nickname = "Monty",
+                                spaceId = 1,
+                                imageUri = null,
+                            ),
+                        ),
+                    spaces =
+                        listOf(
+                            PlantSpace(id = 1, name = "Living room", type = PlantSpaceType.LivingRoom),
+                        ),
+                    isLoading = false,
+                ),
+            onAction = {},
+            onAddPlant = {},
+            onSpaceSelected = {},
+            onPlantSelected = {},
         )
     }
 }

@@ -31,18 +31,21 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.content.ContextCompat
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.traffipart.polanty.domain.model.care.CareTaskType
 import com.traffipart.polanty.domain.model.care.displayName
+import com.traffipart.polanty.presentation.theme.PolantyTheme
 import com.traffipart.polanty.presentation.theme.spacing
 
 /**
- * The landing screen of the app, providing a summary of the garden and quick actions.
+ * Stateful wrapper for the landing screen of the app, providing a summary of the garden and quick actions.
  *
  * @param onOpenGarden Callback to navigate to the Garden screen.
  * @param onScanPlant Callback to navigate to the Plant Identification flow.
+ * @param onOpenSettings Callback to navigate to the Settings screen.
  * @param viewModel The ViewModel providing the home dashboard state.
  */
 @Composable
@@ -70,69 +73,83 @@ fun HomeScreen(
         ) { isGranted ->
             notificationPermissionGranted = isGranted
         }
-    LaunchedEffect(
-        notificationPermissionGranted,
-    ) {
+
+    LaunchedEffect(notificationPermissionGranted) {
         if (notificationPermissionGranted) {
-            viewModel.onAction(
-                HomeAction.NotificationPermissionGranted,
-            )
+            viewModel.onAction(HomeAction.NotificationPermissionGranted)
         }
     }
 
     val state by viewModel.uiState.collectAsStateWithLifecycle()
+
+    HomeContent(
+        state = state,
+        onAction = viewModel::onAction,
+        onOpenGarden = onOpenGarden,
+        onScanPlant = onScanPlant,
+        onOpenSettings = onOpenSettings,
+        needNotificationPermission = needNotificationPermission,
+        notificationPermissionGranted = notificationPermissionGranted,
+        onRequestNotificationPermission = {
+            notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+        },
+    )
+}
+
+/**
+ * Stateless Home screen content composable.
+ */
+@Composable
+fun HomeContent(
+    state: HomeUiState,
+    onAction: (HomeAction) -> Unit,
+    onOpenGarden: () -> Unit,
+    onScanPlant: () -> Unit,
+    onOpenSettings: () -> Unit,
+    modifier: Modifier = Modifier,
+    needNotificationPermission: Boolean = false,
+    notificationPermissionGranted: Boolean = true,
+    onRequestNotificationPermission: () -> Unit = {},
+) {
     Column(
         modifier =
-            Modifier
+            modifier
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
                 .padding(MaterialTheme.spacing.large),
-        verticalArrangement =
-            Arrangement.spacedBy(
-                MaterialTheme.spacing.medium,
-            ),
+        verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.medium),
     ) {
         Row(
-            modifier =
-                Modifier.fillMaxWidth(),
-            horizontalArrangement =
-                Arrangement.SpaceBetween,
-            verticalAlignment =
-                Alignment.CenterVertically,
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(
                 text = "Planty",
-                style =
-                    MaterialTheme.typography
-                        .headlineMedium,
+                style = MaterialTheme.typography.headlineMedium,
             )
 
-            IconButton(
-                onClick = onOpenSettings,
-            ) {
+            IconButton(onClick = onOpenSettings) {
                 Icon(
-                    imageVector =
-                        Icons.Default.Settings,
-                    contentDescription =
-                        "Settings",
+                    imageVector = Icons.Default.Settings,
+                    contentDescription = "Settings",
                 )
             }
         }
+
         if (state.isLoading) {
             CircularProgressIndicator()
             return@Column
         }
+
         Text(
-            text =
-                "${state.plantCount} plants · " +
-                    "${state.spaceCount} spaces",
+            text = "${state.plantCount} plants · ${state.spaceCount} spaces",
             style = MaterialTheme.typography.bodyMedium,
         )
+
         Text(
             text = "Today's care",
-            style =
-                MaterialTheme.typography
-                    .titleLarge,
+            style = MaterialTheme.typography.titleLarge,
         )
 
         if (state.careTasks.isEmpty()) {
@@ -142,42 +159,17 @@ fun HomeScreen(
             )
         } else {
             state.careTasks.forEach { task ->
-
                 HomeCareTaskItem(
                     task = task,
-                    onComplete = { viewModel.onAction(HomeAction.CompleteCareTask(task)) },
-                    onSoilDry = {
-                        viewModel.onAction(
-                            HomeAction.SoilCheckResult(
-                                task,
-                                soilIsDry = true,
-                            ),
-                        )
-                    },
-                    onSoilMoist = {
-                        viewModel.onAction(
-                            HomeAction.SoilCheckResult(
-                                task,
-                                soilIsDry = false,
-                            ),
-                        )
-                    },
+                    onComplete = { onAction(HomeAction.CompleteCareTask(task)) },
+                    onSoilDry = { onAction(HomeAction.SoilCheckResult(task, soilIsDry = true)) },
+                    onSoilMoist = { onAction(HomeAction.SoilCheckResult(task, soilIsDry = false)) },
                 )
             }
         }
 
-        if (
-            needNotificationPermission &&
-            !notificationPermissionGranted &&
-            state.plantCount > 0
-        ) {
-            Button(
-                onClick = {
-                    notificationPermissionLauncher.launch(
-                        Manifest.permission.POST_NOTIFICATIONS,
-                    )
-                },
-            ) {
+        if (needNotificationPermission && !notificationPermissionGranted && state.plantCount > 0) {
+            Button(onClick = onRequestNotificationPermission) {
                 Text("Enable reminders")
             }
         }
@@ -189,11 +181,6 @@ fun HomeScreen(
 
 /**
  * Renders an individual care task item card on the Home screen with a completion button.
- *
- * @param task The [HomeCareTaskUiModel] representing the care task.
- * @param onComplete Callback invoked when the task completion button is tapped.
- * @param onSoilDry Callback invoked when the user indicates the soil is dry.
- * @param onSoilMoist Callback invoked when the user indicates the soil is moist.
  */
 @Composable
 private fun HomeCareTaskItem(
@@ -206,14 +193,8 @@ private fun HomeCareTaskItem(
         modifier = Modifier.fillMaxWidth(),
     ) {
         Column(
-            modifier =
-                Modifier.padding(
-                    MaterialTheme.spacing.medium,
-                ),
-            verticalArrangement =
-                Arrangement.spacedBy(
-                    MaterialTheme.spacing.small,
-                ),
+            modifier = Modifier.padding(MaterialTheme.spacing.medium),
+            verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small),
         ) {
             Text(
                 text = task.plantName,
@@ -251,5 +232,35 @@ private fun HomeCareTaskItem(
                 }
             }
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun HomeContentPreview() {
+    PolantyTheme {
+        HomeContent(
+            state =
+                HomeUiState(
+                    plantCount = 3,
+                    spaceCount = 2,
+                    isLoading = false,
+                    careTasks =
+                        listOf(
+                            HomeCareTaskUiModel(
+                                taskId = 1,
+                                plantId = 10,
+                                plantName = "Monstera",
+                                scientificName = "Monstera deliciosa",
+                                type = CareTaskType.CheckSoil,
+                                dueAt = System.currentTimeMillis(),
+                            ),
+                        ),
+                ),
+            onAction = {},
+            onOpenGarden = {},
+            onScanPlant = {},
+            onOpenSettings = {},
+        )
     }
 }

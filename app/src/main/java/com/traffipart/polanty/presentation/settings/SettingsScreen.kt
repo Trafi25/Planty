@@ -25,18 +25,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.content.ContextCompat
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.traffipart.polanty.presentation.theme.PolantyTheme
 import com.traffipart.polanty.presentation.theme.spacing
 
 /**
- * Screen displaying application settings, including plant home location configuration.
- *
- * @param onBack Callback invoked to navigate back.
- * @param viewModel The ViewModel supplying settings state and actions.
+ * Stateful wrapper for the Settings screen.
  */
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen(
     onBack: () -> Unit,
@@ -54,6 +52,38 @@ fun SettingsScreen(
             }
         }
 
+    SettingsContent(
+        state = state,
+        onAction = viewModel::onAction,
+        onBack = onBack,
+        onRequestLocationPermission = {
+            val hasPermission =
+                ContextCompat.checkSelfPermission(
+                    context,
+                    Manifest.permission.ACCESS_COARSE_LOCATION,
+                ) == PackageManager.PERMISSION_GRANTED
+
+            if (hasPermission) {
+                viewModel.onAction(SettingsAction.SaveCurrentPlantHomeLocation)
+            } else {
+                locationPermissionLauncher.launch(Manifest.permission.ACCESS_COARSE_LOCATION)
+            }
+        },
+    )
+}
+
+/**
+ * Stateless Settings content composable.
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun SettingsContent(
+    state: SettingsUiState,
+    onAction: (SettingsAction) -> Unit,
+    onBack: () -> Unit,
+    onRequestLocationPermission: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
     Scaffold(
         topBar = {
             TopAppBar(
@@ -68,6 +98,7 @@ fun SettingsScreen(
                 },
             )
         },
+        modifier = modifier,
     ) { innerPadding ->
         Column(
             modifier =
@@ -106,19 +137,7 @@ fun SettingsScreen(
                     Button(
                         modifier = Modifier.fillMaxWidth(),
                         enabled = !state.isSavingLocation,
-                        onClick = {
-                            val hasPermission =
-                                ContextCompat.checkSelfPermission(
-                                    context,
-                                    Manifest.permission.ACCESS_COARSE_LOCATION,
-                                ) == PackageManager.PERMISSION_GRANTED
-
-                            if (hasPermission) {
-                                viewModel.onAction(SettingsAction.SaveCurrentPlantHomeLocation)
-                            } else {
-                                locationPermissionLauncher.launch(Manifest.permission.ACCESS_COARSE_LOCATION)
-                            }
-                        },
+                        onClick = onRequestLocationPermission,
                     ) {
                         Text(
                             when {
@@ -133,7 +152,7 @@ fun SettingsScreen(
                         OutlinedButton(
                             modifier = Modifier.fillMaxWidth(),
                             onClick = {
-                                viewModel.onAction(SettingsAction.ClearPlantHomeLocation)
+                                onAction(SettingsAction.ClearPlantHomeLocation)
                             },
                         ) {
                             Text("Remove saved location")
@@ -149,5 +168,18 @@ fun SettingsScreen(
                 }
             }
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun SettingsContentPreview() {
+    PolantyTheme {
+        SettingsContent(
+            state = SettingsUiState(hasPlantHomeLocation = true, isSavingLocation = false),
+            onAction = {},
+            onBack = {},
+            onRequestLocationPermission = {},
+        )
     }
 }
