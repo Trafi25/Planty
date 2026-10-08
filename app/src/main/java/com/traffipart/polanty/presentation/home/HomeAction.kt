@@ -29,6 +29,4 @@ sealed interface HomeAction {
      */
     data object NotificationPermissionGranted :
         HomeAction
-
-    data object SaveCurrentGardenLocation : HomeAction
 }

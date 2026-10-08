@@ -15,7 +15,6 @@ data class HomeUiState(
     val spaceCount: Int = 0,
     val isLoading: Boolean = true,
     val careTasks: List<HomeCareTaskUiModel> = emptyList(),
-    val hasGardenLocation: Boolean = false,
 )
 
 /**

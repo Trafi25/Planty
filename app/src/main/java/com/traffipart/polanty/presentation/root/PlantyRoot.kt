@@ -24,6 +24,7 @@ import com.traffipart.polanty.presentation.garden.GardenScreen
 import com.traffipart.polanty.presentation.home.HomeScreen
 import com.traffipart.polanty.presentation.progress.ProgressScreen
 import com.traffipart.polanty.presentation.scan.IdentifyPlantScreen
+import com.traffipart.polanty.presentation.settings.SettingsScreen
 import com.traffipart.polanty.presentation.setup.PlantSetupScreen
 import com.traffipart.polanty.presentation.spaceDetails.SpaceDetailsScreen
 
@@ -93,6 +94,11 @@ fun PlantyRoot(
                     },
                     onScanPlant = {
                         navController.navigateToTopLevel(PlantRoute.IDENTIFY)
+                    },
+                    onOpenSettings = {
+                        navController.navigate(
+                            PlantRoute.SETTINGS,
+                        )
                     },
                 )
             }
@@ -169,6 +175,15 @@ fun PlantyRoot(
                 SpaceDetailsScreen(
                     onBackClick = { navController.popBackStack() },
                     onPlantSelected = { navController.navigate(PlantRoute.details(it)) },
+                )
+            }
+            composable(
+                route = PlantRoute.SETTINGS,
+            ) {
+                SettingsScreen(
+                    onBack = {
+                        navController.popBackStack()
+                    },
                 )
             }
         }

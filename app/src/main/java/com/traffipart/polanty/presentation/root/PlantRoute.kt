@@ -5,6 +5,8 @@ package com.traffipart.polanty.presentation.root
  */
 internal object PlantRoute {
     const val HOME = "home"
+
+    const val SETTINGS = "settings"
     const val GARDEN = "garden"
     const val IDENTIFY = "identify"
     const val PROGRESS = "progress"
