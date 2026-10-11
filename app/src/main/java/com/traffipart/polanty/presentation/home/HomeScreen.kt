@@ -98,6 +98,16 @@ fun HomeScreen(
 
 /**
  * Stateless Home screen content composable.
+ *
+ * @param state Current [HomeUiState] containing dashboard metrics and care tasks.
+ * @param onAction Callback invoked when a [HomeAction] is dispatched.
+ * @param onOpenGarden Callback to navigate to the Garden screen.
+ * @param onScanPlant Callback to navigate to the Plant Identification screen.
+ * @param onOpenSettings Callback to navigate to the Settings screen.
+ * @param needNotificationPermission Whether notification runtime permissions are required on this API level.
+ * @param notificationPermissionGranted Whether notification permission is currently granted.
+ * @param onRequestNotificationPermission Callback to request notification permission.
+ * @param modifier The modifier to be applied to the layout.
  */
 @Composable
 fun HomeContent(

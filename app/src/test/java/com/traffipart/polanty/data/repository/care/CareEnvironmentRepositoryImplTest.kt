@@ -7,7 +7,7 @@ import com.traffipart.polanty.data.remote.weather.dto.OpenMeteoResponseDto
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import java.io.IOException
 
 class CareEnvironmentRepositoryImplTest {

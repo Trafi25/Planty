@@ -65,6 +65,14 @@ interface CareTaskDao {
         completedAt: Long,
     ): Int
 
+    @Query(
+        """UPDATE care_tasks SET dueAt = :dueAt WHERE id = :taskId AND isCompleted = 0 """,
+    )
+    suspend fun updateDueAt(
+        taskId: Long,
+        dueAt: Long,
+    ): Int
+
     /**
      * Deletes a specific care task record from the database.
      *

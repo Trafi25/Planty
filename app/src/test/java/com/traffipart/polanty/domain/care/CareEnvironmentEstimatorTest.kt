@@ -4,7 +4,7 @@ import com.google.common.truth.Truth.assertThat
 import com.traffipart.polanty.domain.model.care.CareEnvironment
 import com.traffipart.polanty.domain.model.care.CareEnvironmentSource
 import com.traffipart.polanty.domain.model.space.ClimateExposure
-import org.junit.Test
+import org.junit.jupiter.api.Test
 
 class CareEnvironmentEstimatorTest {
     private val estimator = CareEnvironmentEstimator()

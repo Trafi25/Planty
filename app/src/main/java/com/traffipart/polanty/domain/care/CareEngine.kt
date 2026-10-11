@@ -36,19 +36,14 @@ class CareEngine
         ): List<CareTask> {
             require(plantId > 0) { "Plant ID must be valid" }
 
-            val wateringProfile = knowledge.careProfile?.watering ?: return emptyList()
-            val intervalDays =
-                intervalCalculator.calculateDays(
-                    watering = wateringProfile,
-                    humidityRange = knowledge.careProfile.humidity,
-                    temperatureRange = knowledge.careProfile.temperature,
-                    environment = environment,
-                )
-
             // Filter tasks for this specific plant and type once for efficiency
             val relevantTasks =
                 existingTasks.filter { task ->
-                    task.plantId == plantId && (task.type == CareTaskType.CheckSoil || task.type == CareTaskType.Water)
+                    task.plantId == plantId &&
+                        (
+                            task.type == CareTaskType.CheckSoil ||
+                                task.type == CareTaskType.Water
+                        )
                 }
 
             // Rule 1: Don't create a new task if there's already an incomplete one
@@ -56,22 +51,16 @@ class CareEngine
                 return emptyList()
             }
 
-            // Rule 2: Schedule based on the last completion time or schedule for 'now' if first time
-            val lastCompletedAt =
-                relevantTasks
-                    .asSequence()
-                    .filter { task -> task.isCompleted }
-                    .mapNotNull { task -> task.completedAt }
-                    .maxOrNull()
+            val recommendedDueAt =
+                calculateRecommendedSoilCheckDueAt(
+                    plantId = plantId,
+                    knowledge = knowledge,
+                    existingTasks = existingTasks,
+                    environment = environment,
+                    now = now,
+                ) ?: return emptyList()
 
-            val nextDueAt =
-                if (lastCompletedAt == null) {
-                    now
-                } else {
-                    val scheduledTime = lastCompletedAt + intervalDays.days.inWholeMilliseconds
-                    // If the interval has already passed, schedule for now, otherwise use the calculated time
-                    maxOf(now, scheduledTime)
-                }
+            val nextDueAt = maxOf(now, recommendedDueAt)
 
             return listOf(
                 CareTask(
@@ -84,6 +73,68 @@ class CareEngine
                     xpReward = CHECK_SOIL_XP,
                 ),
             )
+        }
+
+        /**
+         * Calculates the recommended due date timestamp for a plant's next soil moisture check.
+         *
+         * Anchors the calculation to the plant's last completed care task (watering or soil check).
+         * If no completion history exists, defaults to [now].
+         *
+         * @param plantId The target plant ID.
+         * @param knowledge Botanical knowledge containing watering guidelines and preferred climate ranges.
+         * @param existingTasks Historic and open tasks associated with the plant.
+         * @param environment Optional ambient environmental conditions.
+         * @param now Current reference timestamp in milliseconds.
+         * @return Recommended due date timestamp in milliseconds, or `null` if care profile guidelines are missing.
+         */
+        fun calculateRecommendedSoilCheckDueAt(
+            plantId: Long,
+            knowledge: PlantKnowledge,
+            existingTasks: List<CareTask>,
+            environment: CareEnvironment? = null,
+            now: Long = System.currentTimeMillis(),
+        ): Long? {
+            require(plantId > 0) {
+                "Plant ID must be valid"
+            }
+
+            val careProfile =
+                knowledge.careProfile
+                    ?: return null
+
+            val wateringProfile =
+                careProfile.watering
+                    ?: return null
+
+            val intervalDays =
+                intervalCalculator.calculateDays(
+                    watering = wateringProfile,
+                    humidityRange = careProfile.humidity,
+                    temperatureRange = careProfile.temperature,
+                    environment = environment,
+                )
+
+            val lastCompletedAt =
+                existingTasks
+                    .asSequence()
+                    .filter { task ->
+                        task.plantId == plantId &&
+                            task.isCompleted &&
+                            (
+                                task.type == CareTaskType.CheckSoil ||
+                                    task.type == CareTaskType.Water
+                            )
+                    }.mapNotNull { task ->
+                        task.completedAt
+                    }.maxOrNull()
+
+            return if (lastCompletedAt == null) {
+                now
+            } else {
+                lastCompletedAt +
+                    intervalDays.days.inWholeMilliseconds
+            }
         }
 
         private companion object {

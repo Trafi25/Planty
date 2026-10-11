@@ -54,4 +54,9 @@ interface CareTaskRepository {
      * @return True if the operation was successful, false otherwise.
      */
     suspend fun deleteTask(task: CareTask): Boolean
+
+    suspend fun updateDueAt(
+        taskId: Long,
+        dueAt: Long,
+    ): Boolean
 }

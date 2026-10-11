@@ -2,10 +2,11 @@ package com.traffipart.polanty.domain.care
 
 import com.google.common.truth.Truth.assertThat
 import com.traffipart.polanty.domain.model.care.CareEnvironment
+import com.traffipart.polanty.domain.model.care.CareEnvironmentSource
 import com.traffipart.polanty.domain.model.knowledge.HumidityRange
 import com.traffipart.polanty.domain.model.knowledge.TemperatureRange
 import com.traffipart.polanty.domain.model.knowledge.WateringProfile
-import org.junit.Test
+import org.junit.jupiter.api.Test
 
 /**
  * Unit tests for [SoilCheckIntervalCalculator], verifying interval calculation behavior under
@@ -33,6 +34,9 @@ class SoilCheckIntervalCalculatorTest {
             maxCelsius = 26.0,
         )
 
+    /**
+     * Verifies that when no environmental data is provided, the calculator defaults to the minimum check interval.
+     */
     @Test
     fun noEnvironmentUsesMinimumInterval() {
         val result =
@@ -47,6 +51,9 @@ class SoilCheckIntervalCalculatorTest {
             .isEqualTo(7)
     }
 
+    /**
+     * Verifies that when ambient temperature exceeds the species's maximum preference, the calculator uses the minimum check interval.
+     */
     @Test
     fun hotEnvironmentUsesMinimumInterval() {
         val result =
@@ -58,6 +65,7 @@ class SoilCheckIntervalCalculatorTest {
                     CareEnvironment(
                         temperatureCelsius = 31.0,
                         humidityPercent = 50,
+                        source = CareEnvironmentSource.OutdoorWeather,
                     ),
             )
 
@@ -65,6 +73,9 @@ class SoilCheckIntervalCalculatorTest {
             .isEqualTo(7)
     }
 
+    /**
+     * Verifies that when ambient humidity exceeds the species's maximum preference, the calculator uses the maximum check interval.
+     */
     @Test
     fun humidEnvironmentUsesMaximumInterval() {
         val result =
@@ -76,6 +87,7 @@ class SoilCheckIntervalCalculatorTest {
                     CareEnvironment(
                         temperatureCelsius = 22.0,
                         humidityPercent = 80,
+                        source = CareEnvironmentSource.OutdoorWeather,
                     ),
             )
 
@@ -83,6 +95,9 @@ class SoilCheckIntervalCalculatorTest {
             .isEqualTo(10)
     }
 
+    /**
+     * Verifies that when ambient environmental conditions fall within optimal species bounds, the calculator uses the midpoint interval.
+     */
     @Test
     fun normalEnvironmentUsesMiddleInterval() {
         val result =
@@ -94,6 +109,7 @@ class SoilCheckIntervalCalculatorTest {
                     CareEnvironment(
                         temperatureCelsius = 22.0,
                         humidityPercent = 50,
+                        source = CareEnvironmentSource.OutdoorWeather,
                     ),
             )
 

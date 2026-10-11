@@ -215,4 +215,37 @@ class CareEngineTest {
             expectedDueAt,
         )
     }
+
+    @Test
+    fun recommendedDueDateIsAnchoredToLastCompletion() {
+        val completedAt =
+            1_700_000_000_000L
+
+        val completedTask =
+            CareTask(
+                id = 1L,
+                plantId = 1L,
+                type = CareTaskType.Water,
+                dueAt = completedAt,
+                isCompleted = true,
+                completedAt = completedAt,
+                xpReward = 10,
+            )
+
+        val result =
+            careEngine
+                .calculateRecommendedSoilCheckDueAt(
+                    plantId = 1L,
+                    knowledge =
+                        plantKnowledge(
+                            wateringMinDays = 7,
+                            wateringMaxDays = 10,
+                        ),
+                    existingTasks = listOf(completedTask),
+                    now = completedAt,
+                )
+
+        assertThat(result)
+            .isEqualTo(completedAt + 7.days.inWholeMilliseconds)
+    }
 }

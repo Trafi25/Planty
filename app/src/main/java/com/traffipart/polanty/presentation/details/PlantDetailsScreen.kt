@@ -17,15 +17,17 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
+import com.traffipart.polanty.domain.model.plant.Plant
+import com.traffipart.polanty.presentation.theme.PolantyTheme
 import com.traffipart.polanty.presentation.theme.spacing
 
 /**
- * Screen displaying the details of a specific plant.
- * Allows the user to view plant information and delete the plant.
+ * Stateful wrapper for the Plant Details screen.
  *
  * @param onBack Callback invoked when the user wants to go back to the previous screen.
  * @param onDeleted Callback invoked when the plant has been successfully deleted.
@@ -45,13 +47,34 @@ fun PlantDetailsScreen(
         }
     }
 
+    PlantDetailsContent(
+        state = state,
+        onAction = viewModel::onAction,
+        onBack = onBack,
+    )
+}
+
+/**
+ * Stateless Plant Details content composable.
+ *
+ * @param state Current [PlantDetailsUiState].
+ * @param onAction Callback invoked when a [PlantDetailsAction] is dispatched.
+ * @param onBack Callback invoked to navigate back.
+ * @param modifier The modifier to be applied to the layout.
+ */
+@Composable
+fun PlantDetailsContent(
+    state: PlantDetailsUiState,
+    onAction: (PlantDetailsAction) -> Unit,
+    onBack: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
     Column(
         modifier =
-            Modifier
+            modifier
                 .fillMaxSize()
-                .verticalScroll(
-                    rememberScrollState(),
-                ).padding(MaterialTheme.spacing.large),
+                .verticalScroll(rememberScrollState())
+                .padding(MaterialTheme.spacing.large),
         verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.medium),
     ) {
         Button(onClick = onBack) {
@@ -75,35 +98,19 @@ fun PlantDetailsScreen(
             )
         }
         Text(text = plant.displayName)
-        plant.nickname?.let {
-            Text(
-                text = "Nickname: $it",
-            )
-        }
-        plant.commonName?.let {
-            Text(
-                text = "Common name: $it",
-            )
-        }
-        plant.spaceId?.let {
-            Text(
-                text = "Space ID: $it",
-            )
-        }
+        plant.nickname?.let { Text("Nickname: $it") }
+        plant.commonName?.let { Text("Common name: $it") }
+        plant.spaceId?.let { Text("Space ID: $it") }
 
-        // Section for botanical knowledge and care information
         PlantKnowledgeContent(
             state = state.knowledgeState,
-            onRetry = {
-                viewModel.onAction(
-                    PlantDetailsAction.RetryKnowledge,
-                )
-            },
+            onRetry = { onAction(PlantDetailsAction.RetryKnowledge) },
         )
+
         Button(
             modifier = Modifier.fillMaxWidth(),
             enabled = !state.isDeleting,
-            onClick = { viewModel.onAction(PlantDetailsAction.DeletePlant) },
+            onClick = { onAction(PlantDetailsAction.DeletePlant) },
         ) {
             if (state.isDeleting) {
                 CircularProgressIndicator()
@@ -112,5 +119,29 @@ fun PlantDetailsScreen(
             }
         }
         state.errorMessage?.let { Text(it) }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun PlantDetailsContentPreview() {
+    PolantyTheme {
+        PlantDetailsContent(
+            state =
+                PlantDetailsUiState(
+                    plant =
+                        Plant(
+                            id = 1,
+                            scientificName = "Monstera deliciosa",
+                            commonName = "Swiss Cheese Plant",
+                            nickname = "Monty",
+                            spaceId = 1,
+                            imageUri = null,
+                        ),
+                    isLoading = false,
+                ),
+            onAction = {},
+            onBack = {},
+        )
     }
 }

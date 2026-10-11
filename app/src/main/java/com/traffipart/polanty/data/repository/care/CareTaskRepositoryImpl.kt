@@ -84,4 +84,15 @@ class CareTaskRepositoryImpl
                 Log.e(TAG, "Error deleting task", e)
                 throw e
             }
+
+        override suspend fun updateDueAt(
+            taskId: Long,
+            dueAt: Long,
+        ): Boolean =
+            try {
+                careTaskDao.updateDueAt(taskId = taskId, dueAt = dueAt) == 1
+            } catch (e: Exception) {
+                Log.e(TAG, "Error updating due date for task $taskId", e)
+                throw e
+            }
     }

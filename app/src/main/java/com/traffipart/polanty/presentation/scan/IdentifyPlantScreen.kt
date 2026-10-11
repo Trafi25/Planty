@@ -24,17 +24,19 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.traffipart.polanty.core.common.toMessage
 import com.traffipart.polanty.domain.model.identification.PlantCandidate
+import com.traffipart.polanty.domain.model.identification.PlantIdentification
+import com.traffipart.polanty.presentation.theme.PolantyTheme
 import com.traffipart.polanty.presentation.theme.spacing
 
 /**
- * Screen for identifying a plant from a photo.
- * Users can pick a photo, see identification results, and select a candidate plant.
+ * Stateful wrapper for the Plant Identification screen.
  *
  * @param onCandidateSelected Callback invoked when a plant candidate is selected.
- * @param viewModel The ViewModel providing the state and handling actions for this screen.
+ * @param viewModel The ViewModel providing state and handling actions for this screen.
  */
 @Composable
 fun IdentifyPlantScreen(
@@ -43,7 +45,6 @@ fun IdentifyPlantScreen(
 ) {
     val state by viewModel.uiState.collectAsState()
     val context = LocalContext.current
-
     var selectedImageUri by remember { mutableStateOf<String?>(null) }
 
     val photoPicker =
@@ -59,9 +60,39 @@ fun IdentifyPlantScreen(
                 }
             }
         }
+
+    IdentifyPlantContent(
+        state = state,
+        onPickPhoto = {
+            photoPicker.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+        },
+        onCandidateSelected = { candidate ->
+            val uri = selectedImageUri
+            viewModel.onAction(IdentifyPlantAction.Reset)
+            selectedImageUri = null
+            onCandidateSelected(candidate, uri)
+        },
+    )
+}
+
+/**
+ * Stateless Plant Identification content composable.
+ *
+ * @param state Current [IdentifyPlantUiState].
+ * @param onPickPhoto Callback to trigger the photo picker launcher.
+ * @param onCandidateSelected Callback when a plant candidate is tapped.
+ * @param modifier The modifier to be applied to the layout.
+ */
+@Composable
+fun IdentifyPlantContent(
+    state: IdentifyPlantUiState,
+    onPickPhoto: () -> Unit,
+    onCandidateSelected: (candidate: PlantCandidate) -> Unit,
+    modifier: Modifier = Modifier,
+) {
     Column(
         modifier =
-            Modifier
+            modifier
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
                 .padding(MaterialTheme.spacing.large),
@@ -69,19 +100,15 @@ fun IdentifyPlantScreen(
     ) {
         Button(
             modifier = Modifier.fillMaxWidth(),
-            onClick = {
-                photoPicker.launch(
-                    PickVisualMediaRequest(
-                        ActivityResultContracts.PickVisualMedia.ImageOnly,
-                    ),
-                )
-            },
+            onClick = onPickPhoto,
         ) {
             Text("Choose plant photo")
         }
+
         if (state.isLoading) {
             CircularProgressIndicator()
         }
+
         state.identification?.let { identification ->
             Text(
                 text = "Best match: ${identification.bestMatch}",
@@ -93,12 +120,7 @@ fun IdentifyPlantScreen(
                     modifier =
                         Modifier
                             .fillMaxWidth()
-                            .clickable {
-                                val uri = selectedImageUri
-                                viewModel.onAction(IdentifyPlantAction.Reset)
-                                selectedImageUri = null
-                                onCandidateSelected(candidate, uri)
-                            },
+                            .clickable { onCandidateSelected(candidate) },
                 ) {
                     Column(
                         modifier = Modifier.padding(MaterialTheme.spacing.medium),
@@ -108,8 +130,7 @@ fun IdentifyPlantScreen(
                             style = MaterialTheme.typography.titleMedium,
                         )
                         Text(
-                            text =
-                                "${(candidate.confidence * 100).toInt()}% match",
+                            text = "${(candidate.confidence * 100).toInt()}% match",
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.secondary,
                         )
@@ -117,11 +138,35 @@ fun IdentifyPlantScreen(
                 }
             }
         }
+
         state.error?.let { error ->
             Text(
                 text = error.toMessage(),
                 color = MaterialTheme.colorScheme.error,
             )
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun IdentifyPlantContentPreview() {
+    PolantyTheme {
+        IdentifyPlantContent(
+            state =
+                IdentifyPlantUiState(
+                    identification =
+                        PlantIdentification(
+                            bestMatch = "Monstera deliciosa",
+                            candidates =
+                                listOf(
+                                    PlantCandidate("Monstera deliciosa", "Swiss Cheese Plant", 0.95),
+                                ),
+                        ),
+                    isLoading = false,
+                ),
+            onPickPhoto = {},
+            onCandidateSelected = {},
+        )
     }
 }

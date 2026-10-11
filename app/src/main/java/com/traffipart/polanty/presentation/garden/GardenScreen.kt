@@ -31,6 +31,9 @@ import com.traffipart.polanty.presentation.garden.gardenContent.SpacesContent
 import com.traffipart.polanty.presentation.theme.PolantyTheme
 import com.traffipart.polanty.presentation.theme.spacing
 
+/**
+ * Tab options available on the Garden screen.
+ */
 enum class GardenTab {
     Plants,
     Spaces,
@@ -38,6 +41,11 @@ enum class GardenTab {
 
 /**
  * Stateful wrapper for the Garden screen.
+ *
+ * @param onAddPlant Callback invoked when the user wants to add a new plant.
+ * @param onSpaceSelected Callback invoked when a space is selected, providing its ID.
+ * @param onPlantSelected Callback invoked when a plant is selected, providing its ID.
+ * @param viewModel The ViewModel providing state and handling actions for this screen.
  */
 @Composable
 fun GardenScreen(
@@ -107,6 +115,23 @@ fun GardenScreen(
 
 /**
  * Stateless Garden screen content composable.
+ *
+ * @param state Current [GardenUiState].
+ * @param onAction Callback invoked when a [GardenAction] is dispatched.
+ * @param onAddPlant Callback to initiate adding a new plant.
+ * @param onSpaceSelected Callback invoked when a space is selected.
+ * @param onPlantSelected Callback invoked when a plant is selected.
+ * @param modifier The modifier to be applied to the layout.
+ * @param showAddSpaceDialog Whether the add space dialog is visible.
+ * @param onShowAddSpaceDialogChanged Callback when add space dialog visibility changes.
+ * @param newSpaceName Current value of the new space name text field.
+ * @param onNewSpaceNameChanged Callback when new space name changes.
+ * @param newSpaceType Currently selected new space type.
+ * @param onNewSpaceTypeChanged Callback when new space type changes.
+ * @param spaceToDelete Target [PlantSpace] pending deletion, or null.
+ * @param onSpaceIdToDeleteChanged Callback when space deletion target changes.
+ * @param dismissAddSpace Callback to dismiss add space dialog.
+ * @param dismissDeleteSpace Callback to dismiss delete space dialog.
  */
 @Composable
 fun GardenContent(
