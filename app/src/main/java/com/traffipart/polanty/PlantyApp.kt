@@ -9,6 +9,7 @@ import com.google.firebase.appcheck.appCheck
 import com.google.firebase.appcheck.debug.DebugAppCheckProviderFactory
 import com.google.firebase.appcheck.playintegrity.PlayIntegrityAppCheckProviderFactory
 import com.google.firebase.initialize
+import com.traffipart.polanty.domain.sync.CarePlanSyncScheduler
 import dagger.hilt.android.HiltAndroidApp
 import javax.inject.Inject
 
@@ -23,6 +24,10 @@ class PlantyApp :
     /** Factory for injecting dependencies into Hilt-annotated workers. */
     @Inject
     lateinit var workerFactory: HiltWorkerFactory
+
+    /** Schedules recurring weather-aware care updates after application initialization. */
+    @Inject
+    lateinit var carePlanSyncScheduler: CarePlanSyncScheduler
 
     /** Provides custom WorkManager configuration featuring the Hilt worker factory. */
     override val workManagerConfiguration: Configuration
@@ -55,6 +60,7 @@ class PlantyApp :
             Firebase.appCheck
                 .installAppCheckProviderFactory(PlayIntegrityAppCheckProviderFactory.getInstance())
         }
+        carePlanSyncScheduler.schedulePeriodicSync()
     }
 
     private companion object {

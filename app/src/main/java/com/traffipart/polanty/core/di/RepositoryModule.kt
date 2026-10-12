@@ -13,6 +13,7 @@ import com.traffipart.polanty.data.repository.plant.PlantRepositoryImpl
 import com.traffipart.polanty.data.repository.plant.PlantSpaceRepositoryImpl
 import com.traffipart.polanty.data.repository.plant.SpaceInitializationRepositoryImpl
 import com.traffipart.polanty.data.storage.PlantImageStorageImpl
+import com.traffipart.polanty.data.sync.WorkManagerCarePlanSyncScheduler
 import com.traffipart.polanty.domain.PlantKnowledgeGenerator
 import com.traffipart.polanty.domain.location.DeviceLocationProvider
 import com.traffipart.polanty.domain.reminder.CareReminderScheduler
@@ -26,6 +27,7 @@ import com.traffipart.polanty.domain.repository.plant.PlantRepository
 import com.traffipart.polanty.domain.repository.plant.PlantSpaceRepository
 import com.traffipart.polanty.domain.repository.plant.SpaceInitializationRepository
 import com.traffipart.polanty.domain.storage.PlantImageStorage
+import com.traffipart.polanty.domain.sync.CarePlanSyncScheduler
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -35,6 +37,10 @@ import jakarta.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 abstract class RepositoryModule {
+    @Binds
+    @Singleton
+    abstract fun bindCarePlanSyncScheduler(scheduler: WorkManagerCarePlanSyncScheduler): CarePlanSyncScheduler
+
     @Binds
     @Singleton
     abstract fun bindPlantIdentificationRepository(

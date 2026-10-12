@@ -16,10 +16,10 @@ subprojects {
             targetExclude("**/build/**/*.kt")
             ktlint(libs.versions.ktlint.get()).editorConfigOverride(
                 mapOf(
-                    "ktlint_code_style" to "android",
+                    "ktlint_code_style" to "ktlint_official",
                     "ktlint_function_naming_ignore_when_annotated_with" to "Composable",
-                    "ktlint_standard_no-unused-imports" to "enabled"
-                )
+                    "ktlint_standard_no-unused-imports" to "enabled",
+                ),
             )
         }
         kotlinGradle {
@@ -29,7 +29,7 @@ subprojects {
         }
         format("misc") {
             target("**/*.gradle", "**/*.md", "**/.gitignore")
-            indentWithSpaces()
+            leadingTabsToSpaces()
             trimTrailingWhitespace()
             endWithNewline()
         }
