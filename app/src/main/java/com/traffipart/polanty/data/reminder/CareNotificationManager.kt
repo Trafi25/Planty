@@ -7,6 +7,7 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
@@ -34,19 +35,21 @@ class CareNotificationManager
         private val context: Context,
     ) {
         /**
-         * Displays a notification for a due care task if notification permission is granted.
+         * Displays one expandable notification containing all due care reminders.
          *
-         * @param task The [CareTask] for which the reminder notification is being shown.
-         * @param plantName Display name of the plant needing care.
+         * @param reminders Due tasks paired with their plant display names.
          */
-        fun showCareReminder(
-            task: CareTask,
-            plantName: String,
-        ) {
-            val contentIntent = createContentIntent(task)
+        fun showCareReminder(reminders: List<Pair<CareTask, String>>) {
+            if (reminders.isEmpty()) return
+            val plantIds = reminders.map { it.first.plantId }.distinct()
+            val singlePlantId = plantIds.singleOrNull()
+            val contentIntent = createContentIntent(singlePlantId)
+            val lines = reminders.map { (task, plantName) -> "$plantName: ${task.type.displayName()}" }
+            val title = if (singlePlantId != null) reminders.first().second else "${plantIds.size} plants need care"
             createChannel()
 
             if (
+                Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
                 ContextCompat.checkSelfPermission(
                     context,
                     Manifest.permission.POST_NOTIFICATIONS,
@@ -55,12 +58,21 @@ class CareNotificationManager
                 return
             }
 
+            // Remove per-task reminders left visible by older app versions.
+            val systemManager = context.getSystemService(NotificationManager::class.java)
+            systemManager.activeNotifications
+                .filter { it.notification.channelId == CHANNEL_ID && it.tag != NOTIFICATION_TAG }
+                .forEach { systemManager.cancel(it.tag, it.id) }
+
+            val inboxStyle = NotificationCompat.InboxStyle()
+            lines.forEach { inboxStyle.addLine(it) }
             val notification =
                 NotificationCompat
                     .Builder(context, CHANNEL_ID)
                     .setSmallIcon(R.drawable.ic_launcher_foreground)
-                    .setContentTitle(plantName)
-                    .setContentText(task.type.displayName())
+                    .setContentTitle(title)
+                    .setContentText(lines.joinToString(" • "))
+                    .setStyle(inboxStyle)
                     .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                     .setContentIntent(contentIntent)
                     .setAutoCancel(true)
@@ -70,30 +82,31 @@ class CareNotificationManager
             NotificationManagerCompat
                 .from(context)
                 .notify(
-                    task.id.hashCode(),
+                    NOTIFICATION_TAG,
+                    NOTIFICATION_ID,
                     notification,
                 )
         }
 
         /**
-         * Creates a [PendingIntent] pointing to [MainActivity] with the target plant ID extra
-         * so tapping the notification launches or brings the app to the plant's detail screen.
+         * Opens plant details for a single plant, or Home for a reminder covering several plants.
          *
-         * @param task The [CareTask] associated with the notification.
+         * @param plantId Single plant to open, or null to open Home.
          * @return The configured [PendingIntent].
          */
-        private fun createContentIntent(task: CareTask): PendingIntent {
+        private fun createContentIntent(plantId: Long?): PendingIntent {
             val intent =
                 Intent(context, MainActivity::class.java).apply {
-                    putExtra(
-                        MainActivity.EXTRA_NOTIFICATION_PLANT_ID,
-                        task.plantId,
-                    )
+                    if (plantId != null) {
+                        putExtra(MainActivity.EXTRA_NOTIFICATION_PLANT_ID, plantId)
+                    } else {
+                        putExtra(MainActivity.EXTRA_NOTIFICATION_OPEN_HOME, true)
+                    }
                     flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
                 }
             return PendingIntent.getActivity(
                 context,
-                task.id.hashCode(),
+                NOTIFICATION_ID,
                 intent,
                 PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
             )
@@ -115,6 +128,8 @@ class CareNotificationManager
         }
 
         private companion object {
+            const val NOTIFICATION_TAG = "care-summary"
+            const val NOTIFICATION_ID = 1
             const val CHANNEL_ID = "plant_care_reminders"
         }
     }

@@ -21,15 +21,22 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     private var notificationPlantId by mutableStateOf<Long?>(null)
+    private var notificationOpenHome by mutableStateOf(false)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         notificationPlantId = intent.notificationPlantId()
+        notificationOpenHome = intent.getBooleanExtra(EXTRA_NOTIFICATION_OPEN_HOME, false)
         setContent {
             PolantyTheme {
                 PlantyRoot(
                     notificationPlantId = notificationPlantId,
+                    notificationOpenHome = notificationOpenHome,
+                    onNotificationHomeHandled = {
+                        notificationOpenHome = false
+                        intent.removeExtra(EXTRA_NOTIFICATION_OPEN_HOME)
+                    },
                     onNotificationPlantHandled = {
                         notificationPlantId = null
                         intent.removeExtra(EXTRA_NOTIFICATION_PLANT_ID)
@@ -43,6 +50,7 @@ class MainActivity : ComponentActivity() {
         super.onNewIntent(intent)
         setIntent(intent)
         notificationPlantId = intent.notificationPlantId()
+        notificationOpenHome = intent.getBooleanExtra(EXTRA_NOTIFICATION_OPEN_HOME, false)
     }
 
     /**
@@ -63,6 +71,9 @@ class MainActivity : ComponentActivity() {
     companion object {
         /** Intent extra key for passing the target plant ID from care reminder notifications. */
         const val EXTRA_NOTIFICATION_PLANT_ID = "notification_plant_id"
+
+        /** Intent extra directing a reminder for multiple plants to the Home care task list. */
+        const val EXTRA_NOTIFICATION_OPEN_HOME = "notification_open_home"
         private const val INVALID_PLANT_ID = -1L
     }
 }

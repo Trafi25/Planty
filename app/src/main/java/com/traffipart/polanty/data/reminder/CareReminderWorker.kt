@@ -13,8 +13,8 @@ import kotlinx.coroutines.flow.first
 /**
  * [CoroutineWorker] executed by Android [androidx.work.WorkManager] to post care task reminder notifications.
  *
- * Fetches the specified [com.traffipart.polanty.domain.model.CareTask] and associated [com.traffipart.polanty.domain.model.Plant],
- * verifying that the task is still valid and uncompleted before triggering a notification via [CareNotificationManager].
+ * Verifies the triggering task is still due, then combines all due tasks and their plant names
+ * into one notification via [CareNotificationManager]. Future tasks are excluded.
  *
  * @param context The application context.
  * @param params Worker configuration parameters passed by WorkManager.
@@ -46,11 +46,20 @@ class CareReminderWorker
             }
 
             val task = careTaskRepository.getTask(taskId) ?: return Result.success()
-            if (task.isCompleted) return Result.success()
-            val plant = plantRepository.observePlant(task.plantId).first() ?: return Result.success()
+            val now = System.currentTimeMillis()
+            if (task.isCompleted || task.dueAt > now) return Result.success()
+            val plantsById = plantRepository.observePlants().first().associateBy { it.id }
+            val reminders =
+                careTaskRepository
+                    .observeOpenTasks()
+                    .first()
+                    .filter { !it.isCompleted && it.dueAt <= now }
+                    .mapNotNull { dueTask ->
+                        val plant = plantsById[dueTask.plantId] ?: return@mapNotNull null
+                        dueTask to plant.displayName
+                    }
             notificationManager.showCareReminder(
-                task = task,
-                plantName = plant.displayName,
+                reminders = reminders,
             )
 
             return Result.success()

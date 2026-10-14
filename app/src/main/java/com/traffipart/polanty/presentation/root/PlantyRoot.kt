@@ -36,15 +36,26 @@ import com.traffipart.polanty.presentation.spaceDetails.SpaceDetailsScreen
  *
  * @param notificationPlantId Target plant ID to navigate to if launched from a care reminder notification.
  * @param onNotificationPlantHandled Callback invoked after navigating to the notification's target plant.
+ * @param notificationOpenHome Whether a reminder for multiple plants should open Home.
+ * @param onNotificationHomeHandled Callback invoked after opening Home from a reminder.
  * @param rootViewModel The ViewModel handling global app initialization.
  */
 @Composable
 fun PlantyRoot(
     notificationPlantId: Long? = null,
     onNotificationPlantHandled: () -> Unit = {},
+    notificationOpenHome: Boolean = false,
+    onNotificationHomeHandled: () -> Unit = {},
     rootViewModel: PlantyRootViewModel = hiltViewModel(),
 ) {
     val navController = rememberNavController()
+
+    LaunchedEffect(notificationOpenHome) {
+        if (notificationOpenHome) {
+            navController.navigateToTopLevel(PlantRoute.HOME)
+            onNotificationHomeHandled()
+        }
+    }
 
     LaunchedEffect(notificationPlantId) {
         val plantId = notificationPlantId ?: return@LaunchedEffect
