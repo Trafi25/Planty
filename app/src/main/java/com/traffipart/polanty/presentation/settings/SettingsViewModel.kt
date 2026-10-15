@@ -4,7 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.traffipart.polanty.domain.usecase.location.ClearGardenLocationUseCase
 import com.traffipart.polanty.domain.usecase.location.ObserveGardenLocationUseCase
-import com.traffipart.polanty.domain.usecase.location.SaveCurrentGardenLocationUseCase
+import com.traffipart.polanty.domain.usecase.location.UpdatePlantHomeLocationResult
+import com.traffipart.polanty.domain.usecase.location.UpdatePlantHomeLocationUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -19,7 +20,7 @@ class SettingsViewModel
     @Inject
     constructor(
         observeGardenLocationUseCase: ObserveGardenLocationUseCase,
-        private val saveCurrentGardenLocationUseCase: SaveCurrentGardenLocationUseCase,
+        private val updatePlantHomeLocationUseCase: UpdatePlantHomeLocationUseCase,
         private val clearGardenLocationUseCase: ClearGardenLocationUseCase,
     ) : ViewModel() {
         private val isSavingLocation = MutableStateFlow(false)
@@ -78,9 +79,27 @@ class SettingsViewModel
                 locationErrorMessage.value = null
 
                 try {
-                    val saved = saveCurrentGardenLocationUseCase()
-                    if (!saved) {
-                        locationErrorMessage.value = "Unable to determine location."
+                    when (
+                        val result =
+                            updatePlantHomeLocationUseCase()
+                    ) {
+                        UpdatePlantHomeLocationResult
+                            .LocationUnavailable,
+                        -> {
+                            locationErrorMessage.value = "Unable to determine location."
+                        }
+
+                        is UpdatePlantHomeLocationResult
+                            .Updated,
+                        -> {
+                            locationErrorMessage.value = null
+                        }
+
+                        UpdatePlantHomeLocationResult
+                            .UpdatedCareSyncDeferred,
+                        -> {
+                            locationErrorMessage.value = null
+                        }
                     }
                 } catch (
                     e: CancellationException,

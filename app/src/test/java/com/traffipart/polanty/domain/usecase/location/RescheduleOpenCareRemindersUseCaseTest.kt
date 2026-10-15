@@ -1,4 +1,4 @@
-package com.traffipart.polanty.domain.care
+package com.traffipart.polanty.domain.usecase.location
 
 import com.traffipart.polanty.domain.model.care.CareTask
 import com.traffipart.polanty.domain.model.care.CareTaskType
