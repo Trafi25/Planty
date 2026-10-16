@@ -8,16 +8,24 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
+import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import com.traffipart.polanty.R
 import com.traffipart.polanty.domain.model.care.CareTask
 import com.traffipart.polanty.domain.model.care.displayName
+import com.traffipart.polanty.domain.reminder.CareReminderRefresher
+import com.traffipart.polanty.domain.repository.care.CareTaskRepository
+import com.traffipart.polanty.domain.repository.plant.PlantRepository
 import com.traffipart.polanty.presentation.MainActivity
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 
 /**
  * Singleton manager responsible for creating notification channels and displaying plant care notifications.
@@ -26,6 +34,8 @@ import javax.inject.Singleton
  * prior to building and displaying notifications.
  *
  * @property context Application context used for notification system services.
+ * @property careTaskRepository Supplies current open care tasks when rebuilding the reminder.
+ * @property plantRepository Supplies plant display names for due care tasks.
  */
 @Singleton
 class CareNotificationManager
@@ -33,14 +43,65 @@ class CareNotificationManager
     constructor(
         @ApplicationContext
         private val context: Context,
-    ) {
+        private val careTaskRepository: CareTaskRepository,
+        private val plantRepository: PlantRepository,
+    ) : CareReminderRefresher {
+        private val refreshMutex = Mutex()
+
+        /** Refreshes an existing summary without letting notification failures undo a care action. */
+        override suspend fun refreshVisibleReminder() {
+            try {
+                refreshReminder(onlyIfVisible = true)
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                Log.w("CareNotificationManager", "Failed to refresh visible care reminder", e)
+            }
+        }
+
+        /**
+         * Reads due tasks and publishes their current summary. Calls are serialized so a worker
+         * cannot overwrite a completion refresh with a snapshot read before that completion.
+         *
+         * @param onlyIfVisible Skip posting when the user has already dismissed the reminder.
+         */
+        suspend fun refreshReminder(onlyIfVisible: Boolean = false) {
+            refreshMutex.withLock {
+                if (onlyIfVisible && !isReminderVisible()) return@withLock
+                val now = System.currentTimeMillis()
+                val dueTasks = careTaskRepository.observeOpenTasks().first()
+                    .filter { !it.isCompleted && it.dueAt <= now }
+                val reminders = if (dueTasks.isEmpty()) {
+                    emptyList()
+                } else {
+                    val plantsById = plantRepository.observePlants().first().associateBy { it.id }
+                    dueTasks.mapNotNull { task ->
+                        val plant = plantsById[task.plantId] ?: return@mapNotNull null
+                        task to plant.displayName
+                    }
+                }
+                // The user may have dismissed the notification while repositories were being read.
+                if (onlyIfVisible && !isReminderVisible()) return@withLock
+                showCareReminder(reminders)
+            }
+        }
+
+        /** Returns whether Android currently displays this manager's shared care notification. */
+        private fun isReminderVisible(): Boolean =
+            context.getSystemService(NotificationManager::class.java).activeNotifications.any {
+                it.tag == NOTIFICATION_TAG && it.id == NOTIFICATION_ID
+            }
+
         /**
          * Displays one expandable notification containing all due care reminders.
          *
          * @param reminders Due tasks paired with their plant display names.
          */
-        fun showCareReminder(reminders: List<Pair<CareTask, String>>) {
-            if (reminders.isEmpty()) return
+        internal fun showCareReminder(reminders: List<Pair<CareTask, String>>) {
+            if (reminders.isEmpty()) {
+                context.getSystemService(NotificationManager::class.java).cancel(NOTIFICATION_TAG, NOTIFICATION_ID)
+                return
+            }
             val plantIds = reminders.map { it.first.plantId }.distinct()
             val singlePlantId = plantIds.singleOrNull()
             val contentIntent = createContentIntent(singlePlantId)
