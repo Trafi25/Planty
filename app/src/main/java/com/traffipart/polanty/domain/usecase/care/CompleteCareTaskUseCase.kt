@@ -1,7 +1,7 @@
 package com.traffipart.polanty.domain.usecase.care
 
-import com.traffipart.polanty.domain.reminder.CareReminderScheduler
 import com.traffipart.polanty.domain.reminder.CareReminderRefresher
+import com.traffipart.polanty.domain.reminder.CareReminderScheduler
 import com.traffipart.polanty.domain.repository.care.CareTaskRepository
 import javax.inject.Inject
 

@@ -8,9 +8,11 @@ import com.traffipart.polanty.domain.usecase.care.ObserveDueCareTasksUseCase
 import com.traffipart.polanty.domain.usecase.care.RecordSoilCheckResultUseCase
 import com.traffipart.polanty.domain.usecase.care.RefreshPlantCarePlanUseCase
 import com.traffipart.polanty.domain.usecase.care.RescheduleOpenCareRemindersUseCase
+import com.traffipart.polanty.domain.usecase.care.SyncEnvironmentAwareCarePlansUseCase
 import com.traffipart.polanty.domain.usecase.plant.ObservePlantsUseCase
 import com.traffipart.polanty.domain.usecase.space.ObserveSpacesUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
@@ -32,6 +34,7 @@ import kotlin.coroutines.cancellation.CancellationException
  * @property refreshPlantCarePlanUseCase Use case to recalculate and schedule next care tasks.
  * @property recordSoilCheckResultUseCase Use case to record soil check results and adjust watering intervals.
  * @property rescheduleOpenCareRemindersUseCase Use case to reschedule active care task notification reminders.
+ * @property syncEnvironmentAwareCarePlansUseCase Use case to perform live weather and climate care plan synchronization.
  */
 @HiltViewModel
 class HomeViewModel
@@ -44,7 +47,10 @@ class HomeViewModel
         private val refreshPlantCarePlanUseCase: RefreshPlantCarePlanUseCase,
         private val recordSoilCheckResultUseCase: RecordSoilCheckResultUseCase,
         private val rescheduleOpenCareRemindersUseCase: RescheduleOpenCareRemindersUseCase,
+        private val syncEnvironmentAwareCarePlansUseCase: SyncEnvironmentAwareCarePlansUseCase,
     ) : ViewModel() {
+        private val isRefreshing = MutableStateFlow(false)
+
         /**
          * The UI state for the Home screen, providing plant and space counts and due care tasks.
          */
@@ -53,7 +59,8 @@ class HomeViewModel
                 observePlantsUseCase(),
                 observeSpacesUseCase(),
                 observeDueCareTasksUseCase(),
-            ) { plants, spaces, careTasks ->
+                isRefreshing,
+            ) { plants, spaces, careTasks, refreshing ->
                 val plantsById = plants.associateBy { plant -> plant.id }
                 val taskUiModels =
                     careTasks.mapNotNull { task ->
@@ -72,6 +79,7 @@ class HomeViewModel
                 HomeUiState(
                     plantCount = plants.size,
                     spaceCount = spaces.size,
+                    isRefreshing = refreshing,
                     isLoading = false,
                     careTasks = taskUiModels,
                 )
@@ -95,6 +103,37 @@ class HomeViewModel
                     recordSoilCheckResult(task = action.task, soilIsDry = action.soilIsDry)
                 }
                 HomeAction.NotificationPermissionGranted -> rescheduleCareReminders()
+                HomeAction.RefreshCarePlans -> {
+                    refreshCarePlans()
+                }
+            }
+        }
+
+        /**
+         * Triggers a manual refresh of environment-aware care plans using current weather and location data.
+         */
+        private fun refreshCarePlans() {
+            if (isRefreshing.value) return
+            isRefreshing.value = true
+
+            viewModelScope.launch {
+                try {
+                    val updatedTaskCount = syncEnvironmentAwareCarePlansUseCase()
+                    Log.d(
+                        "HomeViewModel",
+                        "Manual care refresh completed. Updated tasks=$updatedTaskCount",
+                    )
+                } catch (
+                    e: CancellationException,
+                ) {
+                    throw e
+                } catch (
+                    e: Exception,
+                ) {
+                    Log.e("HomeViewModel", "Manual care refresh failed", e)
+                } finally {
+                    isRefreshing.value = false
+                }
             }
         }
 

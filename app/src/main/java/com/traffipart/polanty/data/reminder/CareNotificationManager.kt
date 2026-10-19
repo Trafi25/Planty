@@ -20,12 +20,12 @@ import com.traffipart.polanty.domain.repository.care.CareTaskRepository
 import com.traffipart.polanty.domain.repository.plant.PlantRepository
 import com.traffipart.polanty.presentation.MainActivity
 import dagger.hilt.android.qualifiers.ApplicationContext
-import javax.inject.Inject
-import javax.inject.Singleton
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import javax.inject.Inject
+import javax.inject.Singleton
 
 /**
  * Singleton manager responsible for creating notification channels and displaying plant care notifications.
@@ -69,17 +69,21 @@ class CareNotificationManager
             refreshMutex.withLock {
                 if (onlyIfVisible && !isReminderVisible()) return@withLock
                 val now = System.currentTimeMillis()
-                val dueTasks = careTaskRepository.observeOpenTasks().first()
-                    .filter { !it.isCompleted && it.dueAt <= now }
-                val reminders = if (dueTasks.isEmpty()) {
-                    emptyList()
-                } else {
-                    val plantsById = plantRepository.observePlants().first().associateBy { it.id }
-                    dueTasks.mapNotNull { task ->
-                        val plant = plantsById[task.plantId] ?: return@mapNotNull null
-                        task to plant.displayName
+                val dueTasks =
+                    careTaskRepository
+                        .observeOpenTasks()
+                        .first()
+                        .filter { !it.isCompleted && it.dueAt <= now }
+                val reminders =
+                    if (dueTasks.isEmpty()) {
+                        emptyList()
+                    } else {
+                        val plantsById = plantRepository.observePlants().first().associateBy { it.id }
+                        dueTasks.mapNotNull { task ->
+                            val plant = plantsById[task.plantId] ?: return@mapNotNull null
+                            task to plant.displayName
+                        }
                     }
-                }
                 // The user may have dismissed the notification while repositories were being read.
                 if (onlyIfVisible && !isReminderVisible()) return@withLock
                 showCareReminder(reminders)

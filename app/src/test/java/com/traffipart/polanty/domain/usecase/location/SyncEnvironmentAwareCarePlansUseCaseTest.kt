@@ -15,6 +15,9 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Test
 
+/**
+ * Unit tests for [SyncEnvironmentAwareCarePlansUseCase], verifying short-circuit optimization conditions.
+ */
 class SyncEnvironmentAwareCarePlansUseCaseTest {
     private val tasks = mockk<CareTaskRepository>()
     private val location = mockk<GardenLocationRepository>()
@@ -33,6 +36,9 @@ class SyncEnvironmentAwareCarePlansUseCaseTest {
             updateCareTaskDueAtUseCase = mockk(),
         )
 
+    /**
+     * Verifies that having no open care tasks short-circuits execution before querying location or weather.
+     */
     @Test
     fun noOpenTasksSkipsLocationAndWeather() =
         runTest {
@@ -44,6 +50,9 @@ class SyncEnvironmentAwareCarePlansUseCaseTest {
             coVerify(exactly = 0) { weather.getCurrentEnvironment(any(), any()) }
         }
 
+    /**
+     * Verifies that open non-soil tasks (such as watering) short-circuit execution before querying location or weather.
+     */
     @Test
     fun wateringOnlySkipsLocationAndWeather() =
         runTest {
@@ -55,6 +64,9 @@ class SyncEnvironmentAwareCarePlansUseCaseTest {
             coVerify(exactly = 0) { weather.getCurrentEnvironment(any(), any()) }
         }
 
+    /**
+     * Verifies that missing garden location coordinates short-circuit execution before calling the weather API.
+     */
     @Test
     fun missingLocationSkipsWeather() =
         runTest {

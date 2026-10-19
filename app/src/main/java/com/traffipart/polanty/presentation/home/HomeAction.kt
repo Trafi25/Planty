@@ -29,4 +29,10 @@ sealed interface HomeAction {
      */
     data object NotificationPermissionGranted :
         HomeAction
+
+    /**
+     * Action dispatched when a user triggers pull-to-refresh to manually synchronize care plans.
+     */
+    data object RefreshCarePlans :
+        HomeAction
 }

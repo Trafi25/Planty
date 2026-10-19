@@ -7,14 +7,16 @@ import com.traffipart.polanty.domain.model.care.CareTaskType
  *
  * @property plantCount Total number of plants in the garden.
  * @property spaceCount Total number of defined plant spaces.
- * @property isLoading Whether the data is currently being loaded.
+ * @property isLoading Whether the data is currently being loaded initially.
  * @property careTasks List of care tasks due today or pending completion.
+ * @property isRefreshing Whether a manual pull-to-refresh care plan sync is in progress.
  */
 data class HomeUiState(
     val plantCount: Int = 0,
     val spaceCount: Int = 0,
     val isLoading: Boolean = true,
     val careTasks: List<HomeCareTaskUiModel> = emptyList(),
+    val isRefreshing: Boolean = false,
 )
 
 /**

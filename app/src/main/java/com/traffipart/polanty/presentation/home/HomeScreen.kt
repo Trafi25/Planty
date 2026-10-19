@@ -18,10 +18,12 @@ import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -48,6 +50,7 @@ import com.traffipart.polanty.presentation.theme.spacing
  * @param onOpenSettings Callback to navigate to the Settings screen.
  * @param viewModel The ViewModel providing the home dashboard state.
  */
+
 @Composable
 fun HomeScreen(
     onOpenGarden: () -> Unit,
@@ -109,6 +112,7 @@ fun HomeScreen(
  * @param onRequestNotificationPermission Callback to request notification permission.
  * @param modifier The modifier to be applied to the layout.
  */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeContent(
     state: HomeUiState,
@@ -121,71 +125,102 @@ fun HomeContent(
     notificationPermissionGranted: Boolean = true,
     onRequestNotificationPermission: () -> Unit = {},
 ) {
-    Column(
-        modifier =
-            modifier
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-                .padding(MaterialTheme.spacing.large),
-        verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.medium),
-    ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Text(
-                text = "Planty",
-                style = MaterialTheme.typography.headlineMedium,
+    PullToRefreshBox(
+        isRefreshing = state.isRefreshing,
+        onRefresh = {
+            onAction(
+                HomeAction.RefreshCarePlans,
             )
-
-            IconButton(onClick = onOpenSettings) {
-                Icon(
-                    imageVector = Icons.Default.Settings,
-                    contentDescription = "Settings",
+        },
+        modifier =
+            modifier.fillMaxSize(),
+    ) {
+        Column(
+            modifier =
+                modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+                    .padding(MaterialTheme.spacing.large),
+            verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.medium),
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    text = "Planty",
+                    style = MaterialTheme.typography.headlineMedium,
                 )
+
+                IconButton(onClick = onOpenSettings) {
+                    Icon(
+                        imageVector = Icons.Default.Settings,
+                        contentDescription = "Settings",
+                    )
+                }
             }
-        }
 
-        if (state.isLoading) {
-            CircularProgressIndicator()
-            return@Column
-        }
+            if (state.isLoading) {
+                CircularProgressIndicator()
+                return@Column
+            }
 
-        Text(
-            text = "${state.plantCount} plants · ${state.spaceCount} spaces",
-            style = MaterialTheme.typography.bodyMedium,
-        )
-
-        Text(
-            text = "Today's care",
-            style = MaterialTheme.typography.titleLarge,
-        )
-
-        if (state.careTasks.isEmpty()) {
             Text(
-                text = "No tasks for today.",
+                text = "${state.plantCount} plants · ${state.spaceCount} spaces",
                 style = MaterialTheme.typography.bodyMedium,
             )
-        } else {
-            state.careTasks.forEach { task ->
-                HomeCareTaskItem(
-                    task = task,
-                    onComplete = { onAction(HomeAction.CompleteCareTask(task)) },
-                    onSoilDry = { onAction(HomeAction.SoilCheckResult(task, soilIsDry = true)) },
-                    onSoilMoist = { onAction(HomeAction.SoilCheckResult(task, soilIsDry = false)) },
+
+            Text(
+                text = "Today's care",
+                style = MaterialTheme.typography.titleLarge,
+            )
+
+            if (state.careTasks.isEmpty()) {
+                Text(
+                    text = "No tasks for today.",
+                    style = MaterialTheme.typography.bodyMedium,
                 )
+            } else {
+                state.careTasks.forEach { task ->
+                    HomeCareTaskItem(
+                        task = task,
+                        onComplete = { onAction(HomeAction.CompleteCareTask(task)) },
+                        onSoilDry = {
+                            onAction(
+                                HomeAction.SoilCheckResult(
+                                    task,
+                                    soilIsDry = true,
+                                ),
+                            )
+                        },
+                        onSoilMoist = {
+                            onAction(
+                                HomeAction.SoilCheckResult(
+                                    task,
+                                    soilIsDry = false,
+                                ),
+                            )
+                        },
+                    )
+                }
             }
-        }
 
-        if (needNotificationPermission && !notificationPermissionGranted && state.plantCount > 0) {
-            Button(onClick = onRequestNotificationPermission) {
-                Text("Enable reminders")
+            if (needNotificationPermission && !notificationPermissionGranted && state.plantCount > 0) {
+                Button(onClick = onRequestNotificationPermission) {
+                    Text("Enable reminders")
+                }
             }
-        }
 
-        Button(modifier = Modifier.fillMaxWidth(), onClick = onScanPlant) { Text("Scan a plant") }
-        Button(modifier = Modifier.fillMaxWidth(), onClick = onOpenGarden) { Text("Open garden") }
+            Button(
+                modifier = Modifier.fillMaxWidth(),
+                onClick = onScanPlant,
+            ) { Text("Scan a plant") }
+            Button(
+                modifier = Modifier.fillMaxWidth(),
+                onClick = onOpenGarden,
+            ) { Text("Open garden") }
+        }
     }
 }
 
@@ -266,6 +301,29 @@ private fun HomeContentPreview() {
                                 dueAt = System.currentTimeMillis(),
                             ),
                         ),
+                ),
+            onAction = {},
+            onOpenGarden = {},
+            onScanPlant = {},
+            onOpenSettings = {},
+        )
+    }
+}
+
+@Preview(
+    showBackground = true,
+    name = "Home refreshing",
+)
+@Composable
+private fun HomeContentRefreshingPreview() {
+    PolantyTheme {
+        HomeContent(
+            state =
+                HomeUiState(
+                    plantCount = 3,
+                    spaceCount = 2,
+                    isLoading = false,
+                    isRefreshing = true,
                 ),
             onAction = {},
             onOpenGarden = {},
