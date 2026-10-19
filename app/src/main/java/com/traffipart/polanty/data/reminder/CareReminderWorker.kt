@@ -5,8 +5,10 @@ import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.traffipart.polanty.domain.repository.care.CareTaskRepository
+import com.traffipart.polanty.domain.repository.plant.PlantRepository
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
+import kotlinx.coroutines.flow.first
 
 /**
  * [CoroutineWorker] executed by Android [androidx.work.WorkManager] to post care task reminder notifications.
@@ -17,6 +19,7 @@ import dagger.assisted.AssistedInject
  * @param context The application context.
  * @param params Worker configuration parameters passed by WorkManager.
  * @property careTaskRepository Repository used to retrieve the target care task.
+ * @property plantRepository Supplies names for plants with due care tasks.
  * @property notificationManager Manager responsible for posting the system notification.
  */
 @HiltWorker
@@ -26,6 +29,7 @@ class CareReminderWorker
         @Assisted context: Context,
         @Assisted params: WorkerParameters,
         private val careTaskRepository: CareTaskRepository,
+        private val plantRepository: PlantRepository,
         private val notificationManager: CareNotificationManager,
     ) : CoroutineWorker(context, params) {
         /**
@@ -44,7 +48,17 @@ class CareReminderWorker
             val task = careTaskRepository.getTask(taskId) ?: return Result.success()
             val now = System.currentTimeMillis()
             if (task.isCompleted || task.dueAt > now) return Result.success()
-            notificationManager.refreshReminder()
+            val plantsById = plantRepository.observePlants().first().associateBy { it.id }
+            val reminders =
+                careTaskRepository
+                    .observeOpenTasks()
+                    .first()
+                    .filter { !it.isCompleted && it.dueAt <= now }
+                    .mapNotNull { dueTask ->
+                        val plant = plantsById[dueTask.plantId] ?: return@mapNotNull null
+                        dueTask to plant.displayName
+                    }
+            notificationManager.showCareReminder(reminders)
 
             return Result.success()
         }

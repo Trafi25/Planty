@@ -8,9 +8,11 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import com.traffipart.polanty.data.reminder.CareNotificationManager
 import com.traffipart.polanty.presentation.root.PlantyRoot
 import com.traffipart.polanty.presentation.theme.PolantyTheme
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 /**
  * Main Activity for the application.
@@ -20,6 +22,10 @@ import dagger.hilt.android.AndroidEntryPoint
  */
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    /** Clears reminders when the user returns to Planty to handle care tasks. */
+    @Inject
+    lateinit var careNotificationManager: CareNotificationManager
+
     private var notificationPlantId by mutableStateOf<Long?>(null)
     private var notificationOpenHome by mutableStateOf(false)
 
@@ -44,6 +50,11 @@ class MainActivity : ComponentActivity() {
                 )
             }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        careNotificationManager.dismissReminder()
     }
 
     override fun onNewIntent(intent: Intent) {

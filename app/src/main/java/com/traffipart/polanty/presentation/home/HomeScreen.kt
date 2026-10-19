@@ -132,12 +132,11 @@ fun HomeContent(
                 HomeAction.RefreshCarePlans,
             )
         },
-        modifier =
-            modifier.fillMaxSize(),
+        modifier = modifier.fillMaxSize(),
     ) {
         Column(
             modifier =
-                modifier
+                Modifier
                     .fillMaxSize()
                     .verticalScroll(rememberScrollState())
                     .padding(MaterialTheme.spacing.large),

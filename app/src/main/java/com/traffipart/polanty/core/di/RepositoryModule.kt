@@ -1,7 +1,6 @@
 package com.traffipart.polanty.core.di
 
 import com.traffipart.polanty.data.location.AndroidDeviceLocationProvider
-import com.traffipart.polanty.data.reminder.CareNotificationManager
 import com.traffipart.polanty.data.reminder.WorkManagerCareReminderScheduler
 import com.traffipart.polanty.data.repository.care.CareEnvironmentRepositoryImpl
 import com.traffipart.polanty.data.repository.care.CareTaskRepositoryImpl
@@ -17,7 +16,6 @@ import com.traffipart.polanty.data.storage.PlantImageStorageImpl
 import com.traffipart.polanty.data.sync.WorkManagerCarePlanSyncScheduler
 import com.traffipart.polanty.domain.PlantKnowledgeGenerator
 import com.traffipart.polanty.domain.location.DeviceLocationProvider
-import com.traffipart.polanty.domain.reminder.CareReminderRefresher
 import com.traffipart.polanty.domain.reminder.CareReminderScheduler
 import com.traffipart.polanty.domain.repository.care.CareEnvironmentRepository
 import com.traffipart.polanty.domain.repository.care.CareTaskRepository
@@ -39,10 +37,6 @@ import jakarta.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 abstract class RepositoryModule {
-    @Binds
-    @Singleton
-    abstract fun bindCareReminderRefresher(manager: CareNotificationManager): CareReminderRefresher
-
     @Binds
     @Singleton
     abstract fun bindCarePlanSyncScheduler(scheduler: WorkManagerCarePlanSyncScheduler): CarePlanSyncScheduler
