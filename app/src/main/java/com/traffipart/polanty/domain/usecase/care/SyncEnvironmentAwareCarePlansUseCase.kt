@@ -3,6 +3,8 @@ package com.traffipart.polanty.domain.usecase.care
 import com.traffipart.polanty.domain.care.CareEngine
 import com.traffipart.polanty.domain.care.CareEnvironmentEstimator
 import com.traffipart.polanty.domain.care.CareTaskReschedulePolicy
+import com.traffipart.polanty.domain.care.DaylightDurationCalculator
+import com.traffipart.polanty.domain.model.care.CareContext
 import com.traffipart.polanty.domain.model.care.CareTaskType
 import com.traffipart.polanty.domain.repository.care.CareEnvironmentRepository
 import com.traffipart.polanty.domain.repository.care.CareTaskRepository
@@ -14,12 +16,12 @@ import kotlinx.coroutines.flow.first
 import javax.inject.Inject
 
 /**
- * Use case to synchronize and update the due dates of all open care tasks based on live weather data
- * and room climate exposure estimates.
+ * Use case to synchronize and update the due dates of all open care tasks based on live weather data,
+ * room climate exposure estimates, and astronomical daylight duration.
  *
- * This use case evaluates current outdoor weather, estimates room microclimates, delegates recommended due
- * date calculations to [CareEngine], and reschedules open soil check tasks if the recommended due date
- * differs significantly according to [CareTaskReschedulePolicy].
+ * This use case evaluates current outdoor weather, estimates room microclimates, calculates photoperiod daylight length,
+ * delegates recommended due date calculations to [CareEngine], and reschedules open soil check tasks if the recommended
+ * due date differs significantly according to [CareTaskReschedulePolicy].
  *
  * @property plantRepository Repository to query plant records.
  * @property plantSpaceRepository Repository to query room climate exposure levels.
@@ -31,6 +33,7 @@ import javax.inject.Inject
  * @property careEngine Engine calculating recommended due dates for tasks.
  * @property reschedulePolicy Policy deciding whether a due date shift warrants rescheduling.
  * @property updateCareTaskDueAtUseCase Use case to update due dates and reschedule notifications.
+ * @property daylightDurationCalculator Calculator used to compute daylight duration in hours for the garden location.
  */
 class SyncEnvironmentAwareCarePlansUseCase
     @Inject
@@ -45,6 +48,7 @@ class SyncEnvironmentAwareCarePlansUseCase
         private val careEngine: CareEngine,
         private val reschedulePolicy: CareTaskReschedulePolicy,
         private val updateCareTaskDueAtUseCase: UpdateCareTaskDueAtUseCase,
+        private val daylightDurationCalculator: DaylightDurationCalculator,
     ) {
         /**
          * Fetches weather data for saved garden coordinates and updates open soil check task due dates.
@@ -73,13 +77,16 @@ class SyncEnvironmentAwareCarePlansUseCase
                     .first()
                     ?: return 0
 
+            val daylightHours =
+                daylightDurationCalculator
+                    .calculateHours(latitude = coordinates.latitude, atMillis = now)
+
             val outdoorEnvironment =
                 careEnvironmentRepository
                     .getCurrentEnvironment(
                         latitude = coordinates.latitude,
                         longitude = coordinates.longitude,
                     )
-                    ?: return 0
 
             val plantsById =
                 plantRepository
@@ -104,7 +111,7 @@ class SyncEnvironmentAwareCarePlansUseCase
 
                 val spaceId = plant.spaceId ?: continue
 
-                val space = spacesById[spaceId] ?: continue
+                val space = plant.spaceId.let { spaceId -> spacesById[spaceId] }
 
                 val knowledge =
                     plantKnowledgeRepository
@@ -120,12 +127,25 @@ class SyncEnvironmentAwareCarePlansUseCase
                         ).first()
 
                 val environment =
-                    careEnvironmentEstimator
-                        .estimate(
-                            outdoorEnvironment =
-                            outdoorEnvironment,
-                            exposure = space.type.climateExposure,
-                        )
+                    if (
+                        space != null &&
+                        outdoorEnvironment != null
+                    ) {
+                        careEnvironmentEstimator
+                            .estimate(
+                                outdoorEnvironment = outdoorEnvironment,
+                                exposure = space.type.climateExposure,
+                            )
+                    } else {
+                        null
+                    }
+
+                val careContext =
+                    CareContext(
+                        environment = environment,
+                        daylightHours =
+                            daylightHours,
+                    )
 
                 val recommendedDueAt =
                     careEngine
@@ -133,7 +153,7 @@ class SyncEnvironmentAwareCarePlansUseCase
                             plantId = plant.id,
                             knowledge = knowledge,
                             existingTasks = plantTasks,
-                            environment = environment,
+                            careContext = careContext,
                             now = now,
                         )
                         ?: continue

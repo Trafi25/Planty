@@ -1,6 +1,7 @@
 package com.traffipart.polanty.domain.care
 
 import com.google.common.truth.Truth.assertThat
+import com.traffipart.polanty.domain.model.care.CareContext
 import com.traffipart.polanty.domain.model.care.CareTask
 import com.traffipart.polanty.domain.model.care.CareTaskType
 import com.traffipart.polanty.domain.model.knowledge.PlantCareProfile
@@ -53,7 +54,11 @@ private fun plantKnowledge(
             ),
     )
 
-private val careEngine = CareEngine(intervalCalculator = SoilCheckIntervalCalculator())
+private val careEngine =
+    CareEngine(
+        intervalCalculator = SoilCheckIntervalCalculator(),
+        photoperiodAdjuster = SoilCheckPhotoperiodAdjuster(),
+    )
 
 class CareEngineTest {
     @Test
@@ -247,5 +252,48 @@ class CareEngineTest {
 
         assertThat(result)
             .isEqualTo(completedAt + 7.days.inWholeMilliseconds)
+    }
+
+    @Test
+    fun shortDaylightExtendsRecommendedInterval() {
+        val completedAt =
+            1_700_000_000_000L
+
+        val completedTask =
+            CareTask(
+                id = 1L,
+                plantId = 1L,
+                type = CareTaskType.Water,
+                dueAt = completedAt,
+                isCompleted = true,
+                completedAt = completedAt,
+                xpReward = 10,
+            )
+
+        val result =
+            careEngine
+                .calculateRecommendedSoilCheckDueAt(
+                    plantId = 1L,
+                    knowledge =
+                        plantKnowledge(
+                            wateringMinDays = 7,
+                            wateringMaxDays = 10,
+                        ),
+                    existingTasks =
+                        listOf(completedTask),
+                    careContext =
+                        CareContext(
+                            daylightHours = 8.0,
+                        ),
+                    now = completedAt,
+                )
+
+        assertThat(result)
+            .isEqualTo(
+                completedAt +
+                    8
+                        .days
+                        .inWholeMilliseconds,
+            )
     }
 }

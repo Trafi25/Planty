@@ -2,7 +2,8 @@ package com.traffipart.polanty.domain.usecase.care
 
 import com.traffipart.polanty.domain.care.CareEngine
 import com.traffipart.polanty.domain.care.CareEnvironmentEstimator
-import com.traffipart.polanty.domain.model.care.CareEnvironment
+import com.traffipart.polanty.domain.care.DaylightDurationCalculator
+import com.traffipart.polanty.domain.model.care.CareContext
 import com.traffipart.polanty.domain.repository.care.CareEnvironmentRepository
 import com.traffipart.polanty.domain.repository.care.CareTaskRepository
 import com.traffipart.polanty.domain.repository.knowledge.PlantKnowledgeRepository
@@ -27,6 +28,7 @@ import javax.inject.Inject
  * @property gardenLocationRepository The repository to retrieve saved garden location coordinates.
  * @property careEnvironmentRepository The repository to fetch outdoor weather environment conditions.
  * @property careEnvironmentEstimator Estimator used to adjust outdoor weather for room climate exposure.
+ * @property daylightDurationCalculator Calculator used to determine astronomical photoperiod/daylight duration.
  */
 class RefreshPlantCarePlanUseCase
     @Inject
@@ -40,6 +42,7 @@ class RefreshPlantCarePlanUseCase
         private val gardenLocationRepository: GardenLocationRepository,
         private val careEnvironmentRepository: CareEnvironmentRepository,
         private val careEnvironmentEstimator: CareEnvironmentEstimator,
+        private val daylightDurationCalculator: DaylightDurationCalculator,
     ) {
         /**
          * Evaluates care requirements and creates newly needed care tasks for a specific plant.
@@ -58,12 +61,15 @@ class RefreshPlantCarePlanUseCase
                 "Plant ID must be valid"
             }
             require(scientificName.isNotBlank()) { "Scientific name must not be blank" }
-
+            val careContext =
+                getCareContextForPlant(
+                    plantId = plantId,
+                    now = now,
+                )
             val knowledge = plantKnowledgeRepository.getPlantKnowledge(scientificName) ?: return emptyList()
             val existingTasks = careTaskRepository.observePlantTasks(plantId).first()
-            val environment = getEnvironmentForPlant(plantId)
 
-            val newTasks = careEngine.generateTasks(plantId, knowledge, existingTasks, environment, now)
+            val newTasks = careEngine.generateTasks(plantId, knowledge, existingTasks, careContext, now)
 
             val createdTaskIds = mutableListOf<Long>()
 
@@ -75,19 +81,70 @@ class RefreshPlantCarePlanUseCase
         }
 
         /**
-         * Resolves the current [CareEnvironment] microclimate for a plant based on its assigned space and garden coordinates.
+         * Resolves the full [CareContext] (microclimate and daylight hours) for a target plant.
          *
-         * @param plantId The target plant ID.
-         * @return The estimated or observed [CareEnvironment], or `null` if location/weather is unavailable.
+         * @param plantId Target plant ID.
+         * @param now Current reference timestamp in milliseconds.
+         * @return Populated [CareContext].
          */
-        private suspend fun getEnvironmentForPlant(plantId: Long): CareEnvironment? {
-            val plant = plantRepository.observePlant(plantId).first() ?: return null
-            val spaceId = plant.spaceId ?: return null
-            val space = plantSpaceRepository.observeSpace(spaceId).first() ?: return null
-            val coordinates = gardenLocationRepository.observeLocation().first() ?: return null
+        private suspend fun getCareContextForPlant(
+            plantId: Long,
+            now: Long,
+        ): CareContext {
+            val coordinates =
+                gardenLocationRepository
+                    .observeLocation()
+                    .first()
+                    ?: return CareContext()
+
+            val daylightHours =
+                daylightDurationCalculator
+                    .calculateHours(
+                        latitude = coordinates.latitude,
+                        atMillis = now,
+                    )
+
+            val plant =
+                plantRepository
+                    .observePlant(plantId)
+                    .first()
+                    ?: return CareContext(
+                        daylightHours =
+                            daylightHours,
+                    )
+
+            val space =
+                plant.spaceId
+                    ?.let { spaceId ->
+                        plantSpaceRepository
+                            .observeSpace(spaceId)
+                            .first()
+                    }
+
             val outdoorEnvironment =
-                careEnvironmentRepository.getCurrentEnvironment(latitude = coordinates.latitude, longitude = coordinates.longitude)
-                    ?: return null
-            return careEnvironmentEstimator.estimate(outdoorEnvironment = outdoorEnvironment, exposure = space.type.climateExposure)
+                if (space != null) {
+                    careEnvironmentRepository
+                        .getCurrentEnvironment(
+                            latitude =
+                                coordinates.latitude,
+                            longitude =
+                                coordinates.longitude,
+                        )
+                } else {
+                    null
+                }
+
+            val environment =
+                if (outdoorEnvironment != null && space != null) {
+                    careEnvironmentEstimator
+                        .estimate(
+                            outdoorEnvironment = outdoorEnvironment,
+                            exposure = space.type.climateExposure,
+                        )
+                } else {
+                    null
+                }
+
+            return CareContext(environment = environment, daylightHours = daylightHours)
         }
     }
