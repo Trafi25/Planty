@@ -20,40 +20,44 @@ class SoilCheckPhotoperiodAdjuster
          * @param watering Botanical watering profile providing min and max allowed check intervals.
          * @param daylightHours Current daylight duration in hours, or `null` if unavailable.
          * @return Adjusted check interval in days, constrained to species limits.
-         * @throws IllegalArgumentException If daylight hours is provided outside [0.0, 24.0].
+         * @throws IllegalArgumentException If daylight hours is provided outside [0.0, 24.0]
+         * or the species interval bounds are invalid.
          */
         fun adjustDays(
             baseDays: Int,
             watering: WateringProfile,
             daylightHours: Double?,
         ): Int {
-            if (daylightHours == null) {
-                return baseDays
+            val minDays = watering.soilCheckIntervalDaysMin
+            val maxDays = watering.soilCheckIntervalDaysMax
+            require(minDays > 0 && maxDays >= minDays) {
+                "Soil-check interval bounds must be positive and ordered"
             }
-
-            require(daylightHours in 0.0..24.0) {
+            require(daylightHours == null || daylightHours in 0.0..24.0) {
                 "Daylight duration must be between 0 and 24 hours"
             }
 
             val adjustedDays =
                 when {
+                    daylightHours == null -> baseDays.toLong()
                     daylightHours <= SHORT_DAY_HOURS -> {
-                        baseDays + 1
+                        baseDays.toLong() + 1
                     }
 
                     daylightHours >= LONG_DAY_HOURS -> {
-                        baseDays - 1
+                        baseDays.toLong() - 1
                     }
 
                     else -> {
-                        baseDays
+                        baseDays.toLong()
                     }
                 }
 
-            return adjustedDays.coerceIn(
-                watering.soilCheckIntervalDaysMin,
-                watering.soilCheckIntervalDaysMax,
-            )
+            return adjustedDays
+                .coerceIn(
+                    minDays.toLong(),
+                    maxDays.toLong(),
+                ).toInt()
         }
 
         private companion object {

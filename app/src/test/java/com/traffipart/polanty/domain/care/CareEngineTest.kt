@@ -18,7 +18,6 @@ private fun plantKnowledge(
     wateringMinDays: Int = 7,
     wateringMaxDays: Int = 10,
 ): PlantKnowledge =
-
     PlantKnowledge(
         speciesInfo =
             PlantSpeciesInfo(
@@ -40,12 +39,9 @@ private fun plantKnowledge(
                 scientificName = "Test plant",
                 watering =
                     WateringProfile(
-                        soilCheckIntervalDaysMin =
-                        wateringMinDays,
-                        soilCheckIntervalDaysMax =
-                        wateringMaxDays,
-                        instruction =
-                            "Check the soil before watering.",
+                        soilCheckIntervalDaysMin = wateringMinDays,
+                        soilCheckIntervalDaysMax = wateringMaxDays,
+                        instruction = "Check the soil before watering.",
                     ),
                 light = null,
                 humidity = null,
@@ -60,6 +56,9 @@ private val careEngine =
         photoperiodAdjuster = SoilCheckPhotoperiodAdjuster(),
     )
 
+/**
+ * Unit tests for [CareEngine], verifying task generation, due date scheduling, and photoperiod adjustments.
+ */
 class CareEngineTest {
     @Test
     fun createsSoilCheckImmediatelyWhenPlantHasNoCareHistory() {
@@ -106,8 +105,7 @@ class CareEngineTest {
 
     @Test
     fun schedulesNextSoilCheckAfterMinimumInterval() {
-        val completedAt =
-            1_700_000_000_000L
+        val completedAt = 1_700_000_000_000L
 
         val existingTask =
             CareTask(
@@ -127,17 +125,13 @@ class CareEngineTest {
                     plantKnowledge(
                         wateringMinDays = 7,
                     ),
-                existingTasks =
-                    listOf(existingTask),
+                existingTasks = listOf(existingTask),
                 now = completedAt,
             )
 
-        val expectedDueAt =
-            completedAt +
-                7.days.inWholeMilliseconds
+        val expectedDueAt = completedAt + 7.days.inWholeMilliseconds
 
-        assertThat(result.single().dueAt)
-            .isEqualTo(expectedDueAt)
+        assertThat(result.single().dueAt).isEqualTo(expectedDueAt)
     }
 
     @Test
@@ -165,12 +159,8 @@ class CareEngineTest {
 
     @Test
     fun schedulesNextSoilCheckFromLatestWatering() {
-        val soilCheckCompletedAt =
-            1_700_000_000_000L
-
-        val wateredAt =
-            soilCheckCompletedAt +
-                2.hours.inWholeMilliseconds
+        val soilCheckCompletedAt = 1_700_000_000_000L
+        val wateredAt = soilCheckCompletedAt + 2.hours.inWholeMilliseconds
 
         val soilCheck =
             CareTask(
@@ -179,8 +169,7 @@ class CareEngineTest {
                 type = CareTaskType.CheckSoil,
                 dueAt = soilCheckCompletedAt,
                 isCompleted = true,
-                completedAt =
-                soilCheckCompletedAt,
+                completedAt = soilCheckCompletedAt,
                 xpReward = 10,
             )
 
@@ -210,21 +199,14 @@ class CareEngineTest {
                 now = wateredAt,
             )
 
-        val expectedDueAt =
-            wateredAt +
-                7.days.inWholeMilliseconds
+        val expectedDueAt = wateredAt + 7.days.inWholeMilliseconds
 
-        assertThat(
-            result.single().dueAt,
-        ).isEqualTo(
-            expectedDueAt,
-        )
+        assertThat(result.single().dueAt).isEqualTo(expectedDueAt)
     }
 
     @Test
     fun recommendedDueDateIsAnchoredToLastCompletion() {
-        val completedAt =
-            1_700_000_000_000L
+        val completedAt = 1_700_000_000_000L
 
         val completedTask =
             CareTask(
@@ -250,14 +232,15 @@ class CareEngineTest {
                     now = completedAt,
                 )
 
-        assertThat(result)
-            .isEqualTo(completedAt + 7.days.inWholeMilliseconds)
+        assertThat(result).isEqualTo(completedAt + 7.days.inWholeMilliseconds)
     }
 
+    /**
+     * Verifies that short winter photoperiods (<= 9h daylight) adjust recommended check intervals by +1 day.
+     */
     @Test
     fun shortDaylightExtendsRecommendedInterval() {
-        val completedAt =
-            1_700_000_000_000L
+        val completedAt = 1_700_000_000_000L
 
         val completedTask =
             CareTask(
@@ -279,8 +262,7 @@ class CareEngineTest {
                             wateringMinDays = 7,
                             wateringMaxDays = 10,
                         ),
-                    existingTasks =
-                        listOf(completedTask),
+                    existingTasks = listOf(completedTask),
                     careContext =
                         CareContext(
                             daylightHours = 8.0,
@@ -288,12 +270,6 @@ class CareEngineTest {
                     now = completedAt,
                 )
 
-        assertThat(result)
-            .isEqualTo(
-                completedAt +
-                    8
-                        .days
-                        .inWholeMilliseconds,
-            )
+        assertThat(result).isEqualTo(completedAt + 8.days.inWholeMilliseconds)
     }
 }

@@ -53,7 +53,8 @@ class SyncEnvironmentAwareCarePlansUseCase
         /**
          * Fetches weather data for saved garden coordinates and updates open soil check task due dates.
          * Skips location and weather retrieval when no open soil checks exist. Missing coordinates
-         * or unavailable weather also return zero without updating tasks.
+         * return zero without updating tasks. Unavailable weather or a missing space still allow
+         * daylight-only adjustments; room climate is included only when both are available.
          *
          * @param now Current reference timestamp in milliseconds.
          * @return The number of open care tasks successfully rescheduled.
@@ -64,7 +65,7 @@ class SyncEnvironmentAwareCarePlansUseCase
                     .observeOpenTasks()
                     .first()
                     .filter { task ->
-                        task.type == CareTaskType.CheckSoil
+                        !task.isCompleted && task.type == CareTaskType.CheckSoil
                     }
 
             if (openSoilTasks.isEmpty()) {
@@ -109,9 +110,7 @@ class SyncEnvironmentAwareCarePlansUseCase
             for (task in openSoilTasks) {
                 val plant = plantsById[task.plantId] ?: continue
 
-                val spaceId = plant.spaceId ?: continue
-
-                val space = plant.spaceId.let { spaceId -> spacesById[spaceId] }
+                val space = plant.spaceId?.let { spacesById[it] }
 
                 val knowledge =
                     plantKnowledgeRepository
@@ -144,7 +143,7 @@ class SyncEnvironmentAwareCarePlansUseCase
                     CareContext(
                         environment = environment,
                         daylightHours =
-                            daylightHours,
+                        daylightHours,
                     )
 
                 val recommendedDueAt =

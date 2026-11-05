@@ -110,7 +110,7 @@ class RefreshPlantCarePlanUseCase
                     .first()
                     ?: return CareContext(
                         daylightHours =
-                            daylightHours,
+                        daylightHours,
                     )
 
             val space =

@@ -12,6 +12,7 @@ import kotlin.math.tan
  * Calculates daylight duration (photoperiod) in hours for a given geographic latitude and calendar date.
  *
  * Uses solar declination and sunrise/sunset hour angle equations to determine astronomical daylight length.
+ * This seasonal estimate uses the UTC calendar date and excludes atmospheric refraction.
  */
 class DaylightDurationCalculator
     @Inject
@@ -52,6 +53,7 @@ class DaylightDurationCalculator
 
             val hourAngle = acos(cosHourAngle)
 
-            return (24.0 / hourAngle).coerceIn(0.0, 24.0)
+            // Sunrise to sunset spans twice this angle; 2 PI radians represent 24 hours.
+            return (24.0 * hourAngle / PI).coerceIn(0.0, 24.0)
         }
     }

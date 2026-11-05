@@ -123,9 +123,9 @@ class CareEngine
             val intervalDays =
                 photoperiodAdjuster.adjustDays(
                     baseDays =
-                        baseIntervalDays,
+                    baseIntervalDays,
                     watering =
-                        wateringProfile,
+                    wateringProfile,
                     daylightHours =
                         careContext.daylightHours,
                 )
