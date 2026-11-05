@@ -4,6 +4,7 @@ import com.traffipart.polanty.data.location.AndroidDeviceLocationProvider
 import com.traffipart.polanty.data.reminder.WorkManagerCareReminderScheduler
 import com.traffipart.polanty.data.repository.care.CareEnvironmentRepositoryImpl
 import com.traffipart.polanty.data.repository.care.CareTaskRepositoryImpl
+import com.traffipart.polanty.data.repository.health.GeminiPlantHealthRepository
 import com.traffipart.polanty.data.repository.knowledge.GbifPlantNameResolverImpl
 import com.traffipart.polanty.data.repository.knowledge.GeminiPlantKnowledgeGenerator
 import com.traffipart.polanty.data.repository.knowledge.PlantIdentificationRepositoryImpl
@@ -19,6 +20,7 @@ import com.traffipart.polanty.domain.location.DeviceLocationProvider
 import com.traffipart.polanty.domain.reminder.CareReminderScheduler
 import com.traffipart.polanty.domain.repository.care.CareEnvironmentRepository
 import com.traffipart.polanty.domain.repository.care.CareTaskRepository
+import com.traffipart.polanty.domain.repository.health.PlantHealthRepository
 import com.traffipart.polanty.domain.repository.knowledge.PlantIdentificationRepository
 import com.traffipart.polanty.domain.repository.knowledge.PlantKnowledgeRepository
 import com.traffipart.polanty.domain.repository.knowledge.PlantNameResolver
@@ -74,6 +76,10 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindPlantKnowledgeGenerator(generator: GeminiPlantKnowledgeGenerator): PlantKnowledgeGenerator
+
+    @Binds
+    @Singleton
+    abstract fun bindPlantHealthRepository(repository: GeminiPlantHealthRepository): PlantHealthRepository
 
     @Binds
     @Singleton
